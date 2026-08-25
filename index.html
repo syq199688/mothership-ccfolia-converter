@@ -136,6 +136,85 @@
       margin-bottom: 24px;
     }
 
+    /* 历史记录 UI 样式 */
+    .history-card {
+      background: rgba(17, 19, 23, 0.85);
+      border: 1px dashed var(--accent-cyan);
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-bottom: 24px;
+    }
+    .history-card header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .history-card title {
+      color: var(--accent-cyan);
+      font-family: var(--font-title);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    .history-item:hover {
+      border-color: var(--accent-cyan);
+      background: rgba(0, 216, 214, 0.05);
+    }
+    .history-info {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .history-tag {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: var(--font-mono);
+    }
+    .tag-character { background: rgba(255, 63, 52, 0.2); color: var(--accent-red); border: 1px solid var(--accent-red); }
+    .tag-pet { background: rgba(255, 168, 1, 0.2); color: var(--accent-orange); border: 1px solid var(--accent-orange); }
+    .history-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .btn-hist-load {
+      background: transparent;
+      border: 1px solid var(--accent-cyan);
+      color: var(--accent-cyan);
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-hist-load:hover { background: var(--accent-cyan); color: #000; }
+    .btn-hist-del {
+      background: transparent;
+      border: 1px solid #555;
+      color: var(--text-muted);
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-hist-del:hover { border-color: var(--accent-red); color: var(--accent-red); }
+
     /* Tab 切换栏样式 */
     .tab-bar {
       display: flex;
@@ -521,6 +600,17 @@
   <h1>🌠 Mothership角色卡Ccfolia转换器</h1>
   <div class="subtitle">支持Excel表一键导入转换，也可以手动填写</div>
 
+  <!-- 本地存储/历史记录 UI 模块 -->
+  <div class="history-card">
+    <header>
+      <div class="history-title">📜 历史角色记录 (本地存储最近 5 个)</div>
+      <button class="btn-hist-del" onclick="clearAllHistory()">清空历史</button>
+    </header>
+    <div id="historyList" class="history-list">
+      <div style="color: var(--text-muted); font-size: 12px; text-align: center;">暂无历史记录</div>
+    </div>
+  </div>
+
   <!-- 选项卡按钮栏 -->
   <div class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('character')">👤 角色档案</button>
@@ -817,6 +907,8 @@
     "共振砍刀": { attr: "战斗", damage: "3d10", note: "范围:邻接；出血+狰狞 (AA)；造成损伤时同时根据出血和狰狞列投骰" }
   };
 
+  const STORAGE_KEY = 'MOTHERSHIP_CHARACTERS_HISTORY';
+
   function rollD10(count = 1) {
     let total = 0;
     for (let i = 0; i < count; i++) {
@@ -929,12 +1021,12 @@
     }
   }
 
-  function addPetSkillRow(tier) {
+  function addPetSkillRow(tier, skillName = '') {
     const container = document.getElementById(`pet_skills_${tier}`);
     const row = document.createElement('div');
     row.className = 'skill-item';
     row.innerHTML = `
-      <input type="text" class="pet-skill-input" placeholder="技能名称" list="skills-list-${tier}">
+      <input type="text" class="pet-skill-input" value="${skillName}" placeholder="技能名称" list="skills-list-${tier}">
       <button onclick="this.parentElement.remove();">✕</button>
     `;
     container.appendChild(row);
@@ -951,6 +1043,7 @@
     addWeaponRow();
     updateCommandsPreview();
     onPetTypeChange();
+    renderHistoryUI();
   });
 
   function initWeaponDatalist() {
@@ -1431,6 +1524,50 @@
 
     document.getElementById('outputJson').value = JSON.stringify(ccfoliaData, null, 2);
     document.getElementById('outputGroup').style.display = 'block';
+
+    // 抓取并保存表单原始数据以备本地恢复
+    const rawSkills = { 10: [], 15: [], 20: [] };
+    [10, 15, 20].forEach(tier => {
+      document.querySelectorAll(`#skills_container_${tier} .skill-item`).forEach(item => {
+        rawSkills[tier].push({
+          name: item.querySelector('.skill-name-input').value,
+          attr: item.querySelector('.skill-attr-select').value
+        });
+      });
+    });
+
+    const rawWeapons = [];
+    document.querySelectorAll('#weapons_container .weapon-item').forEach(item => {
+      rawWeapons.push({
+        name: item.querySelector('.weapon-name-input').value,
+        attr: item.querySelector('.weapon-attr').value,
+        skill: item.querySelector('.weapon-skill').value,
+        damage: item.querySelector('.weapon-damage').value,
+        note: item.querySelector('.weapon-note').value
+      });
+    });
+
+    const charRecord = {
+      type: 'character',
+      name: document.getElementById('edit_name').value || "未命名角色",
+      job: jobStr,
+      response: traumaStr,
+      hp: document.getElementById('edit_hp').value,
+      stress: document.getElementById('edit_stress').value,
+      damage: document.getElementById('edit_damage').value,
+      armor: document.getElementById('edit_armor').value,
+      str: document.getElementById('edit_str').value,
+      spd: document.getElementById('edit_spd').value,
+      int: document.getElementById('edit_int').value,
+      combat: document.getElementById('edit_combat').value,
+      sanity: document.getElementById('edit_sanity').value,
+      fear: document.getElementById('edit_fear').value,
+      body: document.getElementById('edit_body').value,
+      skills: rawSkills,
+      weapons: rawWeapons
+    };
+
+    saveCharacterToStorage(charRecord);
   }
 
   // 生成宠物独立 JSON
@@ -1492,6 +1629,161 @@
 
     document.getElementById('outputPetJson').value = JSON.stringify(petCcfoliaData, null, 2);
     document.getElementById('petOutputGroup').style.display = 'block';
+
+    const petRecord = {
+      type: 'pet',
+      petType: petType,
+      petName: petName,
+      petInstinct: petInstinct,
+      skills: petSkills
+    };
+
+    saveCharacterToStorage(petRecord);
+  }
+
+  /* ================= 历史记录 & 本地存储核心逻辑 ================= */
+
+  function getStorageHistory() {
+    try {
+      const data = localStorage.getItem(STORAGE_KEY);
+      return data ? JSON.parse(data) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveCharacterToStorage(record) {
+    let history = getStorageHistory();
+    record.id = Date.now();
+    record.time = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+    
+    // 加在队首
+    history.unshift(record);
+    // 限制最多保存 5 条
+    if (history.length > 5) {
+      history = history.slice(0, 5);
+    }
+
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+      renderHistoryUI();
+    } catch (e) {
+      console.warn("localStorage 写入失败:", e);
+    }
+  }
+
+  function deleteHistoryItem(id) {
+    let history = getStorageHistory();
+    history = history.filter(item => item.id !== id);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+    renderHistoryUI();
+  }
+
+  function clearAllHistory() {
+    if (confirm("确定要清空保存的本地历史记录吗？")) {
+      localStorage.removeItem(STORAGE_KEY);
+      renderHistoryUI();
+    }
+  }
+
+  function loadHistoryItem(id) {
+    const history = getStorageHistory();
+    const target = history.find(item => item.id === id);
+    if (!target) return;
+
+    playAudioBeep(520, 'sine', 0.1);
+
+    if (target.type === 'character') {
+      switchTab('character');
+      resetForm();
+
+      document.getElementById('edit_name').value = target.name || '';
+      document.getElementById('edit_job').value = target.job || '';
+      document.getElementById('edit_response').value = target.response || '';
+      document.getElementById('edit_hp').value = target.hp || '';
+      document.getElementById('edit_stress').value = target.stress || '';
+      document.getElementById('edit_damage').value = target.damage || '';
+      document.getElementById('edit_armor').value = target.armor || '';
+
+      document.getElementById('edit_str').value = target.str || '';
+      document.getElementById('edit_spd').value = target.spd || '';
+      document.getElementById('edit_int').value = target.int || '';
+      document.getElementById('edit_combat').value = target.combat || '';
+
+      document.getElementById('edit_sanity').value = target.sanity || '';
+      document.getElementById('edit_fear').value = target.fear || '';
+      document.getElementById('edit_body').value = target.body || '';
+
+      if (target.skills) {
+        [10, 15, 20].forEach(tier => {
+          if (target.skills[tier]) {
+            target.skills[tier].forEach(s => addSkillRow(tier, s.name, s.attr));
+          }
+        });
+      }
+
+      document.getElementById('weapons_container').innerHTML = '';
+      if (target.weapons && target.weapons.length > 0) {
+        target.weapons.forEach(w => addWeaponRow(w.name, w.attr, w.skill, w.damage, w.note));
+      } else {
+        addWeaponRow();
+      }
+
+      updateCommandsPreview();
+      generateCcfoliaJson();
+
+    } else if (target.type === 'pet') {
+      switchTab('pet');
+      document.getElementById('edit_pet_type').value = target.petType || 'organic';
+      onPetTypeChange();
+      document.getElementById('edit_pet_name').value = target.petName || '';
+      document.getElementById('edit_pet_instinct').value = target.petInstinct || '';
+
+      document.getElementById('pet_skills_10').innerHTML = '';
+      document.getElementById('pet_skills_15').innerHTML = '';
+
+      if (target.skills) {
+        target.skills.forEach(s => addPetSkillRow(s.bonus, s.name));
+      }
+
+      generatePetCcfoliaJson();
+    }
+  }
+
+  function renderHistoryUI() {
+    const historyListEl = document.getElementById('historyList');
+    if (!historyListEl) return;
+
+    const history = getStorageHistory();
+
+    if (history.length === 0) {
+      historyListEl.innerHTML = `<div style="color: var(--text-muted); font-size: 12px; text-align: center;">暂无历史转换记录</div>`;
+      return;
+    }
+
+    let html = '';
+    history.forEach(item => {
+      const isPet = item.type === 'pet';
+      const tagClass = isPet ? 'tag-pet' : 'tag-character';
+      const tagText = isPet ? '宠物' : '主角色';
+      const displayName = isPet ? item.petName : item.name;
+
+      html += `
+        <div class="history-item">
+          <div class="history-info">
+            <span class="history-tag ${tagClass}">${tagText}</span>
+            <strong style="color: #fff;">${displayName || '未命名'}</strong>
+            <span style="color: var(--text-muted); font-size: 11px;">(${item.time})</span>
+          </div>
+          <div class="history-actions">
+            <button class="btn-hist-load" onclick="loadHistoryItem(${item.id})">一键恢复</button>
+            <button class="btn-hist-del" onclick="deleteHistoryItem(${item.id})">✕</button>
+          </div>
+        </div>
+      `;
+    });
+
+    historyListEl.innerHTML = html;
   }
 
   function copyToClipboard() {
