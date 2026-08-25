@@ -658,7 +658,7 @@
       if (!skillSelect) return;
       const currentVal = skillSelect.value;
 
-      let html = '<option value="">无技能 (裸面板)</option>';
+      let html = '<option value="">无技能</option>';
       skills.forEach(s => {
         const valStr = `${s.name} (${s.bonus})`;
         const selected = (currentVal === valStr) ? 'selected' : '';
@@ -674,7 +674,7 @@
     row.className = 'weapon-item';
 
     const skills = getAllTrainedSkills();
-    let skillOptionsHtml = '<option value="">无技能 (裸面板)</option>';
+    let skillOptionsHtml = '<option value="">无技能</option>';
     skills.forEach(s => {
       const valStr = `${s.name} (${s.bonus})`;
       const sel = (skillChoice === valStr) ? 'selected' : '';
