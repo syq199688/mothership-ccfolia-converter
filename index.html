@@ -658,15 +658,16 @@
           <label for="edit_hp" style="margin-bottom: 0;">生命值</label>
           <span title="点我快速掷骰生命值" onclick="quickRollHP()" class="dice-icon" style="font-size: 0.8rem; line-height: 1;">🎲</span>
         </div>
-        <input type="number" id="edit_hp" value="" placeholder="0">
+        <!-- 更改为支持斜杠文本输入 -->
+        <input type="text" id="edit_hp" value="" placeholder="如: 10/10">
       </div>
       <div>
         <label for="edit_stress">压力</label>
-        <input type="number" id="edit_stress" value="" placeholder="2">
+        <input type="text" id="edit_stress" value="2/20" placeholder="如: 2/20">
       </div>
       <div>
         <label for="edit_damage">损伤</label>
-        <input type="number" id="edit_damage" value="" placeholder="0">
+        <input type="text" id="edit_damage" value="0/3" placeholder="如: 0/3">
       </div>
       <div>
         <label for="edit_armor">护甲 (AP)</label>
@@ -865,6 +866,18 @@
 <datalist id="weapons-datalist"></datalist>
 
 <script>
+  // 工具函数：解析带斜杠的数值文本（如 10/10）拆分为 val 和 max
+  function parseSlashVal(valStr, defaultMax) {
+    if (!valStr) return { val: 0, max: defaultMax || 0 };
+    const s = String(valStr).trim();
+    if (s.includes('/')) {
+      const parts = s.split('/');
+      return { val: parseInt(parts[0]) || 0, max: parseInt(parts[1]) || 0 };
+    }
+    const num = parseInt(s) || 0;
+    return { val: num, max: defaultMax !== undefined ? defaultMax : num };
+  }
+
   const SKILL_DATABASE = {
     10: {
       '语言学': '智力', '动物学': '智力', '植物学': '智力', '地质学': '智力',
@@ -955,11 +968,11 @@
     }
   }
 
-  // 快速生成生命值 (1d10 + 10)
+  // 快速生成生命值 (1d10 + 10) - 更改为直接输出为 max/max
   function quickRollHP() {
     playDiceRollSound();
     const result = rollD10(1) + 10;
-    document.getElementById('edit_hp').value = result;
+    document.getElementById('edit_hp').value = `${result}/${result}`;
     updateCommandsPreview();
   }
 
@@ -980,11 +993,16 @@
 
   function resetForm() {
     playAudioBeep(400, 'sawtooth', 0.15);
-    ['edit_name', 'edit_job', 'edit_response', 'edit_hp', 'edit_stress', 'edit_damage', 'edit_armor',
+    ['edit_name', 'edit_job', 'edit_response', 'edit_hp', 'edit_armor',
      'edit_str', 'edit_spd', 'edit_int', 'edit_combat', 'edit_sanity', 'edit_fear', 'edit_body'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
+    
+    // 给压力和损伤设定初始默认值
+    document.getElementById('edit_stress').value = '2/20';
+    document.getElementById('edit_damage').value = '0/3';
+    
     clearSkillContainers();
     document.getElementById('weapons_container').innerHTML = '';
     addWeaponRow();
@@ -1168,10 +1186,12 @@
       const m = rawText.match(reg);
       return m ? m[1] : '';
     }
+    
+    // 更改此处：识别带斜杠的内容，并将“当前/最大”均抓取出来返回
     function matchSlashNum(keyStr) {
       const reg = new RegExp(`${keyStr}[^\\d]*?(\\d{1,3})\\s*[/\\\\|]\\s*(\\d{1,3})`, 'i');
       const m = rawText.match(reg);
-      return m ? m[1] : '';
+      return m ? `${m[1]}/${m[2]}` : '';
     }
 
     const parsedName = matchField(['角色名称', '角色名', '姓名', '名字', 'Name', 'Character']);
@@ -1255,7 +1275,7 @@
     });
   }
 
-  // 优化后的武器添加函数：不再重复带有列标签
+  // 优化后的武器添加函数
   function addWeaponRow(selectedWeapon = '', attr = '战斗', skillChoice = '', damage = '', note = '') {
     const container = document.getElementById('weapons_container');
     const row = document.createElement('div');
@@ -1497,10 +1517,15 @@
     const jobStr = document.getElementById('edit_job').value;
     const traumaStr = document.getElementById('edit_response').value;
 
+    // 核心更改点：运用上面写好的 parseSlashVal 将文本输入拆分成 value 和 max
+    const hpParsed = parseSlashVal(document.getElementById('edit_hp').value, 0);
+    const stressParsed = parseSlashVal(document.getElementById('edit_stress').value, 20);
+    const dmgParsed = parseSlashVal(document.getElementById('edit_damage').value, 3);
+
     let statusList = [
-      { label: "HP", value: parseInt(document.getElementById('edit_hp').value)||0, max: parseInt(document.getElementById('edit_hp').value)||0 },
-      { label: "压力", value: parseInt(document.getElementById('edit_stress').value)||0, max: 20 },
-      { label: "损伤", value: parseInt(document.getElementById('edit_damage').value)||0, max: 3 },
+      { label: "HP", value: hpParsed.val, max: hpParsed.max || hpParsed.val },
+      { label: "压力", value: stressParsed.val, max: stressParsed.max },
+      { label: "损伤", value: dmgParsed.val, max: dmgParsed.max },
       { label: "护甲", value: parseInt(document.getElementById('edit_armor').value)||0, max: parseInt(document.getElementById('edit_armor').value)||0 }
     ];
 
