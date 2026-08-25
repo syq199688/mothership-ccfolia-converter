@@ -45,6 +45,28 @@
       background-attachment: fixed;
     }
 
+    /* 呼吸感霓虹发光动画 */
+    @keyframes titleGlow {
+      0%, 100% { text-shadow: 0 0 12px rgba(255, 63, 52, 0.4); }
+      50% { text-shadow: 0 0 20px rgba(255, 63, 52, 0.8), 0 0 30px rgba(255, 63, 52, 0.4); }
+    }
+
+    /* 自定义滚动条样式 */
+    textarea::-webkit-scrollbar, ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    textarea::-webkit-scrollbar-track, ::-webkit-scrollbar-track {
+      background: #090a0c;
+    }
+    textarea::-webkit-scrollbar-thumb, ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 3px;
+    }
+    textarea::-webkit-scrollbar-thumb:hover, ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-cyan);
+    }
+
     .card {
       background: var(--card-bg);
       backdrop-filter: blur(8px);
@@ -58,7 +80,6 @@
       position: relative;
     }
 
-    /* 已将 CRT 扫描线效果减弱 */
     .card::before {
       content: " ";
       display: block;
@@ -78,7 +99,7 @@
       font-size: 1.8rem;
       letter-spacing: 2px;
       text-transform: uppercase;
-      text-shadow: 0 0 12px rgba(255, 63, 52, 0.4);
+      animation: titleGlow 4s infinite ease-in-out;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -93,6 +114,20 @@
       padding-bottom: 8px;
       margin-top: 28px;
       text-transform: uppercase;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+      margin-top: 28px;
+    }
+    .section-header h2 {
+      margin: 0;
+      border: none;
+      padding: 0;
     }
 
     .subtitle {
@@ -132,6 +167,7 @@
       color: var(--accent-cyan);
       background: var(--section-bg);
       border-color: var(--accent-cyan);
+      border-top: 2px solid var(--accent-cyan);
       border-bottom: 2px solid var(--section-bg);
       margin-bottom: -2px;
       box-shadow: 0 -4px 10px rgba(0, 216, 214, 0.15);
@@ -140,6 +176,7 @@
     .tab-btn.active.tab-pet {
       color: var(--accent-orange);
       border-color: var(--accent-orange);
+      border-top: 2px solid var(--accent-orange);
       box-shadow: 0 -4px 10px rgba(255, 168, 1, 0.15);
     }
 
@@ -156,11 +193,11 @@
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .drop-zone:hover {
+    .drop-zone:hover, .drop-zone.dragover {
       background: rgba(255, 63, 52, 0.08);
       color: #fff;
-      border-color: #ff5e57;
-      box-shadow: 0 0 15px rgba(255, 63, 52, 0.2);
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 15px rgba(0, 216, 214, 0.3);
     }
 
     input[type="file"] { display: none; }
@@ -188,11 +225,18 @@
       font-size: 14px;
       font-family: var(--font-body);
       transition: all 0.2s;
+      cursor: text;
     }
+
+    select { cursor: pointer; }
 
     input[type="number"] {
       font-family: var(--font-mono);
       font-weight: 600;
+    }
+
+    input:hover, select:hover {
+      border-color: rgba(0, 216, 214, 0.5);
     }
 
     input:focus, select:focus, textarea:focus {
@@ -247,35 +291,62 @@
     .badge-15 { background-color: var(--accent-orange); }
     .badge-20 { background-color: var(--accent-red); }
 
-    .skill-item, .weapon-item {
+    .skill-item {
       display: flex;
       gap: 8px;
       margin-bottom: 10px;
       align-items: center;
     }
-    
     .skill-item input { flex: 2.2; padding: 8px; min-width: 0; }
     .skill-item select { flex: 1.2; padding: 8px 4px; min-width: 62px; }
 
-    .weapon-field-group { display: flex; flex-direction: column; }
-    .weapon-field-label { font-size: 11px; color: var(--accent-cyan); margin-bottom: 4px; font-weight: 600; }
-    .weapon-field-group.group-select { flex: 1.8; }
-    .weapon-field-group.group-attr { flex: 1; }
-    .weapon-field-group.group-skill { flex: 1.4; }
-    .weapon-field-group.group-damage { flex: 1; }
-    .weapon-field-group.group-note { flex: 2; }
+    /* 重构后的武器表样式 */
+    .weapon-table-header {
+      display: flex;
+      gap: 8px;
+      padding-bottom: 6px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 11px;
+      color: var(--accent-cyan);
+      font-weight: 600;
+    }
+    .weapon-table-header div { flex: 1; }
+    .weapon-table-header .col-name { flex: 1.8; }
+    .weapon-table-header .col-attr { flex: 1; }
+    .weapon-table-header .col-skill { flex: 1.4; }
+    .weapon-table-header .col-damage { flex: 1; }
+    .weapon-table-header .col-note { flex: 2; }
+    .weapon-table-header .col-action { flex: 0 0 32px; }
+
+    .weapon-item {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+    .weapon-item .weapon-name-input { flex: 1.8; }
+    .weapon-item .weapon-attr { flex: 1; }
+    .weapon-item .weapon-skill { flex: 1.4; }
+    .weapon-item .weapon-damage { flex: 1; }
+    .weapon-item .weapon-note { flex: 2; }
 
     button { font-family: var(--font-body); transition: all 0.2s; }
 
     .skill-item button, .weapon-item button {
-      width: auto;
-      padding: 9px 12px;
+      width: 32px;
+      height: 36px;
+      padding: 0;
       background: #2b303b;
       border: 1px solid #3a404d;
       color: var(--accent-red);
       border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
     .skill-item button:hover, .weapon-item button:hover {
       background: var(--accent-red);
@@ -298,6 +369,20 @@
     .btn-add-skill:hover, .btn-add-weapon:hover {
       background: rgba(0, 216, 214, 0.1);
       box-shadow: 0 0 10px rgba(0, 216, 214, 0.2);
+    }
+
+    .btn-reset {
+      background: rgba(255, 63, 52, 0.1);
+      border: 1px solid var(--accent-red);
+      color: var(--accent-red);
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-reset:hover {
+      background: var(--accent-red);
+      color: #fff;
     }
 
     button.btn-primary {
@@ -416,6 +501,18 @@
       line-height: 1.6;
       color: var(--text-main);
     }
+
+    /* 移动端/小屏幕自适应媒体查询 */
+    @media (max-width: 768px) {
+      body { padding: 10px; margin: 10px auto; }
+      .card { padding: 20px; }
+      .grid-4 { grid-template-columns: 1fr 1fr; }
+      .grid-3 { grid-template-columns: 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .weapon-table-header { display: none; } /* 移动端隐藏表格头 */
+      .weapon-item { flex-direction: column; align-items: stretch; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px; }
+      .weapon-item button { width: 100%; margin-top: 4px; }
+    }
   </style>
 </head>
 <body>
@@ -432,15 +529,19 @@
 
   <!-- ================= Tab 1: 主角色档案 ================= -->
   <div class="tab-content active" id="tab-character">
-    <div class="drop-zone" id="dropZone" onclick="triggerFileInput()">
-      📄 点击上传角色卡 (.xlsx / .xls)
+    <div class="drop-zone" id="dropZone" onclick="triggerFileInput()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+      📄 点击或拖拽上传角色卡 (.xlsx / .xls)
       <input type="file" id="fileInput" accept=".xlsx, .xls">
     </div>
 
     <div class="status-box" id="statusBox">正在读取并解析文件内容，请稍候...</div>
 
-    <h2>背景资料</h2>
-    <div class="grid-2">
+    <div class="section-header">
+      <h2>背景资料</h2>
+      <button class="btn-reset" onclick="resetForm()">🧹 清空重置</button>
+    </div>
+    
+    <div class="grid-2" style="margin-top: 15px;">
       <div>
         <label for="edit_name">角色名称</label>
         <input type="text" id="edit_name" value="" placeholder="请输入角色名称">
@@ -462,7 +563,6 @@
       <div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
           <label for="edit_hp" style="margin-bottom: 0;">生命值</label>
-          <!-- 已将骰子图标字体调小至 0.8rem，让其与输入框更匹配 -->
           <span title="点我快速掷骰生命值" onclick="quickRollHP()" class="dice-icon" style="font-size: 0.8rem; line-height: 1;">🎲</span>
         </div>
         <input type="number" id="edit_hp" value="" placeholder="0">
@@ -481,8 +581,8 @@
       </div>
     </div>
 
-    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-top: 25px;">
-      <h2 style="margin: 0; border: none; padding: 0;">基础属性 & 豁免检定</h2>
+    <div class="section-header">
+      <h2>基础属性 & 豁免检定</h2>
       <span title="点我快速掷骰生成属性" onclick="quickRollStatsAndSaves()" class="dice-icon">🎲</span>
     </div>
 
@@ -555,6 +655,17 @@
       <header>
         <span style="color:var(--accent-red);">武器列表</span>
       </header>
+      
+      <!-- 统一武器表头 -->
+      <div class="weapon-table-header">
+        <div class="col-name">武器名称</div>
+        <div class="col-attr">属性</div>
+        <div class="col-skill">技能加成</div>
+        <div class="col-damage">伤害骰</div>
+        <div class="col-note">备注说明</div>
+        <div class="col-action"></div>
+      </div>
+
       <div id="weapons_container"></div>
       <button class="btn-add-weapon" onclick="addWeaponRow()">➕ 添加武器</button>
     </div>
@@ -714,6 +825,26 @@
     return total;
   }
 
+  // Drag and Drop 拖拽反馈处理
+  function handleDragOver(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    document.getElementById('dropZone').classList.add('dragover');
+  }
+  function handleDragLeave(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    document.getElementById('dropZone').classList.remove('dragover');
+  }
+  function handleDrop(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    document.getElementById('dropZone').classList.remove('dragover');
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFile(e.dataTransfer.files[0]);
+    }
+  }
+
   // Tab 切换逻辑
   function switchTab(tabName) {
     playAudioBeep(650, 'sine', 0.08);
@@ -750,6 +881,20 @@
     document.getElementById('edit_body').value = rollD10(2) + 10;
 
     updateCommandsPreview();
+  }
+
+  function resetForm() {
+    playAudioBeep(400, 'sawtooth', 0.15);
+    ['edit_name', 'edit_job', 'edit_response', 'edit_hp', 'edit_stress', 'edit_damage', 'edit_armor',
+     'edit_str', 'edit_spd', 'edit_int', 'edit_combat', 'edit_sanity', 'edit_fear', 'edit_body'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    clearSkillContainers();
+    document.getElementById('weapons_container').innerHTML = '';
+    addWeaponRow();
+    updateCommandsPreview();
+    document.getElementById('outputGroup').style.display = 'none';
   }
 
   function onPetTypeChange() {
@@ -805,7 +950,7 @@
     initWeaponDatalist();
     addWeaponRow();
     updateCommandsPreview();
-    onPetTypeChange(); // 初始化宠物卡UI
+    onPetTypeChange();
   });
 
   function initWeaponDatalist() {
@@ -1014,6 +1159,7 @@
     });
   }
 
+  // 优化后的武器添加函数：不再重复带有列标签
   function addWeaponRow(selectedWeapon = '', attr = '战斗', skillChoice = '', damage = '', note = '') {
     const container = document.getElementById('weapons_container');
     const row = document.createElement('div');
@@ -1028,34 +1174,19 @@
     });
 
     row.innerHTML = `
-      <div class="weapon-field-group group-select">
-        <span class="weapon-field-label">武器名称</span>
-        <input type="text" class="weapon-name-input" list="weapons-datalist" value="${selectedWeapon}" placeholder="选择或手动输入" onchange="onWeaponPresetChange(this)" oninput="updateCommandsPreview()">
-      </div>
-      <div class="weapon-field-group group-attr">
-        <span class="weapon-field-label">属性</span>
-        <select class="weapon-attr" onchange="updateCommandsPreview()">
-          <option value="战斗" ${attr==='战斗'?'selected':''}>战斗</option>
-          <option value="力量" ${attr==='力量'?'selected':''}>力量</option>
-          <option value="速度" ${attr==='速度'?'selected':''}>速度</option>
-          <option value="智力" ${attr==='智力'?'selected':''}>智力</option>
-        </select>
-      </div>
-      <div class="weapon-field-group group-skill">
-        <span class="weapon-field-label">技能加成</span>
-        <select class="weapon-skill" onchange="updateCommandsPreview()">
-          ${skillOptionsHtml}
-        </select>
-      </div>
-      <div class="weapon-field-group group-damage">
-        <span class="weapon-field-label">伤害骰</span>
-        <input type="text" class="weapon-damage" value="${damage}" placeholder="如: 2d10" oninput="updateCommandsPreview()">
-      </div>
-      <div class="weapon-field-group group-note">
-        <span class="weapon-field-label">备注说明</span>
-        <input type="text" class="weapon-note" value="${note}" placeholder="特殊效果/说明" oninput="updateCommandsPreview()">
-      </div>
-      <button style="margin-top: 18px;" onclick="this.parentElement.remove(); updateCommandsPreview();">✕</button>
+      <input type="text" class="weapon-name-input" list="weapons-datalist" value="${selectedWeapon}" placeholder="武器名称" onchange="onWeaponPresetChange(this)" oninput="updateCommandsPreview()">
+      <select class="weapon-attr" onchange="updateCommandsPreview()">
+        <option value="战斗" ${attr==='战斗'?'selected':''}>战斗</option>
+        <option value="力量" ${attr==='力量'?'selected':''}>力量</option>
+        <option value="速度" ${attr==='速度'?'selected':''}>速度</option>
+        <option value="智力" ${attr==='智力'?'selected':''}>智力</option>
+      </select>
+      <select class="weapon-skill" onchange="updateCommandsPreview()">
+        ${skillOptionsHtml}
+      </select>
+      <input type="text" class="weapon-damage" value="${damage}" placeholder="伤害 (如: 2d10)" oninput="updateCommandsPreview()">
+      <input type="text" class="weapon-note" value="${note}" placeholder="备注 / 效果" oninput="updateCommandsPreview()">
+      <button onclick="this.parentElement.remove(); updateCommandsPreview();">✕</button>
     `;
 
     container.appendChild(row);
@@ -1365,14 +1496,15 @@
 
   function copyToClipboard() {
     playAudioBeep(750, 'sine', 0.12);
+    if (navigator.vibrate) navigator.vibrate(50); // 触屏微震动反馈
     const textarea = document.getElementById('outputJson');
     textarea.select();
     navigator.clipboard.writeText(textarea.value);
 
     const copyBtn = document.querySelector('#outputGroup button');
     if (copyBtn) {
-      const originalText = "📋 一键复制【主角色 JSON】到剪贴板";
-      copyBtn.innerText = "✓ 已复制！请直接 CTRL+V 复制到 CCfolia 界面";
+      const originalText = "📋 一键复制到剪贴板";
+      copyBtn.innerText = "✓ 已复制！请直接 CTRL+V 粘贴到 CCfolia 界面";
       copyBtn.style.backgroundColor = "#00d8d6";
       copyBtn.style.color = "#000";
 
@@ -1386,13 +1518,14 @@
 
   function copyPetToClipboard() {
     playAudioBeep(750, 'sine', 0.12);
+    if (navigator.vibrate) navigator.vibrate(50);
     const textarea = document.getElementById('outputPetJson');
     textarea.select();
     navigator.clipboard.writeText(textarea.value);
 
     const copyBtn = document.getElementById('btnCopyPet');
     if (copyBtn) {
-      const originalText = "📋 一键复制【宠物角色卡 JSON】";
+      const originalText = "📋 一键复制";
       copyBtn.innerText = "✓ 已复制！请直接 CTRL+V 粘贴到 CCfolia";
       copyBtn.style.backgroundColor = "#00d8d6";
       copyBtn.style.color = "#000";
