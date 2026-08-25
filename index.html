@@ -603,7 +603,7 @@
   <!-- 本地存储/历史记录 UI 模块 -->
   <div class="history-card">
     <header>
-      <div class="history-title">📜 历史角色记录 (本地存储最近 5 个)</div>
+      <div class="history-title">📜 历史角色记录</div>
       <button class="btn-hist-del" onclick="clearAllHistory()">清空历史</button>
     </header>
     <div id="historyList" class="history-list">
@@ -620,7 +620,7 @@
   <!-- ================= Tab 1: 主角色档案 ================= -->
   <div class="tab-content active" id="tab-character">
     <div class="drop-zone" id="dropZone" onclick="triggerFileInput()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-      📄 点击或拖拽上传角色卡 (.xlsx / .xls)
+      📄 点击上传角色卡 (.xlsx / .xls)
       <input type="file" id="fileInput" accept=".xlsx, .xls">
     </div>
 
