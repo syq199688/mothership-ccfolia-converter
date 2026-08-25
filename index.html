@@ -4,189 +4,443 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🌠 Mothership角色卡Ccfolia转换器</title>
+  <!-- 引入 Excel 解析库 -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <!-- 引入科幻感 Google Web Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Noto+Sans+SC:wght@400;500;700&family=Orbitron:wght@600;800&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+  
   <style>
+    :root {
+      --bg-color: #06080a;
+      --card-bg: rgba(22, 25, 29, 0.92);
+      --section-bg: #1c2026;
+      --input-bg: #111317;
+      --border-color: #2b303b;
+      --border-highlight: #ff3f34;
+      --text-main: #e0e6ed;
+      --text-muted: #8b95a5;
+      --accent-red: #ff3f34;
+      --accent-orange: #ffa801;
+      --accent-green: #05c46b;
+      --accent-cyan: #00d8d6;
+      --font-title: 'Orbitron', 'Rajdhani', -apple-system, sans-serif;
+      --font-body: 'Noto Sans SC', -apple-system, sans-serif;
+      --font-mono: 'Fira Code', monospace;
+    }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: var(--font-body);
       max-width: 950px;
       margin: 40px auto;
       padding: 0 20px;
-      background-color: #1a1d20;
-      color: #e0e0e0;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      background-image: 
+        radial-gradient(circle at 50% 20%, rgba(0, 216, 214, 0.08) 0%, transparent 60%),
+        linear-gradient(rgba(0, 216, 214, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 216, 214, 0.05) 1px, transparent 1px);
+      background-size: 100% 100%, 20px 20px, 20px 20px;
+      background-attachment: fixed;
     }
+
     .card {
-      background: #24282e;
-      padding: 30px;
-      border-radius: 12px;
-      border: 1px solid #3a3f47;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-    }
-    h1 { margin-top: 0; color: #ff4757; font-size: 1.6rem; letter-spacing: 1px; }
-    h2 { color: #ffa502; font-size: 1.2rem; border-bottom: 1px solid #3a3f47; padding-bottom: 8px; margin-top: 25px; }
-    .subtitle { color: #aaa; font-size: 14px; margin-bottom: 20px; }
-    .drop-zone {
-      border: 2px dashed #ff4757;
-      border-radius: 8px;
+      background: var(--card-bg);
+      backdrop-filter: blur(8px);
       padding: 35px;
-      text-align: center;
-      background: #1c2024;
+      border-radius: 6px;
+      border: 1px solid rgba(0, 216, 214, 0.2);
+      box-shadow: 
+        0 0 30px rgba(0, 0, 0, 0.9), 
+        inset 0 0 15px rgba(0, 216, 214, 0.03),
+        0 0 15px rgba(255, 63, 52, 0.1);
+      position: relative;
+    }
+
+    /* 已将 CRT 扫描线效果减弱 */
+    .card::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.08) 50%);
+      background-size: 100% 4px;
+      z-index: 10;
+      pointer-events: none;
+      opacity: 0.3;
+    }
+
+    h1 {
+      margin-top: 0;
+      color: var(--accent-red);
+      font-family: var(--font-title);
+      font-size: 1.8rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-shadow: 0 0 12px rgba(255, 63, 52, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h2 {
+      color: var(--accent-orange);
+      font-family: var(--font-title);
+      font-size: 1.15rem;
+      letter-spacing: 1px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+      margin-top: 28px;
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-bottom: 24px;
+    }
+
+    /* Tab 切换栏样式 */
+    .tab-bar {
+      display: flex;
+      gap: 10px;
+      margin-top: 25px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .tab-btn {
+      background: rgba(28, 32, 38, 0.6);
+      border: 1px solid var(--border-color);
+      border-bottom: none;
+      color: var(--text-muted);
+      padding: 12px 24px;
+      font-family: var(--font-title);
+      font-size: 14px;
+      font-weight: 700;
       cursor: pointer;
-      color: #aaa;
+      border-radius: 8px 8px 0 0;
       transition: all 0.2s;
     }
-    .drop-zone:hover { background: #282d33; color: #fff; }
+
+    .tab-btn:hover {
+      color: #fff;
+      background: var(--section-bg);
+    }
+
+    .tab-btn.active {
+      color: var(--accent-cyan);
+      background: var(--section-bg);
+      border-color: var(--accent-cyan);
+      border-bottom: 2px solid var(--section-bg);
+      margin-bottom: -2px;
+      box-shadow: 0 -4px 10px rgba(0, 216, 214, 0.15);
+    }
+
+    .tab-btn.active.tab-pet {
+      color: var(--accent-orange);
+      border-color: var(--accent-orange);
+      box-shadow: 0 -4px 10px rgba(255, 168, 1, 0.15);
+    }
+
+    /* 拖拽上传区域 */
+    .drop-zone {
+      border: 2px dashed var(--accent-red);
+      border-radius: 10px;
+      padding: 30px 20px;
+      text-align: center;
+      background: rgba(255, 63, 52, 0.03);
+      cursor: pointer;
+      color: var(--text-muted);
+      font-weight: 500;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .drop-zone:hover {
+      background: rgba(255, 63, 52, 0.08);
+      color: #fff;
+      border-color: #ff5e57;
+      box-shadow: 0 0 15px rgba(255, 63, 52, 0.2);
+    }
+
     input[type="file"] { display: none; }
-    
-    .form-group { margin-top: 15px; }
-    label { display: block; margin-bottom: 6px; font-weight: bold; color: #7bed9f; font-size: 13px; }
-    input[type="text"], input[type="number"], select, button, textarea {
+
+    .form-group { margin-top: 18px; }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: var(--accent-cyan);
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    input[type="text"], input[type="number"], select, textarea {
       width: 100%;
-      padding: 10px 12px;
-      background: #191c1f;
-      border: 1px solid #3a3f47;
+      padding: 10px 14px;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
       color: #fff;
       border-radius: 6px;
       box-sizing: border-box;
       font-size: 14px;
-    }
-    input:focus, select:focus, textarea:focus { border-color: #ff4757; outline: none; }
-    
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
-    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
-
-    .edit-section {
-      background: #1c2024;
-      border: 1px solid #2f3542;
-      border-radius: 8px;
-      padding: 20px;
-      margin-top: 25px;
+      font-family: var(--font-body);
+      transition: all 0.2s;
     }
 
+    input[type="number"] {
+      font-family: var(--font-mono);
+      font-weight: 600;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent-red);
+      box-shadow: 0 0 8px rgba(255, 63, 52, 0.4);
+      outline: none;
+      background: #14171c;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
+
+    .tab-content {
+      display: none;
+      background: var(--section-bg);
+      border: 1px solid var(--border-color);
+      border-top: none;
+      border-radius: 0 0 10px 10px;
+      padding: 24px;
+    }
+
+    .tab-content.active { display: block; }
+
+    /* 技能与武器模块 */
     .skill-card, .weapon-card {
-      background: #24282e;
-      border: 1px solid #3a3f47;
-      border-radius: 6px;
-      padding: 14px;
-      margin-top: 10px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 12px;
     }
+
     .skill-card header, .weapon-card header {
       font-weight: bold;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      font-family: var(--font-title);
     }
+
     .skill-badge {
       font-size: 11px;
-      padding: 2px 6px;
+      padding: 3px 8px;
       border-radius: 4px;
-      color: #1e272e;
-      font-weight: bold;
+      color: #0d0f12;
+      font-weight: 800;
+      font-family: var(--font-mono);
     }
-    .badge-10 { background-color: #7bed9f; }
-    .badge-15 { background-color: #eccc68; }
-    .badge-20 { background-color: #ff7f50; }
+    .badge-10 { background-color: var(--accent-cyan); }
+    .badge-15 { background-color: var(--accent-orange); }
+    .badge-20 { background-color: var(--accent-red); }
 
     .skill-item, .weapon-item {
       display: flex;
-      gap: 6px;
-      margin-bottom: 8px;
+      gap: 8px;
+      margin-bottom: 10px;
       align-items: center;
     }
-    .skill-item input { flex: 2; }
-    .skill-item select { flex: 1; min-width: 75px; }
     
-    .weapon-field-group {
-      display: flex;
-      flex-direction: column;
-    }
-    .weapon-field-label {
-      font-size: 11px;
-      color: #7bed9f;
-      margin-bottom: 4px;
-      font-weight: bold;
-    }
+    .skill-item input { flex: 2.2; padding: 8px; min-width: 0; }
+    .skill-item select { flex: 1.2; padding: 8px 4px; min-width: 62px; }
 
+    .weapon-field-group { display: flex; flex-direction: column; }
+    .weapon-field-label { font-size: 11px; color: var(--accent-cyan); margin-bottom: 4px; font-weight: 600; }
     .weapon-field-group.group-select { flex: 1.8; }
     .weapon-field-group.group-attr { flex: 1; }
     .weapon-field-group.group-skill { flex: 1.4; }
     .weapon-field-group.group-damage { flex: 1; }
     .weapon-field-group.group-note { flex: 2; }
 
+    button { font-family: var(--font-body); transition: all 0.2s; }
+
     .skill-item button, .weapon-item button {
       width: auto;
-      padding: 8px 10px;
-      background: #ff4757;
-      border: none;
-      color: white;
-      border-radius: 4px;
+      padding: 9px 12px;
+      background: #2b303b;
+      border: 1px solid #3a404d;
+      color: var(--accent-red);
+      border-radius: 6px;
       cursor: pointer;
+      font-weight: bold;
     }
+    .skill-item button:hover, .weapon-item button:hover {
+      background: var(--accent-red);
+      color: #fff;
+      border-color: var(--accent-red);
+    }
+
     .btn-add-skill, .btn-add-weapon {
-      background: #2f3542;
-      border: 1px dashed #7bed9f;
-      color: #7bed9f;
+      background: transparent;
+      border: 1px dashed var(--accent-cyan);
+      color: var(--accent-cyan);
       font-size: 12px;
-      padding: 6px;
-      margin-top: 6px;
+      font-weight: 600;
+      padding: 8px;
+      margin-top: 8px;
       cursor: pointer;
-      border-radius: 4px;
+      border-radius: 6px;
       width: 100%;
     }
-    .btn-add-skill:hover, .btn-add-weapon:hover { background: #3a3f47; }
+    .btn-add-skill:hover, .btn-add-weapon:hover {
+      background: rgba(0, 216, 214, 0.1);
+      box-shadow: 0 0 10px rgba(0, 216, 214, 0.2);
+    }
 
     button.btn-primary {
-      background-color: #ff4757;
+      width: 100%;
+      background: linear-gradient(135deg, #ff3f34, #d63031);
       color: white;
       border: none;
-      font-size: 16px;
-      font-weight: bold;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: var(--font-title);
+      letter-spacing: 1px;
       cursor: pointer;
-      margin-top: 20px;
-      transition: background 0.2s;
+      margin-top: 24px;
+      box-shadow: 0 4px 15px rgba(255, 63, 52, 0.3);
     }
-    button.btn-primary:hover { background-color: #ff6b81; }
-    
+    button.btn-primary:hover {
+      background: linear-gradient(135deg, #ff5e57, #ff3f34);
+      box-shadow: 0 6px 20px rgba(255, 63, 52, 0.5);
+      transform: translateY(-1px);
+    }
+
+    button.btn-pet-primary {
+      background: linear-gradient(135deg, #ffa801, #ff7f00);
+      box-shadow: 0 4px 15px rgba(255, 168, 1, 0.3);
+      color: #000;
+    }
+    button.btn-pet-primary:hover {
+      background: linear-gradient(135deg, #ffc048, #ffa801);
+      box-shadow: 0 6px 20px rgba(255, 168, 1, 0.5);
+    }
+
     textarea {
       height: 180px;
-      font-family: "Courier New", monospace;
-      margin-top: 10px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      margin-top: 8px;
       resize: vertical;
-      line-height: 1.4;
-      color: #7bed9f;
+      line-height: 1.5;
+      color: var(--accent-green);
+      background: #090a0c !important;
+      border: 1px solid #22272e;
     }
-    
+
+    /* 宠物专属美化输出面板样式 */
+    #petOutputGroup {
+      background: rgba(15, 17, 21, 0.75);
+      border: 1px solid rgba(255, 168, 1, 0.35);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 168, 1, 0.08);
+    }
+
+    #outputPetJson {
+      background: #08090c !important;
+      border: 1px solid rgba(255, 168, 1, 0.25);
+      color: #ffc048;
+      border-radius: 8px;
+      padding: 12px;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+    }
+
+    #btnCopyPet {
+      background: linear-gradient(135deg, #ffa801, #e17055);
+      color: #06080a;
+      font-family: var(--font-title);
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      margin-top: 14px;
+      cursor: pointer;
+      width: 100%;
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(255, 168, 1, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    #btnCopyPet:hover {
+      background: linear-gradient(135deg, #ffc048, #ffa801);
+      box-shadow: 0 6px 20px rgba(255, 168, 1, 0.5);
+      transform: translateY(-1px);
+    }
+
     .status-box {
       margin-top: 15px;
-      padding: 12px;
+      padding: 12px 16px;
       border-radius: 6px;
-      background: #2f3542;
-      color: #eccc68;
+      background: #2a2008;
+      border: 1px solid var(--accent-orange);
+      color: var(--accent-orange);
       font-size: 13px;
       display: none;
+      font-family: var(--font-mono);
+    }
+
+    .dice-icon {
+      cursor: pointer;
+      font-size: 1.5rem;
+      display: inline-block;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .dice-icon:hover {
+      transform: rotate(180deg) scale(1.25);
+      filter: drop-shadow(0 0 8px var(--accent-orange));
+    }
+
+    .rule-info-card {
+      background: rgba(255, 168, 1, 0.05);
+      border: 1px dashed var(--accent-orange);
+      border-radius: 8px;
+      padding: 14px;
+      margin-top: 15px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-main);
     }
   </style>
 </head>
 <body>
 
 <div class="card">
-  <h1>🌠Mothership角色卡Ccfolia转换器</h1>
-  <div class="subtitle">只支持excel表一键导入，pdf卡请手动输入</div>
-  
-  <div class="drop-zone" id="dropZone" onclick="triggerFileInput()">
-    📄点击上传角色卡
-    <input type="file" id="fileInput" accept=".xlsx, .xls, .pdf, image/*">
+  <h1>🌠 Mothership角色卡Ccfolia转换器</h1>
+  <div class="subtitle">支持Excel表一键导入转换，也可以手动填写</div>
+
+  <!-- 选项卡按钮栏 -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('character')">👤 角色档案</button>
+    <button class="tab-btn tab-pet" onclick="switchTab('pet')">🐾 宠物档案</button>
   </div>
 
-  <div class="status-box" id="statusBox">正在读取并解析文件内容，请稍候...</div>
+  <!-- ================= Tab 1: 主角色档案 ================= -->
+  <div class="tab-content active" id="tab-character">
+    <div class="drop-zone" id="dropZone" onclick="triggerFileInput()">
+      📄 点击或拖拽上传角色卡 (.xlsx / .xls)
+      <input type="file" id="fileInput" accept=".xlsx, .xls">
+    </div>
 
-  <div class="edit-section" id="editSection">
-    <h2>背景</h2>
-    
-    <div class="grid-2" style="margin-top: 15px;">
+    <div class="status-box" id="statusBox">正在读取并解析文件内容，请稍候...</div>
+
+    <h2>背景资料</h2>
+    <div class="grid-2">
       <div>
         <label for="edit_name">角色名称</label>
         <input type="text" id="edit_name" value="" placeholder="请输入角色名称">
@@ -198,11 +452,11 @@
     </div>
 
     <div class="form-group">
-      <label for="edit_response">memo</label>
-      <input type="text" id="edit_response" value="" placeholder="请输入创伤反应或简短角色描述">
+      <label for="edit_response">Memo</label>
+      <input type="text" id="edit_response" value="" placeholder="请输入创伤反应和简短角色描述">
     </div>
 
-    <h2>数据</h2>
+    <h2>生存数据</h2>
     <div class="grid-4">
       <div>
         <label for="edit_hp">生命值</label>
@@ -222,9 +476,12 @@
       </div>
     </div>
 
-    <h2>基础属性&豁免</h2>
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-top: 25px;">
+      <h2 style="margin: 0; border: none; padding: 0;">基础属性 & 豁免检定</h2>
+      <span title="点我快速掷骰生成属性" onclick="quickRollStatsAndSaves()" class="dice-icon">🎲</span>
+    </div>
 
-    <div class="grid-4">
+    <div class="grid-4" style="margin-top: 15px;">
       <div>
         <label for="edit_str">力量</label>
         <input type="number" id="edit_str" value="" placeholder="0">
@@ -258,11 +515,11 @@
       </div>
     </div>
 
-    <h2>技能加值</h2>
+    <h2>专业技能</h2>
     <div class="grid-3">
       <div class="skill-card">
         <header>
-          <span style="color:#7bed9f;">训练技能 (Trained)</span>
+          <span style="color:var(--accent-cyan);">训练技能 (Trained)</span>
           <span class="skill-badge badge-10">+10%</span>
         </header>
         <div id="skills_container_10"></div>
@@ -271,7 +528,7 @@
 
       <div class="skill-card">
         <header>
-          <span style="color:#eccc68;">专家技能 (Expert)</span>
+          <span style="color:var(--accent-orange);">专家技能 (Expert)</span>
           <span class="skill-badge badge-15">+15%</span>
         </header>
         <div id="skills_container_15"></div>
@@ -280,7 +537,7 @@
 
       <div class="skill-card">
         <header>
-          <span style="color:#ff7f50;">大师技能 (Master)</span>
+          <span style="color:var(--accent-red);">大师技能 (Master)</span>
           <span class="skill-badge badge-20">+20%</span>
         </header>
         <div id="skills_container_20"></div>
@@ -288,31 +545,92 @@
       </div>
     </div>
 
-    <h2>武器装备</h2>
+    <h2>武器表</h2>
     <div class="weapon-card">
       <header>
-        <span style="color:#ff4757;">武器列表</span>
+        <span style="color:var(--accent-red);">武器列表</span>
       </header>
       <div id="weapons_container"></div>
       <button class="btn-add-weapon" onclick="addWeaponRow()">➕ 添加武器</button>
     </div>
 
-    <h2>常用对话表预览</h2>
+    <h2>常用对话指令预览</h2>
     <div class="form-group">
-      <textarea id="edit_commands" readonly style="color:#a4b0be; background:#15181b;"></textarea>
+      <textarea id="edit_commands" readonly></textarea>
     </div>
 
-    <button class="btn-primary" onclick="generateCcfoliaJson()">生成Ccfolia角色卡代码</button>
+    <button class="btn-primary" onclick="generateCcfoliaJson()">生成主角色 JSON</button>
+
+    <div class="form-group" id="outputGroup" style="display: none; margin-top: 25px;">
+      <h2>✨ 主角色JSON卡</h2>
+      <textarea id="outputJson" readonly></textarea>
+      <button onclick="copyToClipboard()" style="background-color: var(--accent-green); color: #0d0f12; font-weight:bold; margin-top:10px; cursor:pointer; width:100%; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">📋 一键复制【主角色 JSON】到剪贴板</button>
+    </div>
   </div>
 
-  <div class="form-group" id="outputGroup" style="display: none;">
-    <h2>✨ 生成结果</h2>
-    <textarea id="outputJson" readonly></textarea>
-    <button onclick="copyToClipboard()" style="background-color: #2ed573; color: #1e272e; font-weight:bold; margin-top:10px; cursor:pointer;">📋 一键复制到剪贴板</button>
+
+  <!-- ================= Tab 2: 宠物档案 (独立配置) ================= -->
+  <div class="tab-content" id="tab-pet">
+    <h2>🐾 宠物</h2>
+    
+    <div class="grid-3">
+      <div>
+        <label for="edit_pet_type">宠物类型</label>
+        <select id="edit_pet_type" onchange="onPetTypeChange()">
+          <option value="organic">有机宠物</option>
+          <option value="synthetic">合成宠物</option>
+        </select>
+      </div>
+      <div>
+        <label for="edit_pet_name">宠物名称</label>
+        <input type="text" id="edit_pet_name" value="" placeholder="如：猫/狗">
+      </div>
+      <div>
+        <label for="edit_pet_instinct">宠物本能</label>
+        <input type="number" id="edit_pet_instinct" value="" placeholder="自动生成或手动填">
+      </div>
+    </div>
+
+    <div class="rule-info-card" id="pet_rule_box">
+      <!-- 动态填充宠物规则说明 -->
+    </div>
+
+    <h2>🐾 宠物技能</h2>
+    <div class="grid-2">
+      <div class="skill-card">
+        <header>
+          <span style="color:var(--accent-cyan);">训练技能 (+10%)</span>
+          <span class="skill-badge badge-10" id="pet_trained_count_badge">可选 1 项</span>
+        </header>
+        <div id="pet_skills_10"></div>
+        <button class="btn-add-skill" onclick="addPetSkillRow(10)">➕ 添加宠物训练技能</button>
+      </div>
+
+      <div class="skill-card">
+        <header>
+          <span style="color:var(--accent-orange);">专家技能 (+15%)</span>
+          <span class="skill-badge badge-15" id="pet_expert_count_badge">合成宠物可选</span>
+        </header>
+        <div id="pet_skills_15"></div>
+        <button class="btn-add-skill" onclick="addPetSkillRow(15)">➕ 添加宠物专家技能</button>
+      </div>
+    </div>
+
+    <button class="btn-primary btn-pet-primary" onclick="generatePetCcfoliaJson()">生成宠物JSON角色卡</button>
+
+    <div class="form-group" id="petOutputGroup" style="display: none; margin-top: 25px;">
+      <h2 style="color: var(--accent-orange); border-bottom: 1px solid rgba(255,168,1,0.2); padding-bottom: 8px;">✨ 宠物 JSON 角色卡</h2>
+      <div style="color: var(--text-muted); font-size: 12px; margin-bottom: 10px;">
+        💡 提示：点击下方按钮复制后，直接在 CCfolia 房间窗口使用 <code style="color: var(--accent-orange);">Ctrl + V</code> 粘贴即可生成宠物 Token。
+      </div>
+      <textarea id="outputPetJson" readonly></textarea>
+      <button id="btnCopyPet" onclick="copyPetToClipboard()">📋 一键复制【宠物角色卡 JSON】</button>
+    </div>
   </div>
+
 </div>
 
-<!-- 技能 Datalist -->
+<!-- 技能 Datalist 联想 -->
 <datalist id="skills-list-10">
   <option value="语言学"><option value="动物学"><option value="植物学"><option value="地质学">
   <option value="工业装备"><option value="临时拼凑"><option value="化学"><option value="计算机">
@@ -335,10 +653,6 @@
 <datalist id="weapons-datalist"></datalist>
 
 <script>
-  if (typeof pdfjsLib !== 'undefined') {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-  }
-
   const SKILL_DATABASE = {
     10: {
       '语言学': '智力', '动物学': '智力', '植物学': '智力', '地质学': '智力',
@@ -376,13 +690,94 @@
     "转轮手枪": { attr: "战斗", damage: "1d10+1", note: "范围:近距；枪击" },
     "钩索枪": { attr: "战斗", damage: "1d10", note: "范围:近距；1d10 伤害+移除时 2d10 伤害；出血 [+]；100米细丝，身体豁免失败被缠住" },
     "手术刀": { attr: "战斗", damage: "1d5", note: "范围:邻接；出血 [+]" },
-    "智能步枪": { attr: "战斗", damage: "4d10", note: "范围:极限；枪击 [+] (AA)；在近距范围内开火，战斗检定带有 [-]" },
+    "智能步枪": { attr: "战斗", damage: "4d10", note: "范围:远距；枪击 [+] (AA)；在近距范围内开火，战斗检定带有 [-]" },
     "冲锋枪": { attr: "战斗", damage: "2d10", note: "范围:远距；枪击；可以单手开火" },
     "震慑电棒": { attr: "战斗", damage: "1d5", note: "范围:邻接；钝击；身体豁免失败震慑 1 轮" },
     "镇静手枪": { attr: "战斗", damage: "1d5", note: "范围:近距；钝击；若造成伤害敌人须通过身体豁免，失败失去意识 1d10 轮" },
     "徒手": { attr: "力量", damage: "力量/10", note: "范围:邻接；钝击" },
     "共振砍刀": { attr: "战斗", damage: "3d10", note: "范围:邻接；出血+狰狞 (AA)；造成损伤时同时根据出血和狰狞列投骰" }
   };
+
+  function rollD10(count = 1) {
+    let total = 0;
+    for (let i = 0; i < count; i++) {
+      total += Math.floor(Math.random() * 10) + 1;
+    }
+    return total;
+  }
+
+  // Tab 切换逻辑
+  function switchTab(tabName) {
+    playAudioBeep(650, 'sine', 0.08);
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+    if (tabName === 'character') {
+      document.querySelectorAll('.tab-btn')[0].classList.add('active');
+      document.getElementById('tab-character').classList.add('active');
+    } else {
+      document.querySelectorAll('.tab-btn')[1].classList.add('active');
+      document.getElementById('tab-pet').classList.add('active');
+    }
+  }
+
+  // 快速生成基础属性、豁免
+  function quickRollStatsAndSaves() {
+    playDiceRollSound();
+    document.getElementById('edit_str').value = rollD10(2) + 25;
+    document.getElementById('edit_spd').value = rollD10(2) + 25;
+    document.getElementById('edit_int').value = rollD10(2) + 25;
+    document.getElementById('edit_combat').value = rollD10(2) + 25;
+
+    document.getElementById('edit_sanity').value = rollD10(2) + 10;
+    document.getElementById('edit_fear').value = rollD10(2) + 10;
+    document.getElementById('edit_body').value = rollD10(2) + 10;
+
+    updateCommandsPreview();
+  }
+
+  function onPetTypeChange() {
+    playDiceRollSound();
+    const petType = document.getElementById('edit_pet_type').value;
+    const ruleBox = document.getElementById('pet_rule_box');
+    const badge10 = document.getElementById('pet_trained_count_badge');
+    const badge15 = document.getElementById('pet_expert_count_badge');
+
+    if (petType === 'organic') {
+      document.getElementById('edit_pet_instinct').value = rollD10(2) + 40;
+      badge10.innerText = "1 项技能";
+      badge15.innerText = "不可选";
+      ruleBox.innerHTML = `
+        <strong>【有机宠物规则与能力】</strong><br>
+        • <strong>属性</strong>：损伤 1 (HP 10) | 本能 2d10+40<br>
+        • <strong>技能</strong>：1 项受训技能 (+10%)<br>
+        • <strong>休息</strong>：休息豁免带有 <strong>[ + ] 优势</strong><br>
+        • <strong>负面效果</strong>：只要宠物受到伤害，主人就会造成 <strong>1 压力</strong>；若宠物遇害，主人需进行<strong>惊控检定</strong>且压力下限 +1。
+      `;
+    } else {
+      document.getElementById('edit_pet_instinct').value = rollD10(2) + 30;
+      badge10.innerText = "最多 2 项技能";
+      badge15.innerText = "或 1 项专家技能";
+      ruleBox.innerHTML = `
+        <strong>【合成宠物规则与能力】</strong><br>
+        • <strong>属性</strong>：损伤 2 (HP 15) | 本能 2d10+30<br>
+        • <strong>技能</strong>：2 项受训技能 或 1 项专家技能<br>
+        • <strong>休息</strong>：休息豁免 <strong>+5</strong><br>
+        • <strong>负面效果</strong>：只要宠物遭受伤害，主人就要通过<strong>理智豁免</strong>，否则造成 <strong>1 压力</strong>；若宠物被摧毁，主人造成 <strong>1 压力</strong>。
+      `;
+    }
+  }
+
+  function addPetSkillRow(tier) {
+    const container = document.getElementById(`pet_skills_${tier}`);
+    const row = document.createElement('div');
+    row.className = 'skill-item';
+    row.innerHTML = `
+      <input type="text" class="pet-skill-input" placeholder="技能名称" list="skills-list-${tier}">
+      <button onclick="this.parentElement.remove();">✕</button>
+    `;
+    container.appendChild(row);
+  }
 
   function triggerFileInput() { document.getElementById('fileInput').click(); }
 
@@ -394,6 +789,7 @@
     initWeaponDatalist();
     addWeaponRow();
     updateCommandsPreview();
+    onPetTypeChange(); // 初始化宠物卡UI
   });
 
   function initWeaponDatalist() {
@@ -416,36 +812,41 @@
   function hideStatus() { document.getElementById('statusBox').style.display = 'none'; }
 
   function handleFile(file) {
-    showStatus("正在加载文件: "+file.name);
+    playAudioBeep(520, 'sine', 0.1);
+    showStatus("正在加载文件: " + file.name);
     document.getElementById('outputGroup').style.display = 'none';
     const fileName = file.name.toLowerCase();
 
     if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
       handleExcelFile(file);
-    } else if (fileName.endsWith('.pdf')) {
-      handlePdfFile(file);
     } else {
-      handleImageFile(file);
+      hideStatus();
+      alert("仅支持导入 Excel 文件 (.xlsx 或 .xls)");
     }
   }
 
   function handleExcelFile(file) {
     const reader = new FileReader();
     reader.onload = (e) => {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: 'array', cellStyles: true });
+      try {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array', cellStyles: true });
 
-      let weaponSheetName = workbook.SheetNames.find(name => name.trim().includes("武器"));
-      if (weaponSheetName) {
-        parseWeaponSheet(workbook.Sheets[weaponSheetName]);
+        let weaponSheetName = workbook.SheetNames.find(name => name.trim().includes("武器"));
+        if (weaponSheetName) {
+          parseWeaponSheet(workbook.Sheets[weaponSheetName]);
+        }
+        
+        let targetSheetName = workbook.SheetNames.find(name => name.trim() === "角色档案") || workbook.SheetNames[0];
+        const sheet = workbook.Sheets[targetSheetName];
+        const rawData = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, defval: '' });
+        
+        parseAndFillFormExcel(rawData, sheet);
+      } catch (err) {
+        alert("解析 Excel 文件出错: " + err.message);
+      } finally {
+        hideStatus();
       }
-      
-      let targetSheetName = workbook.SheetNames.find(name => name.trim() === "角色档案") || workbook.SheetNames[0];
-      const sheet = workbook.Sheets[targetSheetName];
-      const rawData = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, defval: '' });
-      
-      parseAndFillFormExcel(rawData, sheet);
-      hideStatus();
     };
     reader.readAsArrayBuffer(file);
   }
@@ -494,77 +895,6 @@
       }
     }
     initWeaponDatalist();
-  }
-
-  async function handlePdfFile(file) {
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-      
-      let formFilled = false;
-      try {
-        const page = await pdf.getPage(1);
-        const annotations = await page.getAnnotations();
-        if (annotations && annotations.length > 0) formFilled = parseAnnotations(annotations);
-      } catch (e) {}
-
-      if (!formFilled) {
-        showStatus("正在对 PDF 画面进行 OCR 文字识别...");
-        const page = await pdf.getPage(1);
-        const viewport = page.getViewport({ scale: 2.0 });
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
-
-        await page.render({ canvasContext: context, viewport: viewport }).promise;
-        const imgData = canvas.toDataURL('image/png');
-
-        const worker = await Tesseract.createWorker('chi_sim+eng');
-        const ret = await worker.recognize(imgData);
-        await worker.terminate();
-
-        parseBaseAttributesText(ret.data.text);
-      }
-      hideStatus();
-    } catch (err) {
-      alert("解析 PDF 出错: "+err.message);
-      hideStatus();
-    }
-  }
-
-  async function handleImageFile(file) {
-    showStatus("正在对图片进行 OCR 识别...");
-    const worker = await Tesseract.createWorker('chi_sim+eng');
-    const ret = await worker.recognize(file);
-    await worker.terminate();
-    hideStatus();
-    parseBaseAttributesText(ret.data.text);
-  }
-
-  function parseAnnotations(annotations) {
-    let count = 0;
-    annotations.forEach(a => {
-      if (!a.fieldName || !a.fieldValue) return;
-      const name = a.fieldName.toLowerCase();
-      const val = String(a.fieldValue).trim();
-
-      if (name.includes('str') || name.includes('力量')) { document.getElementById('edit_str').value = val; count++; }
-      if (name.includes('spd') || name.includes('速度')) { document.getElementById('edit_spd').value = val; count++; }
-      if (name.includes('int') || name.includes('智力')) { document.getElementById('edit_int').value = val; count++; }
-      if (name.includes('com') || name.includes('战斗')) { document.getElementById('edit_combat').value = val; count++; }
-      if (name.includes('san') || name.includes('理智')) { document.getElementById('edit_sanity').value = val; count++; }
-      if (name.includes('fear') || name.includes('恐惧')) { document.getElementById('edit_fear').value = val; count++; }
-      if (name.includes('body') || name.includes('身体')) { document.getElementById('edit_body').value = val; count++; }
-      if (name.includes('hp')) { document.getElementById('edit_hp').value = val; count++; }
-      if (name.includes('stress') || name.includes('压力')) { document.getElementById('edit_stress').value = val; count++; }
-      if (name.includes('damage') || name.includes('损伤')) { document.getElementById('edit_damage').value = val; count++; }
-      if (name.includes('armor') || name === 'ap') { document.getElementById('edit_armor').value = val; count++; }
-      if (name.includes('name')) { document.getElementById('edit_name').value = val; }
-      if (name.includes('job')) { document.getElementById('edit_job').value = val; updateJobResponse(); }
-    });
-    updateCommandsPreview();
-    return count > 3;
   }
 
   function parseBaseAttributesText(rawText) {
@@ -844,23 +1174,48 @@
   }
 
   function updateCommandsPreview() {
-    let cmds = [
-      "1d100<{力量} 力量", "1d100<{速度} 速度", "1d100<{智力} 智力", "1d100<{战斗} 战斗",
-      "1d100<{理智} 理智豁免", "1d100<{恐惧} 恐惧豁免", "1d100<{身体} 身体豁免"
+    let cmds = [];
+
+    // 1. 基础属性 & 豁免
+    cmds.push("--- 基础属性与豁免 ---");
+    const baseAttrs = [
+      { name: "力量", key: "力量" }, { name: "速度", key: "速度" },
+      { name: "智力", key: "智力" }, { name: "战斗", key: "战斗" },
+      { name: "理智豁免", key: "理智" }, { name: "恐惧豁免", key: "恐惧" },
+      { name: "身体豁免", key: "身体" }
     ];
 
+    baseAttrs.forEach(a => {
+      cmds.push(`1d100<{${a.key}} ${a.name}`);
+      cmds.push(`2d100kl1<{${a.key}} ${a.name} [+]优势`);
+      cmds.push(`2d100kh1<{${a.key}} ${a.name} [-]劣势`);
+    });
+
+    // 2. 专业技能
+    let hasSkill = false;
     [10, 15, 20].forEach(tier => {
       const container = document.getElementById(`skills_container_${tier}`);
       if (!container) return;
       Array.from(container.getElementsByClassName('skill-item')).forEach(row => {
         const sName = row.querySelector('.skill-name-input').value.trim();
         const sAttr = row.querySelector('.skill-attr-select').value;
-        if (sName) cmds.push(`1d100<{${sAttr}}+${tier} ${sName}`);
+        if (sName) {
+          if (!hasSkill) {
+            cmds.push("");
+            cmds.push("--- 专业技能 ---");
+            hasSkill = true;
+          }
+          cmds.push(`1d100<{${sAttr}}+${tier} ${sName}`);
+          cmds.push(`2d100kl1<{${sAttr}}+${tier} ${sName} [+]优势`);
+          cmds.push(`2d100kh1<{${sAttr}}+${tier} ${sName} [-]劣势`);
+        }
       });
     });
 
+    // 3. 武器攻击
     const weaponContainer = document.getElementById('weapons_container');
     if (weaponContainer) {
+      let hasWeapon = false;
       Array.from(weaponContainer.getElementsByClassName('weapon-item')).forEach(row => {
         const wName = row.querySelector('.weapon-name-input').value.trim();
         const wAttr = row.querySelector('.weapon-attr').value;
@@ -869,6 +1224,12 @@
         const wNote = row.querySelector('.weapon-note').value.trim();
 
         if (wName) {
+          if (!hasWeapon) {
+            cmds.push("");
+            cmds.push("--- 武器攻击 ---");
+            hasWeapon = true;
+          }
+
           let bonusStr = "";
           if (wSkillVal.includes("(+10)")) bonusStr = "+10";
           else if (wSkillVal.includes("(+15)")) bonusStr = "+15";
@@ -887,30 +1248,36 @@
     document.getElementById('edit_commands').value = cmds.join("\n");
   }
 
+  // 生成主角色 JSON
   function generateCcfoliaJson() {
+    playAudioBeep(600, 'square', 0.15);
     const jobStr = document.getElementById('edit_job').value;
     const traumaStr = document.getElementById('edit_response').value;
+
+    let statusList = [
+      { label: "HP", value: parseInt(document.getElementById('edit_hp').value)||0, max: parseInt(document.getElementById('edit_hp').value)||0 },
+      { label: "压力", value: parseInt(document.getElementById('edit_stress').value)||0, max: 20 },
+      { label: "损伤", value: parseInt(document.getElementById('edit_damage').value)||0, max: 3 },
+      { label: "护甲", value: parseInt(document.getElementById('edit_armor').value)||0, max: parseInt(document.getElementById('edit_armor').value)||0 }
+    ];
+
+    let paramsList = [
+      { label: "力量", value: String(document.getElementById('edit_str').value||"0") },
+      { label: "速度", value: String(document.getElementById('edit_spd').value||"0") },
+      { label: "智力", value: String(document.getElementById('edit_int').value||"0") },
+      { label: "战斗", value: String(document.getElementById('edit_combat').value||"0") },
+      { label: "理智", value: String(document.getElementById('edit_sanity').value||"0") },
+      { label: "恐惧", value: String(document.getElementById('edit_fear').value||"0") },
+      { label: "身体", value: String(document.getElementById('edit_body').value||"0") }
+    ];
 
     const ccfoliaData = {
       kind: "character",
       data: {
         name: document.getElementById('edit_name').value || "未命名角色",
         memo: `职类：${jobStr}\n创伤反应：${traumaStr}`,
-        status: [
-          { label: "HP", value: parseInt(document.getElementById('edit_hp').value)||0, max: parseInt(document.getElementById('edit_hp').value)||0 },
-          { label: "压力", value: parseInt(document.getElementById('edit_stress').value)||0, max: 20 },
-          { label: "损伤", value: parseInt(document.getElementById('edit_damage').value)||0, max: 3 },
-          { label: "护甲", value: parseInt(document.getElementById('edit_armor').value)||0, max: parseInt(document.getElementById('edit_armor').value)||0 }
-        ],
-        params: [
-          { label: "力量", value: String(document.getElementById('edit_str').value||"0") },
-          { label: "速度", value: String(document.getElementById('edit_spd').value||"0") },
-          { label: "智力", value: String(document.getElementById('edit_int').value||"0") },
-          { label: "战斗", value: String(document.getElementById('edit_combat').value||"0") },
-          { label: "理智", value: String(document.getElementById('edit_sanity').value||"0") },
-          { label: "恐惧", value: String(document.getElementById('edit_fear').value||"0") },
-          { label: "身体", value: String(document.getElementById('edit_body').value||"0") }
-        ],
+        status: statusList,
+        params: paramsList,
         commands: document.getElementById('edit_commands').value
       }
     };
@@ -919,11 +1286,133 @@
     document.getElementById('outputGroup').style.display = 'block';
   }
 
+  // 生成宠物独立 JSON
+  function generatePetCcfoliaJson() {
+    playAudioBeep(600, 'square', 0.15);
+    const petType = document.getElementById('edit_pet_type').value;
+    const petName = document.getElementById('edit_pet_name').value.trim() || "宠物";
+    const petHP = petType === 'organic' ? 10 : 15;
+    const petDmg = petType === 'organic' ? 1 : 2;
+    const petInstinct = document.getElementById('edit_pet_instinct').value || "0";
+
+    let petMemo = `【${petType === 'organic' ? '有机宠物' : '合成宠物'}】\n\n`;
+    if (petType === 'organic') {
+      petMemo += "【规则提醒】\n• 休息豁免带有 [ + ] 优势\n• 受到伤害：主人造成 1 压力\n• 遇害：主人进行惊控检定，压力下限 +1。";
+    } else {
+      petMemo += "【规则提醒】\n• 休息豁免 +5\n• 受到伤害：主人进行理智豁免，失败造成 1 压力\n• 被摧毁：主人造成 1 压力。";
+    }
+
+    let petCmds = [];
+    petCmds.push(`--- 🐾 ${petName} 本能检定 ---`);
+    petCmds.push(`1d100<{本能} ${petName} 本能检定`);
+    petCmds.push(`2d100kl1<{本能} ${petName} 本能检定 [+]优势`);
+    petCmds.push(`2d100kh1<{本能} ${petName} 本能检定 [-]劣势`);
+
+    // 收集宠物技能
+    let petSkills = [];
+    document.querySelectorAll('#pet_skills_10 .pet-skill-input').forEach(inp => {
+      if (inp.value.trim()) petSkills.push({ name: inp.value.trim(), bonus: 10 });
+    });
+    document.querySelectorAll('#pet_skills_15 .pet-skill-input').forEach(inp => {
+      if (inp.value.trim()) petSkills.push({ name: inp.value.trim(), bonus: 15 });
+    });
+
+    if (petSkills.length > 0) {
+      petCmds.push("");
+      petCmds.push(`--- 🐾 ${petName} 技能检定 ---`);
+      petSkills.forEach(s => {
+        petCmds.push(`1d100<{本能}+${s.bonus} ${s.name}`);
+        petCmds.push(`2d100kl1<{本能}+${s.bonus} ${s.name} [+]优势`);
+        petCmds.push(`2d100kh1<{本能}+${s.bonus} ${s.name} [-]劣势`);
+      });
+    }
+
+    const petCcfoliaData = {
+      kind: "character",
+      data: {
+        name: petName,
+        memo: petMemo,
+        status: [
+          { label: "HP", value: petHP, max: petHP },
+          { label: "损伤", value: 0, max: petDmg }
+        ],
+        params: [
+          { label: "本能", value: String(petInstinct) }
+        ],
+        commands: petCmds.join("\n")
+      }
+    };
+
+    document.getElementById('outputPetJson').value = JSON.stringify(petCcfoliaData, null, 2);
+    document.getElementById('petOutputGroup').style.display = 'block';
+  }
+
   function copyToClipboard() {
+    playAudioBeep(750, 'sine', 0.12);
     const textarea = document.getElementById('outputJson');
     textarea.select();
     navigator.clipboard.writeText(textarea.value);
-    alert("已复制到剪贴板！可以直接在 Ccfolia界面 Ctrl+V 粘贴导入。");
+
+    const copyBtn = document.querySelector('#outputGroup button');
+    if (copyBtn) {
+      const originalText = "📋 一键复制【主角色 JSON】到剪贴板";
+      copyBtn.innerText = "✓ 已复制！请直接 CTRL+V 复制到 CCfolia 界面";
+      copyBtn.style.backgroundColor = "#00d8d6";
+      copyBtn.style.color = "#000";
+
+      setTimeout(() => {
+        copyBtn.innerText = originalText;
+        copyBtn.style.backgroundColor = "var(--accent-green)";
+        copyBtn.style.color = "#0d0f12";
+      }, 2000);
+    }
+  }
+
+  function copyPetToClipboard() {
+    playAudioBeep(750, 'sine', 0.12);
+    const textarea = document.getElementById('outputPetJson');
+    textarea.select();
+    navigator.clipboard.writeText(textarea.value);
+
+    const copyBtn = document.getElementById('btnCopyPet');
+    if (copyBtn) {
+      const originalText = "📋 一键复制【宠物角色卡 JSON】";
+      copyBtn.innerText = "✓ 已复制！请直接 CTRL+V 粘贴到 CCfolia";
+      copyBtn.style.backgroundColor = "#00d8d6";
+      copyBtn.style.color = "#000";
+
+      setTimeout(() => {
+        copyBtn.innerText = originalText;
+        copyBtn.style.backgroundColor = "";
+        copyBtn.style.color = "";
+      }, 2000);
+    }
+  }
+
+  // Web Audio API 原生电子音效引擎
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  function playAudioBeep(freq = 440, type = 'sine', duration = 0.1) {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+  }
+
+  function playDiceRollSound() {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    for (let i = 0; i < 6; i++) {
+      setTimeout(() => {
+        playAudioBeep(150 + Math.random() * 300, 'triangle', 0.05);
+      }, i * 40);
+    }
   }
 </script>
 
