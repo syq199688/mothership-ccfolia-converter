@@ -457,9 +457,14 @@
     </div>
 
     <h2>生存数据</h2>
-    <div class="grid-4">
+
+    <div class="grid-4" style="margin-top: 15px;">
       <div>
-        <label for="edit_hp">生命值</label>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <label for="edit_hp" style="margin-bottom: 0;">生命值</label>
+          <!-- 已将骰子图标字体调小至 0.8rem，让其与输入框更匹配 -->
+          <span title="点我快速掷骰生命值" onclick="quickRollHP()" class="dice-icon" style="font-size: 0.8rem; line-height: 1;">🎲</span>
+        </div>
         <input type="number" id="edit_hp" value="" placeholder="0">
       </div>
       <div>
@@ -722,6 +727,14 @@
       document.querySelectorAll('.tab-btn')[1].classList.add('active');
       document.getElementById('tab-pet').classList.add('active');
     }
+  }
+
+  // 快速生成生命值 (1d10 + 10)
+  function quickRollHP() {
+    playDiceRollSound();
+    const result = rollD10(1) + 10;
+    document.getElementById('edit_hp').value = result;
+    updateCommandsPreview();
   }
 
   // 快速生成基础属性、豁免
