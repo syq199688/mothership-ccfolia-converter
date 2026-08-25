@@ -563,8 +563,11 @@
 
     <div class="form-group" id="outputGroup" style="display: none; margin-top: 25px;">
       <h2>✨ 主角色JSON卡</h2>
+      <div style="color: var(--text-muted); font-size: 12px; margin-bottom: 10px;">
+        💡 提示：点击下方按钮复制后，直接在 CCfolia 房间窗口使用 <code style="color: var(--accent-orange);">Ctrl + V</code> 粘贴即可生成角色Token。
+      </div>
       <textarea id="outputJson" readonly></textarea>
-      <button onclick="copyToClipboard()" style="background-color: var(--accent-green); color: #0d0f12; font-weight:bold; margin-top:10px; cursor:pointer; width:100%; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">📋 一键复制【主角色 JSON】到剪贴板</button>
+      <button onclick="copyToClipboard()" style="background-color: var(--accent-green); color: #0d0f12; font-weight:bold; margin-top:10px; cursor:pointer; width:100%; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">📋 一键复制到剪贴板</button>
     </div>
   </div>
 
@@ -621,10 +624,10 @@
     <div class="form-group" id="petOutputGroup" style="display: none; margin-top: 25px;">
       <h2 style="color: var(--accent-orange); border-bottom: 1px solid rgba(255,168,1,0.2); padding-bottom: 8px;">✨ 宠物 JSON 角色卡</h2>
       <div style="color: var(--text-muted); font-size: 12px; margin-bottom: 10px;">
-        💡 提示：点击下方按钮复制后，直接在 CCfolia 房间窗口使用 <code style="color: var(--accent-orange);">Ctrl + V</code> 粘贴即可生成宠物 Token。
+        💡 提示：点击下方按钮复制后，直接在 CCfolia 房间窗口使用 <code style="color: var(--accent-orange);">Ctrl + V</code> 粘贴即可生成宠物Token。
       </div>
       <textarea id="outputPetJson" readonly></textarea>
-      <button id="btnCopyPet" onclick="copyPetToClipboard()">📋 一键复制【宠物角色卡 JSON】</button>
+      <button id="btnCopyPet" onclick="copyPetToClipboard()">📋 一键复制</button>
     </div>
   </div>
 
