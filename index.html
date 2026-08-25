@@ -174,7 +174,7 @@
 
 <div class="card">
   <h1>🌠Mothership角色卡Ccfolia转换器</h1>
-  <div class="subtitle">只能直接导入excel，pdf请自行输入，如果数据有错可以手动改改</div>
+  <div class="subtitle">只支持excel表一键导入，pdf卡请手动输入</div>
   
   <div class="drop-zone" id="dropZone" onclick="triggerFileInput()">
     📄点击上传角色卡
@@ -198,7 +198,7 @@
     </div>
 
     <div class="form-group">
-      <label for="edit_response">memo</label>
+      <label for="edit_response">memo (创伤反应)</label>
       <input type="text" id="edit_response" value="" placeholder="请输入创伤反应或简短角色描述">
     </div>
 
@@ -290,7 +290,7 @@
     <h2>武器装备</h2>
     <div class="weapon-card">
       <header>
-        <span style="color:#ff4757;">武器列表与攻击</span>
+        <span style="color:#ff4757;">武器列表与攻击 (可直接手打新武器或下拉选择)</span>
       </header>
       <div id="weapons_container"></div>
       <button class="btn-add-weapon" onclick="addWeaponRow()">➕ 添加武器</button>
@@ -311,25 +311,27 @@
   </div>
 </div>
 
+<!-- 技能 Datalist -->
 <datalist id="skills-list-10">
   <option value="语言学"><option value="动物学"><option value="植物学"><option value="地质学">
   <option value="工业装备"><option value="临时拼凑"><option value="化学"><option value="计算机">
   <option value="零重力"><option value="数学"><option value="艺术"><option value="考古">
   <option value="神学"><option value="军事训练"><option value="外环门道"><option value="运动">
 </datalist>
-
 <datalist id="skills-list-15">
   <option value="心理学"><option value="病理学"><option value="战地医疗"><option value="生态学">
   <option value="小行星采矿"><option value="机械修理"><option value="爆炸物"><option value="药理学">
   <option value="骇客"><option value="导航"><option value="物理学"><option value="神秘主义">
   <option value="荒野生存"><option value="枪械"><option value="近身搏斗">
 </datalist>
-
 <datalist id="skills-list-20">
   <option value="知性学"><option value="外星生物学"><option value="手术"><option value="行星学">
   <option value="机器人学"><option value="工程学"><option value="神经机械学"><option value="人工智能">
   <option value="超空间"><option value="异种密教"><option value="指挥">
 </datalist>
+
+<!-- 武器联想 Datalist -->
+<datalist id="weapons-datalist"></datalist>
 
 <script>
   if (typeof pdfjsLib !== 'undefined') {
@@ -355,24 +357,31 @@
       '超空间': '智力', '异种密教': '智力', '指挥': '战斗'
     }
   };
-
   const DEFAULT_SKILL_ATTRS = { ...SKILL_DATABASE[10], ...SKILL_DATABASE[15], ...SKILL_DATABASE[20] };
 
+  // 🔥 完整内置官方 21 种武器预设库（确保一张图不漏）
   let WEAPON_PRESETS = {
-    "跳帮斧": { attr: "战斗", damage: "2d10", note: "狰狞 [ + ]" },
-    "战斗霰弹枪": { attr: "战斗", damage: "4d10", note: "枪击；远距及更远范围 1d10 伤害" },
-    "撬棍": { attr: "力量", damage: "1d5", note: "钝击 [ + ]；就打开卡住的气闸等力量检定赋予 [ + ]" },
-    "喷火器": { attr: "战斗", damage: "2d10", note: "火焰&爆炸 [ + ]，身体豁免 [ - ] 否则着火 (2d10/轮)" },
-    "信号枪": { attr: "战斗", damage: "1d5", note: "火焰&爆炸 [ + ]；高亮信号火光" },
-    "泡沫枪": { attr: "战斗", damage: "1", note: "钝击；身体豁免，失败动弹不得，力量检定 [ - ] 才能逃脱" },
-    "破片手雷": { attr: "战斗", damage: "3d10", note: "火焰&爆炸；若命中，所有邻接敌人遭受伤害" },
-    "通用机枪": { attr: "战斗", damage: "4d10", note: "双手，沉重，枪管绕过角落开火" },
-    "手持焊枪": { attr: "战斗", damage: "1d10", note: "出血；可以切开气闸门" },
-    "激光切割器": { attr: "战斗", damage: "1d100", note: "出血 [ + ] 或狰狞 [ + ]；双手，沉重" },
-    "射钉枪": { attr: "战斗", damage: "1d5", note: "出血" },
-    "脉冲步枪": { attr: "战斗", damage: "3d10", note: "枪击；配泵动式榴弹发射器，3 枚破片手雷" },
-    "转轮手枪": { attr: "战斗", damage: "1d10+1", note: "枪击" },
-    "钩索枪": { attr: "战斗", damage: "1d10", note: "100 米细丝，身体豁免，若是失败就会被缠住" }
+    "跳帮斧": { attr: "战斗", damage: "2d10", note: "范围:邻接；狰狞 [ + ]" },
+    "战斗霰弹枪": { attr: "战斗", damage: "4d10", note: "范围:临近；枪击；远距及更远范围 1d10 伤害" },
+    "撬棍": { attr: "力量", damage: "1d5", note: "范围:邻接；钝击 [ + ]；打开卡住的气闸等力量检定赋予 [ + ]" },
+    "喷火器": { attr: "战斗", damage: "2d10", note: "范围:临近；火焰&爆炸 [ + ]；身体豁免 [ - ] 否则着火 (2d10/轮)" },
+    "信号枪": { attr: "战斗", damage: "1d5", note: "范围:远距；火焰&爆炸 [ + ]；高亮信号火光" },
+    "泡沫枪": { attr: "战斗", damage: "1", note: "范围:临近；钝击；身体豁免失败动弹不得，力量检定 [ - ] 才能逃脱" },
+    "破片手雷": { attr: "战斗", damage: "3d10", note: "范围:临近；火焰&爆炸；若命中所有邻接敌人遭受伤害" },
+    "通用机枪": { attr: "战斗", damage: "4d10", note: "范围:远距；枪击 [ + ]；双手，沉重，绕过角落开火" },
+    "手持焊枪": { attr: "战斗", damage: "1d10", note: "范围:邻接；出血；可以切开气闸门" },
+    "激光切割器": { attr: "战斗", damage: "1d100", note: "范围:远距；出血 [ + ] 或狰狞 [ + ]；双手，沉重" },
+    "射钉枪": { attr: "战斗", damage: "1d5", note: "范围:临近；出血" },
+    "脉冲步枪": { attr: "战斗", damage: "3d10", note: "范围:远距；枪击；配泵动式榴弹发射器，3 枚破片手雷" },
+    "转轮手枪": { attr: "战斗", damage: "1d10+1", note: "范围:临近；枪击" },
+    "钩索枪": { attr: "战斗", damage: "1d10", note: "范围:临近；1d10 伤害 + 移除时 2d10 伤害；出血 [ + ]；100米细丝，身体豁免失败被缠住" },
+    "手术刀": { attr: "战斗", damage: "1d5", note: "范围:邻接；出血 [ + ]" },
+    "智能步枪": { attr: "战斗", damage: "4d10", note: "范围:极限；枪击 [ + ] (AA)；在临近范围内开火，战斗检定带有 [ - ]" },
+    "冲锋枪": { attr: "战斗", damage: "2d10", note: "范围:远距；枪击；可以单手开火" },
+    "震慑电棒": { attr: "战斗", damage: "1d5", note: "范围:邻接；钝击；身体豁免失败震慑 1 轮" },
+    "镇静手枪": { attr: "战斗", damage: "1d5", note: "范围:临近；钝击；若造成伤害敌人须通过身体豁免，失败失去意识 1d10 轮" },
+    "徒手": { attr: "力量", damage: "力量/10", note: "范围:邻接；钝击" },
+    "共振砍刀": { attr: "战斗", damage: "3d10", note: "范围:邻接；出血 + 狰狞 (AA)；造成损伤时同时根据出血和狰狞列投骰" }
   };
 
   function triggerFileInput() { document.getElementById('fileInput').click(); }
@@ -382,9 +391,20 @@
       const el = document.getElementById(id);
       if (el) el.addEventListener('input', updateCommandsPreview);
     });
-    addWeaponRow('脉冲步枪', '战斗', '', '3d10', '枪击；配泵动式榴弹发射器');
+    initWeaponDatalist();
+    addWeaponRow();
     updateCommandsPreview();
   });
+
+  function initWeaponDatalist() {
+    const dl = document.getElementById('weapons-datalist');
+    if (!dl) return;
+    let html = '';
+    Object.keys(WEAPON_PRESETS).forEach(w => {
+      html += `<option value="${w}">`;
+    });
+    dl.innerHTML = html;
+  }
 
   const fileInput = document.getElementById('fileInput');
   fileInput.addEventListener('change', (e) => { if (e.target.files.length) handleFile(e.target.files[0]); });
@@ -434,62 +454,46 @@
     const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, defval: '' });
     if (rows.length < 2) return;
 
-    let nameCol = 0;
-    let attrCol = -1;
-    let damageCol = -1;
-    let rangeCol = -1;
-    let noteCol = -1;
-
+    let nameCol = -1, damageCol = -1, rangeCol = -1, typeCol = -1, noteCol = -1;
     const headerRow = rows[0].map(cell => String(cell).trim().toLowerCase());
 
     headerRow.forEach((colName, index) => {
-      if (colName.includes('武器') || colName.includes('名称') || colName.includes('装备')) {
-        nameCol = index;
-      } else if (colName.includes('属性') || colName.includes('判定')) {
-        attrCol = index;
-      } else if (colName.includes('伤害') || colName.includes('骰')) {
-        damageCol = index;
-      } else if (colName.includes('距离') || colName.includes('射程') || colName.includes('范围')) {
-        rangeCol = index;
-      } else if (colName.includes('特殊') || colName.includes('备注') || colName.includes('效果') || colName.includes('说明')) {
-        noteCol = index;
-      }
+      if (colName === '武器' || colName.includes('名称') || colName === '装备') nameCol = index;
+      else if (colName.includes('伤害') || colName.includes('骰')) damageCol = index;
+      else if (colName === '范围' || colName.includes('距离') || colName.includes('射程')) rangeCol = index;
+      else if (colName === '损伤' || colName.includes('属性')) typeCol = index;
+      else if (colName === '特殊' || colName.includes('备注') || colName.includes('说明') || colName.includes('效果')) noteCol = index;
     });
-
-    if (damageCol === -1) damageCol = 2;
-    if (rangeCol === -1) rangeCol = 3;
-    if (noteCol === -1) noteCol = 4;
 
     for (let i = 1; i < rows.length; i++) {
       const row = rows[i];
-      if (!row || !row[nameCol]) continue;
+      if (!row || nameCol === -1 || !row[nameCol]) continue;
 
       const wName = String(row[nameCol]).trim();
-      const wAttrRaw = attrCol !== -1 ? String(row[attrCol] || '战斗').trim() : '战斗';
-      let wDmg = String(row[damageCol] || '').trim();
-      wDmg = wDmg.replace(/\s*伤害$/i, '');
+      let wDmg = damageCol !== -1 ? String(row[damageCol]).trim() : '';
+      wDmg = wDmg.replace(/\s*伤害$/i, '').replace('—', '').trim();
 
-      const wRange = String(row[rangeCol] || '').trim();
-      const wNoteRaw = String(row[noteCol] || '').trim();
+      const wRange = rangeCol !== -1 ? String(row[rangeCol]).trim() : '';
+      const wType = typeCol !== -1 ? String(row[typeCol]).trim() : '';
+      const wNoteRaw = noteCol !== -1 ? String(row[noteCol]).trim() : '';
 
-      if (wName) {
+      if (wName && wName !== '—' && wName.length > 1) {
         let attrNorm = '战斗';
-        if (wAttrRaw.includes('力量')) attrNorm = '力量';
-        else if (wAttrRaw.includes('速度')) attrNorm = '速度';
-        else if (wAttrRaw.includes('智力')) attrNorm = '智力';
+        if (wType.includes('钝击') || wName.includes('撬棍') || wName.includes('斧') || wName.includes('锤') || wName.includes('徒手')) attrNorm = '力量';
 
-        let combinedNote = wNoteRaw;
-        if (wRange && !combinedNote.includes(wRange)) {
-          combinedNote = combinedNote ? `${wRange}；${combinedNote}` : wRange;
-        }
+        let combinedNote = [];
+        if (wRange && wRange !== '—' && wRange !== 'NaN') combinedNote.push(`范围:${wRange}`);
+        if (wType && wType !== '—' && wType !== 'NaN') combinedNote.push(wType);
+        if (wNoteRaw && wNoteRaw !== '—' && wNoteRaw !== 'NaN' && wNoteRaw !== '——') combinedNote.push(wNoteRaw);
 
         WEAPON_PRESETS[wName] = {
           attr: attrNorm,
           damage: wDmg,
-          note: combinedNote
+          note: combinedNote.join('；')
         };
       }
     }
+    initWeaponDatalist();
   }
 
   async function handlePdfFile(file) {
@@ -501,9 +505,7 @@
       try {
         const page = await pdf.getPage(1);
         const annotations = await page.getAnnotations();
-        if (annotations && annotations.length > 0) {
-          formFilled = parseAnnotations(annotations);
-        }
+        if (annotations && annotations.length > 0) formFilled = parseAnnotations(annotations);
       } catch (e) {}
 
       if (!formFilled) {
@@ -536,7 +538,6 @@
     const worker = await Tesseract.createWorker('chi_sim+eng');
     const ret = await worker.recognize(file);
     await worker.terminate();
-
     hideStatus();
     parseBaseAttributesText(ret.data.text);
   }
@@ -552,17 +553,15 @@
       if (name.includes('spd') || name.includes('速度')) { document.getElementById('edit_spd').value = val; count++; }
       if (name.includes('int') || name.includes('智力')) { document.getElementById('edit_int').value = val; count++; }
       if (name.includes('com') || name.includes('战斗')) { document.getElementById('edit_combat').value = val; count++; }
-      
       if (name.includes('san') || name.includes('理智')) { document.getElementById('edit_sanity').value = val; count++; }
       if (name.includes('fear') || name.includes('恐惧')) { document.getElementById('edit_fear').value = val; count++; }
       if (name.includes('body') || name.includes('身体')) { document.getElementById('edit_body').value = val; count++; }
-
       if (name.includes('hp')) { document.getElementById('edit_hp').value = val; count++; }
       if (name.includes('stress') || name.includes('压力')) { document.getElementById('edit_stress').value = val; count++; }
       if (name.includes('damage') || name.includes('损伤')) { document.getElementById('edit_damage').value = val; count++; }
-      if (name.includes('armor') || name === 'ap' || name.includes('护甲')) { document.getElementById('edit_armor').value = val; count++; }
-      if (name.includes('name') || name.includes('名字') || name.includes('角色')) { document.getElementById('edit_name').value = val; }
-      if (name.includes('job') || name.includes('职类') || name.includes('职业')) { document.getElementById('edit_job').value = val; updateJobResponse(); }
+      if (name.includes('armor') || name === 'ap') { document.getElementById('edit_armor').value = val; count++; }
+      if (name.includes('name')) { document.getElementById('edit_name').value = val; }
+      if (name.includes('job')) { document.getElementById('edit_job').value = val; updateJobResponse(); }
     });
     updateCommandsPreview();
     return count > 3;
@@ -577,13 +576,11 @@
       }
       return '';
     }
-
     function matchNum(keyStr) {
       const reg = new RegExp(`${keyStr}[^\\d]*?(\\d{1,3})`, 'i');
       const m = rawText.match(reg);
       return m ? m[1] : '';
     }
-    
     function matchSlashNum(keyStr) {
       const reg = new RegExp(`${keyStr}[^\\d]*?(\\d{1,3})\\s*[/\\\\|]\\s*(\\d{1,3})`, 'i');
       const m = rawText.match(reg);
@@ -594,10 +591,7 @@
     const parsedJob = matchField(['职类', '职业', 'Job', 'Class']);
 
     if (parsedName) document.getElementById('edit_name').value = parsedName;
-    if (parsedJob) {
-      document.getElementById('edit_job').value = parsedJob;
-      updateJobResponse();
-    }
+    if (parsedJob) { document.getElementById('edit_job').value = parsedJob; updateJobResponse(); }
 
     document.getElementById('edit_str').value = matchNum('力量') || matchNum('STRENGTH');
     document.getElementById('edit_spd').value = matchNum('速度') || matchNum('SPEED');
@@ -649,9 +643,7 @@
       if (!container) return;
       Array.from(container.getElementsByClassName('skill-item')).forEach(row => {
         const sName = row.querySelector('.skill-name-input').value.trim();
-        if (sName) {
-          skills.push({ name: sName, bonus: `+${tier}` });
-        }
+        if (sName) skills.push({ name: sName, bonus: `+${tier}` });
       });
     });
     return skills;
@@ -681,12 +673,6 @@
     const row = document.createElement('div');
     row.className = 'weapon-item';
 
-    let weaponOptionsHtml = '<option value="">-- 自定义武器 --</option>';
-    Object.keys(WEAPON_PRESETS).forEach(wName => {
-      const sel = (selectedWeapon === wName) ? 'selected' : '';
-      weaponOptionsHtml += `<option value="${wName}" ${sel}>${wName}</option>`;
-    });
-
     const skills = getAllTrainedSkills();
     let skillOptionsHtml = '<option value="">无技能 (裸面板)</option>';
     skills.forEach(s => {
@@ -698,9 +684,7 @@
     row.innerHTML = `
       <div class="weapon-field-group group-select">
         <span class="weapon-field-label">武器名称</span>
-        <select class="weapon-select" onchange="onWeaponPresetChange(this)">
-          ${weaponOptionsHtml}
-        </select>
+        <input type="text" class="weapon-name-input" list="weapons-datalist" value="${selectedWeapon}" placeholder="选择或手打输入" onchange="onWeaponPresetChange(this)" oninput="updateCommandsPreview()">
       </div>
       <div class="weapon-field-group group-attr">
         <span class="weapon-field-label">属性</span>
@@ -712,7 +696,7 @@
         </select>
       </div>
       <div class="weapon-field-group group-skill">
-        <span class="weapon-field-label">技能加值</span>
+        <span class="weapon-field-label">技能加成</span>
         <select class="weapon-skill" onchange="updateCommandsPreview()">
           ${skillOptionsHtml}
         </select>
@@ -732,9 +716,9 @@
     updateCommandsPreview();
   }
 
-  function onWeaponPresetChange(selectEl) {
-    const weaponName = selectEl.value;
-    const row = selectEl.closest('.weapon-item');
+  function onWeaponPresetChange(inputEl) {
+    const weaponName = inputEl.value.trim();
+    const row = inputEl.closest('.weapon-item');
     const attrSel = row.querySelector('.weapon-attr');
     const damageInput = row.querySelector('.weapon-damage');
     const noteInput = row.querySelector('.weapon-note');
@@ -744,9 +728,6 @@
       attrSel.value = data.attr;
       damageInput.value = data.damage;
       noteInput.value = data.note;
-    } else {
-      damageInput.value = "";
-      noteInput.value = "";
     }
     updateCommandsPreview();
   }
@@ -755,9 +736,7 @@
     const skillName = inputElement.value.trim();
     if (DEFAULT_SKILL_ATTRS[skillName]) {
       const selectElement = inputElement.parentElement.querySelector('.skill-attr-select');
-      if (selectElement) {
-        selectElement.value = DEFAULT_SKILL_ATTRS[skillName];
-      }
+      if (selectElement) selectElement.value = DEFAULT_SKILL_ATTRS[skillName];
     }
     updateCommandsPreview();
   }
@@ -804,9 +783,7 @@
         }
         if (/^(护甲|AP)/i.test(cellVal)) {
           const nextVal = String(row[c + 1] || '').trim();
-          if (nextVal && !isNaN(nextVal)) {
-            document.getElementById('edit_armor').value = nextVal;
-          }
+          if (nextVal && !isNaN(nextVal)) document.getElementById('edit_armor').value = nextVal;
         }
 
         [10, 15, 20].forEach(tier => {
@@ -833,7 +810,7 @@
         });
 
         Object.keys(WEAPON_PRESETS).forEach(wName => {
-          if (cellVal.includes(wName) && !addedWeapons.has(wName)) {
+          if (cellVal.includes(wName) && wName.length > 1 && !addedWeapons.has(wName)) {
             addedWeapons.add(wName);
             const wData = WEAPON_PRESETS[wName];
             addWeaponRow(wName, wData.attr, '', wData.damage, wData.note);
@@ -844,6 +821,7 @@
 
     parseBaseAttributesText(flatTextLines.join("\n"));
     updateSkillDropdownsInWeapons();
+    if (addedWeapons.size === 0) addWeaponRow();
   }
 
   function updateJobResponse() {
@@ -875,13 +853,13 @@
     const weaponContainer = document.getElementById('weapons_container');
     if (weaponContainer) {
       Array.from(weaponContainer.getElementsByClassName('weapon-item')).forEach(row => {
-        const wSelect = row.querySelector('.weapon-select').value;
+        const wName = row.querySelector('.weapon-name-input').value.trim();
         const wAttr = row.querySelector('.weapon-attr').value;
         const wSkillVal = row.querySelector('.weapon-skill').value;
         const wDamage = row.querySelector('.weapon-damage').value.trim();
         const wNote = row.querySelector('.weapon-note').value.trim();
 
-        if (wSelect) {
+        if (wName) {
           let bonusStr = "";
           if (wSkillVal.includes("(+10)")) bonusStr = "+10";
           else if (wSkillVal.includes("(+15)")) bonusStr = "+15";
@@ -889,9 +867,9 @@
 
           const formula = `{${wAttr}}${bonusStr}`;
           const noteSuffix = wNote ? `（${wNote}）` : "";
-          cmds.push(`1d100<${formula} ${wSelect} 攻击${noteSuffix}`);
+          cmds.push(`1d100<${formula} ${wName} 攻击${noteSuffix}`);
           if (wDamage) {
-            cmds.push(`${wDamage} ${wSelect} 伤害`);
+            cmds.push(`${wDamage} ${wName} 伤害`);
           }
         }
       });
