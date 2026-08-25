@@ -192,13 +192,13 @@
         <input type="text" id="edit_name" value="" placeholder="请输入角色名称">
       </div>
       <div>
-        <label for="edit_job">职类 (Job)</label>
+        <label for="edit_job">职类</label>
         <input type="text" id="edit_job" value="" placeholder="如：科学家 / 自定职业" oninput="updateJobResponse()">
       </div>
     </div>
 
     <div class="form-group">
-      <label for="edit_response">memo (创伤反应)</label>
+      <label for="edit_response">memo</label>
       <input type="text" id="edit_response" value="" placeholder="请输入创伤反应或简短角色描述">
     </div>
 
@@ -222,7 +222,8 @@
       </div>
     </div>
 
-    <h2>基础属性 & 豁免</h2>
+    <h2>基础属性&豁免</h2>
+
     <div class="grid-4">
       <div>
         <label for="edit_str">力量</label>
@@ -290,18 +291,18 @@
     <h2>武器装备</h2>
     <div class="weapon-card">
       <header>
-        <span style="color:#ff4757;">武器列表与攻击 (可直接手打新武器或下拉选择)</span>
+        <span style="color:#ff4757;">武器列表</span>
       </header>
       <div id="weapons_container"></div>
       <button class="btn-add-weapon" onclick="addWeaponRow()">➕ 添加武器</button>
     </div>
 
-    <h2>宏预览 (Commands)</h2>
+    <h2>常用对话表预览</h2>
     <div class="form-group">
       <textarea id="edit_commands" readonly style="color:#a4b0be; background:#15181b;"></textarea>
     </div>
 
-    <button class="btn-primary" onclick="generateCcfoliaJson()">生成 Ccfolia 角色卡 代码</button>
+    <button class="btn-primary" onclick="generateCcfoliaJson()">生成Ccfolia角色卡代码</button>
   </div>
 
   <div class="form-group" id="outputGroup" style="display: none;">
@@ -359,29 +360,28 @@
   };
   const DEFAULT_SKILL_ATTRS = { ...SKILL_DATABASE[10], ...SKILL_DATABASE[15], ...SKILL_DATABASE[20] };
 
-  // 🔥 完整内置官方 21 种武器预设库（确保一张图不漏）
   let WEAPON_PRESETS = {
-    "跳帮斧": { attr: "战斗", damage: "2d10", note: "范围:邻接；狰狞 [ + ]" },
-    "战斗霰弹枪": { attr: "战斗", damage: "4d10", note: "范围:临近；枪击；远距及更远范围 1d10 伤害" },
-    "撬棍": { attr: "力量", damage: "1d5", note: "范围:邻接；钝击 [ + ]；打开卡住的气闸等力量检定赋予 [ + ]" },
-    "喷火器": { attr: "战斗", damage: "2d10", note: "范围:临近；火焰&爆炸 [ + ]；身体豁免 [ - ] 否则着火 (2d10/轮)" },
-    "信号枪": { attr: "战斗", damage: "1d5", note: "范围:远距；火焰&爆炸 [ + ]；高亮信号火光" },
-    "泡沫枪": { attr: "战斗", damage: "1", note: "范围:临近；钝击；身体豁免失败动弹不得，力量检定 [ - ] 才能逃脱" },
-    "破片手雷": { attr: "战斗", damage: "3d10", note: "范围:临近；火焰&爆炸；若命中所有邻接敌人遭受伤害" },
-    "通用机枪": { attr: "战斗", damage: "4d10", note: "范围:远距；枪击 [ + ]；双手，沉重，绕过角落开火" },
+    "跳帮斧": { attr: "战斗", damage: "2d10", note: "范围:邻接；狰狞 [+]" },
+    "战斗霰弹枪": { attr: "战斗", damage: "4d10", note: "范围:近距；枪击；远距及更远范围 1d10 伤害" },
+    "撬棍": { attr: "力量", damage: "1d5", note: "范围:邻接；钝击 [+]；打开卡住的气闸等力量检定赋予 [+]" },
+    "喷火器": { attr: "战斗", damage: "2d10", note: "范围:近距；火焰&爆炸 [+]；身体豁免 [-] 否则着火 (2d10/轮)" },
+    "信号枪": { attr: "战斗", damage: "1d5", note: "范围:远距；火焰&爆炸 [+]；高亮信号火光" },
+    "泡沫枪": { attr: "战斗", damage: "1", note: "范围:近距；钝击；身体豁免失败动弹不得，力量检定 [ - ] 才能逃脱" },
+    "破片手雷": { attr: "战斗", damage: "3d10", note: "范围:近距；火焰&爆炸；若命中所有邻接敌人遭受伤害" },
+    "通用机枪": { attr: "战斗", damage: "4d10", note: "范围:远距；枪击 [+]；双手，沉重，绕过角落开火" },
     "手持焊枪": { attr: "战斗", damage: "1d10", note: "范围:邻接；出血；可以切开气闸门" },
-    "激光切割器": { attr: "战斗", damage: "1d100", note: "范围:远距；出血 [ + ] 或狰狞 [ + ]；双手，沉重" },
-    "射钉枪": { attr: "战斗", damage: "1d5", note: "范围:临近；出血" },
+    "激光切割器": { attr: "战斗", damage: "1d100", note: "范围:远距；出血 [+] 或狰狞 [+]；双手，沉重" },
+    "射钉枪": { attr: "战斗", damage: "1d5", note: "范围:近距；出血" },
     "脉冲步枪": { attr: "战斗", damage: "3d10", note: "范围:远距；枪击；配泵动式榴弹发射器，3 枚破片手雷" },
-    "转轮手枪": { attr: "战斗", damage: "1d10+1", note: "范围:临近；枪击" },
-    "钩索枪": { attr: "战斗", damage: "1d10", note: "范围:临近；1d10 伤害 + 移除时 2d10 伤害；出血 [ + ]；100米细丝，身体豁免失败被缠住" },
-    "手术刀": { attr: "战斗", damage: "1d5", note: "范围:邻接；出血 [ + ]" },
-    "智能步枪": { attr: "战斗", damage: "4d10", note: "范围:极限；枪击 [ + ] (AA)；在临近范围内开火，战斗检定带有 [ - ]" },
+    "转轮手枪": { attr: "战斗", damage: "1d10+1", note: "范围:近距；枪击" },
+    "钩索枪": { attr: "战斗", damage: "1d10", note: "范围:近距；1d10 伤害+移除时 2d10 伤害；出血 [+]；100米细丝，身体豁免失败被缠住" },
+    "手术刀": { attr: "战斗", damage: "1d5", note: "范围:邻接；出血 [+]" },
+    "智能步枪": { attr: "战斗", damage: "4d10", note: "范围:极限；枪击 [+] (AA)；在近距范围内开火，战斗检定带有 [-]" },
     "冲锋枪": { attr: "战斗", damage: "2d10", note: "范围:远距；枪击；可以单手开火" },
     "震慑电棒": { attr: "战斗", damage: "1d5", note: "范围:邻接；钝击；身体豁免失败震慑 1 轮" },
-    "镇静手枪": { attr: "战斗", damage: "1d5", note: "范围:临近；钝击；若造成伤害敌人须通过身体豁免，失败失去意识 1d10 轮" },
+    "镇静手枪": { attr: "战斗", damage: "1d5", note: "范围:近距；钝击；若造成伤害敌人须通过身体豁免，失败失去意识 1d10 轮" },
     "徒手": { attr: "力量", damage: "力量/10", note: "范围:邻接；钝击" },
-    "共振砍刀": { attr: "战斗", damage: "3d10", note: "范围:邻接；出血 + 狰狞 (AA)；造成损伤时同时根据出血和狰狞列投骰" }
+    "共振砍刀": { attr: "战斗", damage: "3d10", note: "范围:邻接；出血+狰狞 (AA)；造成损伤时同时根据出血和狰狞列投骰" }
   };
 
   function triggerFileInput() { document.getElementById('fileInput').click(); }
@@ -416,7 +416,7 @@
   function hideStatus() { document.getElementById('statusBox').style.display = 'none'; }
 
   function handleFile(file) {
-    showStatus("正在加载文件: " + file.name);
+    showStatus("正在加载文件: "+file.name);
     document.getElementById('outputGroup').style.display = 'none';
     const fileName = file.name.toLowerCase();
 
@@ -528,7 +528,7 @@
       }
       hideStatus();
     } catch (err) {
-      alert("解析 PDF 出错: " + err.message);
+      alert("解析 PDF 出错: "+err.message);
       hideStatus();
     }
   }
@@ -770,28 +770,28 @@
         const cellVal = String(row[c] || '').trim();
         if (!cellVal) continue;
 
-        if (/^(角色名称|角色名|姓名|名字)/.test(cellVal) && c + 1 < row.length) {
-          const nextVal = String(row[c + 1]).trim();
+        if (/^(角色名称|角色名|姓名|名字)/.test(cellVal) && c+1 < row.length) {
+          const nextVal = String(row[c+1]).trim();
           if (nextVal) document.getElementById('edit_name').value = nextVal;
         }
-        if (/^(职类|职业)/.test(cellVal) && c + 1 < row.length) {
-          const nextVal = String(row[c + 1]).trim();
+        if (/^(职类|职业)/.test(cellVal) && c+1 < row.length) {
+          const nextVal = String(row[c+1]).trim();
           if (nextVal) {
             document.getElementById('edit_job').value = nextVal;
             updateJobResponse();
           }
         }
         if (/^(护甲|AP)/i.test(cellVal)) {
-          const nextVal = String(row[c + 1] || '').trim();
+          const nextVal = String(row[c+1] || '').trim();
           if (nextVal && !isNaN(nextVal)) document.getElementById('edit_armor').value = nextVal;
         }
 
         [10, 15, 20].forEach(tier => {
           Object.keys(SKILL_DATABASE[tier]).forEach(skillName => {
             if (cellVal.includes(skillName) && !addedSkills.has(skillName)) {
-              const right1 = (c + 1 < row.length) ? String(row[c + 1]).trim() : '';
-              const right2 = (c + 2 < row.length) ? String(row[c + 2]).trim() : '';
-              const right3 = (c + 3 < row.length) ? String(row[c + 3]).trim() : '';
+              const right1 = (c+1 < row.length) ? String(row[c+1]).trim() : '';
+              const right2 = (c+2 < row.length) ? String(row[c+2]).trim() : '';
+              const right3 = (c+3 < row.length) ? String(row[c+3]).trim() : '';
 
               let isChecked = false;
               for (let t of [right1, right2, right3]) {
@@ -827,9 +827,9 @@
   function updateJobResponse() {
     const job = document.getElementById('edit_job').value.trim();
     let response = document.getElementById('edit_response').value;
-    if (job.includes('陆战队员')) response = "只要你陷入惊控，所有临近友方玩家都必须进行一次恐惧豁免。";
-    else if (job.includes('仿生人')) response = "临近友方玩家进行的恐惧豁免带有劣势。";
-    else if (job.includes('科学家')) response = "只要你理智豁免失败，所有临近友方玩家获得1压力。";
+    if (job.includes('陆战队员')) response = "只要你陷入惊控，所有近距友方玩家都必须进行一次恐惧豁免。";
+    else if (job.includes('仿生人')) response = "近距友方玩家进行的恐惧豁免带有劣势。";
+    else if (job.includes('科学家')) response = "只要你理智豁免失败，所有近距友方玩家获得1压力。";
     else if (job.includes('技工')) response = "每游戏场次一回，你可以在某次惊控检定中带有优势。";
     if (response) document.getElementById('edit_response').value = response;
   }
