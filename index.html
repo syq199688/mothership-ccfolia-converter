@@ -141,14 +141,14 @@
       background: rgba(17, 19, 23, 0.85);
       border: 1px dashed var(--accent-cyan);
       border-radius: 8px;
-      padding: 14px 18px;
-      margin-bottom: 24px;
+      padding: 8px 12px;
+      margin-bottom: 15px;
     }
     .history-card header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
     }
     .history-card title {
       color: var(--accent-cyan);
@@ -158,19 +158,22 @@
       letter-spacing: 1px;
     }
     .history-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
+  	display: flex;
+  	flex-direction: column;
+  	gap: 6px; /* 减小了记录之间的间隙 */
+  	max-height: 100px; /* 限制最大高度 */
+  	overflow-y: auto; /* 超出高度时显示滚动条 */
+  	padding-right: 4px; /* 给滚动条留出一点空间 */
+}
     .history-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
       background: var(--input-bg);
       border: 1px solid var(--border-color);
-      padding: 8px 12px;
+      padding: 4px 10px;
       border-radius: 4px;
-      font-size: 13px;
+      font-size: 12px;
       transition: all 0.2s;
     }
     .history-item:hover {
@@ -603,7 +606,7 @@
   <!-- 本地存储/历史记录 UI 模块 -->
   <div class="history-card">
     <header>
-      <div class="history-title">📜 历史角色记录</div>
+      <div class="history-title">📜 历史角色记录 (本地存储最近 5 个)</div>
       <button class="btn-hist-del" onclick="clearAllHistory()">清空历史</button>
     </header>
     <div id="historyList" class="history-list">
@@ -620,7 +623,7 @@
   <!-- ================= Tab 1: 主角色档案 ================= -->
   <div class="tab-content active" id="tab-character">
     <div class="drop-zone" id="dropZone" onclick="triggerFileInput()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-      📄 点击上传角色卡 (.xlsx / .xls)
+      📄 点击或拖拽上传角色卡 (.xlsx / .xls)
       <input type="file" id="fileInput" accept=".xlsx, .xls">
     </div>
 
