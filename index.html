@@ -755,7 +755,7 @@
         • <strong>属性</strong>：损伤 1 (HP 10) | 本能 2d10+40<br>
         • <strong>技能</strong>：1 项受训技能 (+10%)<br>
         • <strong>休息</strong>：休息豁免带有 <strong>[ + ] 优势</strong><br>
-        • <strong>负面效果</strong>：只要宠物受到伤害，主人就会造成 <strong>1 压力</strong>；若宠物遇害，主人需进行<strong>惊控检定</strong>且压力下限 +1。
+        • <strong>负面效果</strong>：只要宠物受到伤害，主人就会造成 <strong>1 压力</strong>；若宠物遇害，主人需进行<strong>惊恐检定</strong>且压力下限 +1。
       `;
     } else {
       document.getElementById('edit_pet_instinct').value = rollD10(2) + 30;
@@ -1160,10 +1160,10 @@
   function updateJobResponse() {
     const job = document.getElementById('edit_job').value.trim();
     let response = document.getElementById('edit_response').value;
-    if (job.includes('陆战队员')) response = "只要你陷入惊控，所有近距友方玩家都必须进行一次恐惧豁免。";
+    if (job.includes('陆战队员')) response = "只要你陷入惊恐，所有近距友方玩家都必须进行一次恐惧豁免。";
     else if (job.includes('仿生人')) response = "近距友方玩家进行的恐惧豁免带有劣势。";
     else if (job.includes('科学家')) response = "只要你理智豁免失败，所有近距友方玩家获得1压力。";
-    else if (job.includes('技工')) response = "每游戏场次一回，你可以在某次惊控检定中带有优势。";
+    else if (job.includes('技工')) response = "每游戏场次一回，你可以在某次惊恐检定中带有优势。";
     else if (job.includes('熊')) response = "本能反应；陷入惊恐时，会丢下手里的工具和武器用爪子解决问题。";
     else if (job.includes('混混')) response = "惊恐检定带有劣势。";
     else if (job.includes('打工人')) response = "每场游戏一次，当你恢复压力时，恢复量加倍。";
@@ -1300,7 +1300,7 @@
 
     let petMemo = `【${petType === 'organic' ? '有机宠物' : '合成宠物'}】\n\n`;
     if (petType === 'organic') {
-      petMemo += "【规则提醒】\n• 休息豁免带有 [ + ] 优势\n• 受到伤害：主人造成 1 压力\n• 遇害：主人进行惊控检定，压力下限 +1。";
+      petMemo += "【规则提醒】\n• 休息豁免带有 [ + ] 优势\n• 受到伤害：主人造成 1 压力\n• 遇害：主人进行惊恐检定，压力下限 +1。";
     } else {
       petMemo += "【规则提醒】\n• 休息豁免 +5\n• 受到伤害：主人进行理智豁免，失败造成 1 压力\n• 被摧毁：主人造成 1 压力。";
     }
