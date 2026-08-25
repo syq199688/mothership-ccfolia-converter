@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌠 Mothership 角色卡Ccfolia 转换器</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      max-width: 950px;
+      margin: 40px auto;
+      padding: 0 20px;
+      background-color: #1a1d20;
+      color: #e0e0e0;
+    }
+    .card {
+      background: #24282e;
+      padding: 30px;
+      border-radius: 12px;
+      border: 1px solid #3a3f47;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    h1 { margin-top: 0; color: #ff4757; font-size: 1.6rem; letter-spacing: 1px; }
+    h2 { color: #ffa502; font-size: 1.2rem; border-bottom: 1px solid #3a3f47; padding-bottom: 8px; margin-top: 25px; }
+    .subtitle { color: #aaa; font-size: 14px; margin-bottom: 20px; }
+    .drop-zone {
+      border: 2px dashed #ff4757;
+      border-radius: 8px;
+      padding: 35px;
+      text-align: center;
+      background: #1c2024;
+      cursor: pointer;
+      color: #aaa;
+      transition: all 0.2s;
+    }
+    .drop-zone:hover { background: #282d33; color: #fff; }
+    input[type="file"] { display: none; }
+    
+    .form-group { margin-top: 15px; }
+    label { display: block; margin-bottom: 6px; font-weight: bold; color: #7bed9f; font-size: 13px; }
+    input[type="text"], input[type="number"], select, button, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      background: #191c1f;
+      border: 1px solid #3a3f47;
+      color: #fff;
+      border-radius: 6px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+    input:focus, select:focus, textarea:focus { border-color: #ff4757; outline: none; }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
+
+    .edit-section {
+      background: #1c2024;
+      border: 1px solid #2f3542;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 25px;
+    }
+
+    .skill-card, .weapon-card {
+      background: #24282e;
+      border: 1px solid #3a3f47;
+      border-radius: 6px;
+      padding: 14px;
+      margin-top: 10px;
+    }
+    .skill-card header, .weapon-card header {
+      font-weight: bold;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .skill-badge {
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #1e272e;
+      font-weight: bold;
+    }
+    .badge-10 { background-color: #7bed9f; }
+    .badge-15 { background-color: #eccc68; }
+    .badge-20 { background-color: #ff7f50; }
+
+    .skill-item, .weapon-item {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+    .skill-item input { flex: 2; }
+    .skill-item select { flex: 1; min-width: 75px; }
+    
+    .weapon-field-group {
+      display: flex;
+      flex-direction: column;
+    }
+    .weapon-field-label {
+      font-size: 11px;
+      color: #7bed9f;
+      margin-bottom: 4px;
+      font-weight: bold;
+    }
+
+    .weapon-field-group.group-select { flex: 1.8; }
+    .weapon-field-group.group-attr { flex: 1; }
+    .weapon-field-group.group-skill { flex: 1.4; }
+    .weapon-field-group.group-damage { flex: 1; }
+    .weapon-field-group.group-note { flex: 2; }
+
+    .skill-item button, .weapon-item button {
+      width: auto;
+      padding: 8px 10px;
+      background: #ff4757;
+      border: none;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-add-skill, .btn-add-weapon {
+      background: #2f3542;
+      border: 1px dashed #7bed9f;
+      color: #7bed9f;
+      font-size: 12px;
+      padding: 6px;
+      margin-top: 6px;
+      cursor: pointer;
+      border-radius: 4px;
+      width: 100%;
+    }
+    .btn-add-skill:hover, .btn-add-weapon:hover { background: #3a3f47; }
+
+    button.btn-primary {
+      background-color: #ff4757;
+      color: white;
+      border: none;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background 0.2s;
+    }
+    button.btn-primary:hover { background-color: #ff6b81; }
+    
+    textarea {
+      height: 180px;
+      font-family: "Courier New", monospace;
+      margin-top: 10px;
+      resize: vertical;
+      line-height: 1.4;
+      color: #7bed9f;
+    }
+    
+    .status-box {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 6px;
+      background: #2f3542;
+      color: #eccc68;
+      font-size: 13px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h1>Mothership 角色卡Ccfolia 转换器</h1>
+  <div class="subtitle">只能直接导入excel，pdf请自行输入，如果数据有错可以手动改改</div>
+  
+  <div class="drop-zone" id="dropZone" onclick="triggerFileInput()">
+    📄点击上传角色卡
+    <input type="file" id="fileInput" accept=".xlsx, .xls, .pdf, image/*">
+  </div>
+
+  <div class="status-box" id="statusBox">正在读取并解析文件内容，请稍候...</div>
+
+  <div class="edit-section" id="editSection">
+    <h2>背景</h2>
+    
+    <div class="grid-2" style="margin-top: 15px;">
+      <div>
+        <label for="edit_name">角色名称</label>
+        <input type="text" id="edit_name" value="" placeholder="请输入角色名称">
+      </div>
+      <div>
+        <label for="edit_job">职类 (Job)</label>
+        <input type="text" id="edit_job" value="" placeholder="如：科学家 / 自定职业" oninput="updateJobResponse()">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="edit_response">memo</label>
+      <input type="text" id="edit_response" value="" placeholder="请输入创伤反应或简短角色描述">
+    </div>
+
+    <h2>数据</h2>
+    <div class="grid-4">
+      <div>
+        <label for="edit_hp">生命值</label>
+        <input type="number" id="edit_hp" value="" placeholder="0">
+      </div>
+      <div>
+        <label for="edit_stress">压力</label>
+        <input type="number" id="edit_stress" value="" placeholder="2">
+      </div>
+      <div>
+        <label for="edit_damage">损伤</label>
+        <input type="number" id="edit_damage" value="" placeholder="0">
+      </div>
+      <div>
+        <label for="edit_armor">护甲 (AP)</label>
+        <input type="number" id="edit_armor" value="" placeholder="0">
+      </div>
+    </div>
+
+    <h2>基础属性 & 豁免</h2>
+    <div class="grid-4">
+      <div>
+        <label for="edit_str">力量</label>
+        <input type="number" id="edit_str" value="" placeholder="0">
+      </div>
+      <div>
+        <label for="edit_spd">速度</label>
+        <input type="number" id="edit_spd" value="" placeholder="0">
+      </div>
+      <div>
+        <label for="edit_int">智力</label>
+        <input type="number" id="edit_int" value="" placeholder="0">
+      </div>
+      <div>
+        <label for="edit_combat">战斗</label>
+        <input type="number" id="edit_combat" value="" placeholder="0">
+      </div>
+    </div>
+
+    <div class="grid-3" style="margin-top: 12px;">
+      <div>
+        <label for="edit_sanity">理智豁免</label>
+        <input type="number" id="edit_sanity" value="" placeholder="0">
+      </div>
+      <div>
+        <label for="edit_fear">恐惧豁免</label>
+        <input type="number" id="edit_fear" value="" placeholder="0">
+      </div>
+      <div>
+        <label for="edit_body">身体豁免</label>
+        <input type="number" id="edit_body" value="" placeholder="0">
+      </div>
+    </div>
+
+    <h2>技能加值</h2>
+    <div class="grid-3">
+      <div class="skill-card">
+        <header>
+          <span style="color:#7bed9f;">训练技能 (Trained)</span>
+          <span class="skill-badge badge-10">+10%</span>
+        </header>
+        <div id="skills_container_10"></div>
+        <button class="btn-add-skill" onclick="addSkillRow(10, '', '战斗')">➕ 添加训练技能</button>
+      </div>
+
+      <div class="skill-card">
+        <header>
+          <span style="color:#eccc68;">专家技能 (Expert)</span>
+          <span class="skill-badge badge-15">+15%</span>
+        </header>
+        <div id="skills_container_15"></div>
+        <button class="btn-add-skill" onclick="addSkillRow(15, '', '智力')">➕ 添加专家技能</button>
+      </div>
+
+      <div class="skill-card">
+        <header>
+          <span style="color:#ff7f50;">大师技能 (Master)</span>
+          <span class="skill-badge badge-20">+20%</span>
+        </header>
+        <div id="skills_container_20"></div>
+        <button class="btn-add-skill" onclick="addSkillRow(20, '', '智力')">➕ 添加大师技能</button>
+      </div>
+    </div>
+
+    <h2>武器装备</h2>
+    <div class="weapon-card">
+      <header>
+        <span style="color:#ff4757;">武器列表与攻击</span>
+      </header>
+      <div id="weapons_container"></div>
+      <button class="btn-add-weapon" onclick="addWeaponRow()">➕ 添加武器</button>
+    </div>
+
+    <h2>宏预览 (Commands)</h2>
+    <div class="form-group">
+      <textarea id="edit_commands" readonly style="color:#a4b0be; background:#15181b;"></textarea>
+    </div>
+
+    <button class="btn-primary" onclick="generateCcfoliaJson()">生成 Ccfolia 角色卡 代码</button>
+  </div>
+
+  <div class="form-group" id="outputGroup" style="display: none;">
+    <h2>✨ 生成结果</h2>
+    <textarea id="outputJson" readonly></textarea>
+    <button onclick="copyToClipboard()" style="background-color: #2ed573; color: #1e272e; font-weight:bold; margin-top:10px; cursor:pointer;">📋 一键复制到剪贴板</button>
+  </div>
+</div>
+
+<datalist id="skills-list-10">
+  <option value="语言学"><option value="动物学"><option value="植物学"><option value="地质学">
+  <option value="工业装备"><option value="临时拼凑"><option value="化学"><option value="计算机">
+  <option value="零重力"><option value="数学"><option value="艺术"><option value="考古">
+  <option value="神学"><option value="军事训练"><option value="外环门道"><option value="运动">
+</datalist>
+
+<datalist id="skills-list-15">
+  <option value="心理学"><option value="病理学"><option value="战地医疗"><option value="生态学">
+  <option value="小行星采矿"><option value="机械修理"><option value="爆炸物"><option value="药理学">
+  <option value="骇客"><option value="导航"><option value="物理学"><option value="神秘主义">
+  <option value="荒野生存"><option value="枪械"><option value="近身搏斗">
+</datalist>
+
+<datalist id="skills-list-20">
+  <option value="知性学"><option value="外星生物学"><option value="手术"><option value="行星学">
+  <option value="机器人学"><option value="工程学"><option value="神经机械学"><option value="人工智能">
+  <option value="超空间"><option value="异种密教"><option value="指挥">
+</datalist>
+
+<script>
+  if (typeof pdfjsLib !== 'undefined') {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+
+  const SKILL_DATABASE = {
+    10: {
+      '语言学': '智力', '动物学': '智力', '植物学': '智力', '地质学': '智力',
+      '工业装备': '力量', '临时拼凑': '智力', '化学': '智力', '计算机': '智力',
+      '零重力': '速度', '数学': '智力', '艺术': '智力', '考古': '智力',
+      '神学': '智力', '军事训练': '战斗', '外环门道': '智力', '运动': '力量'
+    },
+    15: {
+      '心理学': '智力', '病理学': '智力', '战地医疗': '智力', '生态学': '智力',
+      '小行星采矿': '智力', '机械修理': '智力', '爆炸物': '智力', '药理学': '智力',
+      '骇客': '智力', '导航': '智力', '物理学': '智力', '神秘主义': '智力',
+      '荒野生存': '智力', '枪械': '战斗', '近身搏斗': '战斗'
+    },
+    20: {
+      '知性学': '智力', '外星生物学': '智力', '手术': '智力', '行星学': '智力',
+      '机器人学': '智力', '工程学': '智力', '神经机械学': '智力', '人工智能': '智力',
+      '超空间': '智力', '异种密教': '智力', '指挥': '战斗'
+    }
+  };
+
+  const DEFAULT_SKILL_ATTRS = { ...SKILL_DATABASE[10], ...SKILL_DATABASE[15], ...SKILL_DATABASE[20] };
+
+  let WEAPON_PRESETS = {
+    "跳帮斧": { attr: "战斗", damage: "2d10", note: "狰狞 [ + ]" },
+    "战斗霰弹枪": { attr: "战斗", damage: "4d10", note: "枪击；远距及更远范围 1d10 伤害" },
+    "撬棍": { attr: "力量", damage: "1d5", note: "钝击 [ + ]；就打开卡住的气闸等力量检定赋予 [ + ]" },
+    "喷火器": { attr: "战斗", damage: "2d10", note: "火焰&爆炸 [ + ]，身体豁免 [ - ] 否则着火 (2d10/轮)" },
+    "信号枪": { attr: "战斗", damage: "1d5", note: "火焰&爆炸 [ + ]；高亮信号火光" },
+    "泡沫枪": { attr: "战斗", damage: "1", note: "钝击；身体豁免，失败动弹不得，力量检定 [ - ] 才能逃脱" },
+    "破片手雷": { attr: "战斗", damage: "3d10", note: "火焰&爆炸；若命中，所有邻接敌人遭受伤害" },
+    "通用机枪": { attr: "战斗", damage: "4d10", note: "双手，沉重，枪管绕过角落开火" },
+    "手持焊枪": { attr: "战斗", damage: "1d10", note: "出血；可以切开气闸门" },
+    "激光切割器": { attr: "战斗", damage: "1d100", note: "出血 [ + ] 或狰狞 [ + ]；双手，沉重" },
+    "射钉枪": { attr: "战斗", damage: "1d5", note: "出血" },
+    "脉冲步枪": { attr: "战斗", damage: "3d10", note: "枪击；配泵动式榴弹发射器，3 枚破片手雷" },
+    "转轮手枪": { attr: "战斗", damage: "1d10+1", note: "枪击" },
+    "钩索枪": { attr: "战斗", damage: "1d10", note: "100 米细丝，身体豁免，若是失败就会被缠住" }
+  };
+
+  function triggerFileInput() { document.getElementById('fileInput').click(); }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    ['edit_str', 'edit_spd', 'edit_int', 'edit_combat', 'edit_sanity', 'edit_fear', 'edit_body'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', updateCommandsPreview);
+    });
+    addWeaponRow('脉冲步枪', '战斗', '', '3d10', '枪击；配泵动式榴弹发射器');
+    updateCommandsPreview();
+  });
+
+  const fileInput = document.getElementById('fileInput');
+  fileInput.addEventListener('change', (e) => { if (e.target.files.length) handleFile(e.target.files[0]); });
+
+  function showStatus(text) {
+    const s = document.getElementById('statusBox');
+    s.innerText = text; s.style.display = 'block';
+  }
+  function hideStatus() { document.getElementById('statusBox').style.display = 'none'; }
+
+  function handleFile(file) {
+    showStatus("正在加载文件: " + file.name);
+    document.getElementById('outputGroup').style.display = 'none';
+    const fileName = file.name.toLowerCase();
+
+    if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+      handleExcelFile(file);
+    } else if (fileName.endsWith('.pdf')) {
+      handlePdfFile(file);
+    } else {
+      handleImageFile(file);
+    }
+  }
+
+  function handleExcelFile(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array', cellStyles: true });
+
+      let weaponSheetName = workbook.SheetNames.find(name => name.trim().includes("武器"));
+      if (weaponSheetName) {
+        parseWeaponSheet(workbook.Sheets[weaponSheetName]);
+      }
+      
+      let targetSheetName = workbook.SheetNames.find(name => name.trim() === "角色档案") || workbook.SheetNames[0];
+      const sheet = workbook.Sheets[targetSheetName];
+      const rawData = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, defval: '' });
+      
+      parseAndFillFormExcel(rawData, sheet);
+      hideStatus();
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  function parseWeaponSheet(sheet) {
+    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, defval: '' });
+    if (rows.length < 2) return;
+
+    let nameCol = 0;
+    let attrCol = -1;
+    let damageCol = -1;
+    let rangeCol = -1;
+    let noteCol = -1;
+
+    const headerRow = rows[0].map(cell => String(cell).trim().toLowerCase());
+
+    headerRow.forEach((colName, index) => {
+      if (colName.includes('武器') || colName.includes('名称') || colName.includes('装备')) {
+        nameCol = index;
+      } else if (colName.includes('属性') || colName.includes('判定')) {
+        attrCol = index;
+      } else if (colName.includes('伤害') || colName.includes('骰')) {
+        damageCol = index;
+      } else if (colName.includes('距离') || colName.includes('射程') || colName.includes('范围')) {
+        rangeCol = index;
+      } else if (colName.includes('特殊') || colName.includes('备注') || colName.includes('效果') || colName.includes('说明')) {
+        noteCol = index;
+      }
+    });
+
+    if (damageCol === -1) damageCol = 2;
+    if (rangeCol === -1) rangeCol = 3;
+    if (noteCol === -1) noteCol = 4;
+
+    for (let i = 1; i < rows.length; i++) {
+      const row = rows[i];
+      if (!row || !row[nameCol]) continue;
+
+      const wName = String(row[nameCol]).trim();
+      const wAttrRaw = attrCol !== -1 ? String(row[attrCol] || '战斗').trim() : '战斗';
+      let wDmg = String(row[damageCol] || '').trim();
+      wDmg = wDmg.replace(/\s*伤害$/i, '');
+
+      const wRange = String(row[rangeCol] || '').trim();
+      const wNoteRaw = String(row[noteCol] || '').trim();
+
+      if (wName) {
+        let attrNorm = '战斗';
+        if (wAttrRaw.includes('力量')) attrNorm = '力量';
+        else if (wAttrRaw.includes('速度')) attrNorm = '速度';
+        else if (wAttrRaw.includes('智力')) attrNorm = '智力';
+
+        let combinedNote = wNoteRaw;
+        if (wRange && !combinedNote.includes(wRange)) {
+          combinedNote = combinedNote ? `${wRange}；${combinedNote}` : wRange;
+        }
+
+        WEAPON_PRESETS[wName] = {
+          attr: attrNorm,
+          damage: wDmg,
+          note: combinedNote
+        };
+      }
+    }
+  }
+
+  async function handlePdfFile(file) {
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      
+      let formFilled = false;
+      try {
+        const page = await pdf.getPage(1);
+        const annotations = await page.getAnnotations();
+        if (annotations && annotations.length > 0) {
+          formFilled = parseAnnotations(annotations);
+        }
+      } catch (e) {}
+
+      if (!formFilled) {
+        showStatus("正在对 PDF 画面进行 OCR 文字识别...");
+        const page = await pdf.getPage(1);
+        const viewport = page.getViewport({ scale: 2.0 });
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        await page.render({ canvasContext: context, viewport: viewport }).promise;
+        const imgData = canvas.toDataURL('image/png');
+
+        const worker = await Tesseract.createWorker('chi_sim+eng');
+        const ret = await worker.recognize(imgData);
+        await worker.terminate();
+
+        parseBaseAttributesText(ret.data.text);
+      }
+      hideStatus();
+    } catch (err) {
+      alert("解析 PDF 出错: " + err.message);
+      hideStatus();
+    }
+  }
+
+  async function handleImageFile(file) {
+    showStatus("正在对图片进行 OCR 识别...");
+    const worker = await Tesseract.createWorker('chi_sim+eng');
+    const ret = await worker.recognize(file);
+    await worker.terminate();
+
+    hideStatus();
+    parseBaseAttributesText(ret.data.text);
+  }
+
+  function parseAnnotations(annotations) {
+    let count = 0;
+    annotations.forEach(a => {
+      if (!a.fieldName || !a.fieldValue) return;
+      const name = a.fieldName.toLowerCase();
+      const val = String(a.fieldValue).trim();
+
+      if (name.includes('str') || name.includes('力量')) { document.getElementById('edit_str').value = val; count++; }
+      if (name.includes('spd') || name.includes('速度')) { document.getElementById('edit_spd').value = val; count++; }
+      if (name.includes('int') || name.includes('智力')) { document.getElementById('edit_int').value = val; count++; }
+      if (name.includes('com') || name.includes('战斗')) { document.getElementById('edit_combat').value = val; count++; }
+      
+      if (name.includes('san') || name.includes('理智')) { document.getElementById('edit_sanity').value = val; count++; }
+      if (name.includes('fear') || name.includes('恐惧')) { document.getElementById('edit_fear').value = val; count++; }
+      if (name.includes('body') || name.includes('身体')) { document.getElementById('edit_body').value = val; count++; }
+
+      if (name.includes('hp')) { document.getElementById('edit_hp').value = val; count++; }
+      if (name.includes('stress') || name.includes('压力')) { document.getElementById('edit_stress').value = val; count++; }
+      if (name.includes('damage') || name.includes('损伤')) { document.getElementById('edit_damage').value = val; count++; }
+      if (name.includes('armor') || name === 'ap' || name.includes('护甲')) { document.getElementById('edit_armor').value = val; count++; }
+      if (name.includes('name') || name.includes('名字') || name.includes('角色')) { document.getElementById('edit_name').value = val; }
+      if (name.includes('job') || name.includes('职类') || name.includes('职业')) { document.getElementById('edit_job').value = val; updateJobResponse(); }
+    });
+    updateCommandsPreview();
+    return count > 3;
+  }
+
+  function parseBaseAttributesText(rawText) {
+    function matchField(patterns) {
+      for (let p of patterns) {
+        const reg = new RegExp(`${p}\\s*[:：\\s]\\s*([^\\n\\r]+)`, 'i');
+        const m = rawText.match(reg);
+        if (m && m[1].trim()) return m[1].trim().split(/\s+/)[0];
+      }
+      return '';
+    }
+
+    function matchNum(keyStr) {
+      const reg = new RegExp(`${keyStr}[^\\d]*?(\\d{1,3})`, 'i');
+      const m = rawText.match(reg);
+      return m ? m[1] : '';
+    }
+    
+    function matchSlashNum(keyStr) {
+      const reg = new RegExp(`${keyStr}[^\\d]*?(\\d{1,3})\\s*[/\\\\|]\\s*(\\d{1,3})`, 'i');
+      const m = rawText.match(reg);
+      return m ? m[1] : '';
+    }
+
+    const parsedName = matchField(['角色名称', '角色名', '姓名', '名字', 'Name', 'Character']);
+    const parsedJob = matchField(['职类', '职业', 'Job', 'Class']);
+
+    if (parsedName) document.getElementById('edit_name').value = parsedName;
+    if (parsedJob) {
+      document.getElementById('edit_job').value = parsedJob;
+      updateJobResponse();
+    }
+
+    document.getElementById('edit_str').value = matchNum('力量') || matchNum('STRENGTH');
+    document.getElementById('edit_spd').value = matchNum('速度') || matchNum('SPEED');
+    document.getElementById('edit_int').value = matchNum('智力') || matchNum('INTELLECT');
+    document.getElementById('edit_combat').value = matchNum('战斗') || matchNum('COMBAT');
+
+    document.getElementById('edit_sanity').value = matchNum('理智') || matchNum('SANITY');
+    document.getElementById('edit_fear').value = matchNum('恐惧') || matchNum('FEAR');
+    document.getElementById('edit_body').value = matchNum('身体') || matchNum('BODY');
+
+    const hpVal = matchSlashNum('生命值') || matchSlashNum('HP') || matchNum('生命值') || matchNum('HP');
+    const dmgVal = matchSlashNum('损伤') || matchSlashNum('DAMAGE') || matchNum('损伤');
+    const stressVal = matchSlashNum('压力') || matchSlashNum('STRESS') || matchNum('压力');
+    const armorVal = matchNum('护甲') || matchNum('AP');
+
+    if (hpVal) document.getElementById('edit_hp').value = hpVal;
+    if (dmgVal) document.getElementById('edit_damage').value = dmgVal;
+    if (stressVal) document.getElementById('edit_stress').value = stressVal;
+    if (armorVal) document.getElementById('edit_armor').value = armorVal;
+
+    updateCommandsPreview();
+  }
+
+  function addSkillRow(bonusTier, skillName = '', defaultAttr = '智力') {
+    const container = document.getElementById(`skills_container_${bonusTier}`);
+    const row = document.createElement('div');
+    row.className = 'skill-item';
+    const attrToUse = DEFAULT_SKILL_ATTRS[skillName] || defaultAttr;
+
+    row.innerHTML = `
+      <input type="text" class="skill-name-input" value="${skillName}" placeholder="技能名称" list="skills-list-${bonusTier}" oninput="onSkillNameInput(this); updateSkillDropdownsInWeapons();">
+      <select class="skill-attr-select" onchange="updateCommandsPreview()">
+        <option value="战斗" ${attrToUse==='战斗'?'selected':''}>战斗</option>
+        <option value="力量" ${attrToUse==='力量'?'selected':''}>力量</option>
+        <option value="速度" ${attrToUse==='速度'?'selected':''}>速度</option>
+        <option value="智力" ${attrToUse==='智力'?'selected':''}>智力</option>
+      </select>
+      <button onclick="this.parentElement.remove(); updateCommandsPreview(); updateSkillDropdownsInWeapons();">✕</button>
+    `;
+    container.appendChild(row);
+    updateCommandsPreview();
+    updateSkillDropdownsInWeapons();
+  }
+
+  function getAllTrainedSkills() {
+    let skills = [];
+    [10, 15, 20].forEach(tier => {
+      const container = document.getElementById(`skills_container_${tier}`);
+      if (!container) return;
+      Array.from(container.getElementsByClassName('skill-item')).forEach(row => {
+        const sName = row.querySelector('.skill-name-input').value.trim();
+        if (sName) {
+          skills.push({ name: sName, bonus: `+${tier}` });
+        }
+      });
+    });
+    return skills;
+  }
+
+  function updateSkillDropdownsInWeapons() {
+    const skills = getAllTrainedSkills();
+    const weaponRows = document.getElementsByClassName('weapon-item');
+    
+    Array.from(weaponRows).forEach(row => {
+      const skillSelect = row.querySelector('.weapon-skill');
+      if (!skillSelect) return;
+      const currentVal = skillSelect.value;
+
+      let html = '<option value="">无技能 (裸面板)</option>';
+      skills.forEach(s => {
+        const valStr = `${s.name} (${s.bonus})`;
+        const selected = (currentVal === valStr) ? 'selected' : '';
+        html += `<option value="${valStr}" ${selected}>${s.name} (${s.bonus})</option>`;
+      });
+      skillSelect.innerHTML = html;
+    });
+  }
+
+  function addWeaponRow(selectedWeapon = '', attr = '战斗', skillChoice = '', damage = '', note = '') {
+    const container = document.getElementById('weapons_container');
+    const row = document.createElement('div');
+    row.className = 'weapon-item';
+
+    let weaponOptionsHtml = '<option value="">-- 自定义武器 --</option>';
+    Object.keys(WEAPON_PRESETS).forEach(wName => {
+      const sel = (selectedWeapon === wName) ? 'selected' : '';
+      weaponOptionsHtml += `<option value="${wName}" ${sel}>${wName}</option>`;
+    });
+
+    const skills = getAllTrainedSkills();
+    let skillOptionsHtml = '<option value="">无技能 (裸面板)</option>';
+    skills.forEach(s => {
+      const valStr = `${s.name} (${s.bonus})`;
+      const sel = (skillChoice === valStr) ? 'selected' : '';
+      skillOptionsHtml += `<option value="${valStr}" ${sel}>${s.name} (${s.bonus})</option>`;
+    });
+
+    row.innerHTML = `
+      <div class="weapon-field-group group-select">
+        <span class="weapon-field-label">武器名称</span>
+        <select class="weapon-select" onchange="onWeaponPresetChange(this)">
+          ${weaponOptionsHtml}
+        </select>
+      </div>
+      <div class="weapon-field-group group-attr">
+        <span class="weapon-field-label">属性</span>
+        <select class="weapon-attr" onchange="updateCommandsPreview()">
+          <option value="战斗" ${attr==='战斗'?'selected':''}>战斗</option>
+          <option value="力量" ${attr==='力量'?'selected':''}>力量</option>
+          <option value="速度" ${attr==='速度'?'selected':''}>速度</option>
+          <option value="智力" ${attr==='智力'?'selected':''}>智力</option>
+        </select>
+      </div>
+      <div class="weapon-field-group group-skill">
+        <span class="weapon-field-label">技能加值</span>
+        <select class="weapon-skill" onchange="updateCommandsPreview()">
+          ${skillOptionsHtml}
+        </select>
+      </div>
+      <div class="weapon-field-group group-damage">
+        <span class="weapon-field-label">伤害骰</span>
+        <input type="text" class="weapon-damage" value="${damage}" placeholder="如: 2d10" oninput="updateCommandsPreview()">
+      </div>
+      <div class="weapon-field-group group-note">
+        <span class="weapon-field-label">备注说明</span>
+        <input type="text" class="weapon-note" value="${note}" placeholder="特殊效果/说明" oninput="updateCommandsPreview()">
+      </div>
+      <button style="margin-top: 18px;" onclick="this.parentElement.remove(); updateCommandsPreview();">✕</button>
+    `;
+
+    container.appendChild(row);
+    updateCommandsPreview();
+  }
+
+  function onWeaponPresetChange(selectEl) {
+    const weaponName = selectEl.value;
+    const row = selectEl.closest('.weapon-item');
+    const attrSel = row.querySelector('.weapon-attr');
+    const damageInput = row.querySelector('.weapon-damage');
+    const noteInput = row.querySelector('.weapon-note');
+
+    if (WEAPON_PRESETS[weaponName]) {
+      const data = WEAPON_PRESETS[weaponName];
+      attrSel.value = data.attr;
+      damageInput.value = data.damage;
+      noteInput.value = data.note;
+    } else {
+      damageInput.value = "";
+      noteInput.value = "";
+    }
+    updateCommandsPreview();
+  }
+
+  function onSkillNameInput(inputElement) {
+    const skillName = inputElement.value.trim();
+    if (DEFAULT_SKILL_ATTRS[skillName]) {
+      const selectElement = inputElement.parentElement.querySelector('.skill-attr-select');
+      if (selectElement) {
+        selectElement.value = DEFAULT_SKILL_ATTRS[skillName];
+      }
+    }
+    updateCommandsPreview();
+  }
+
+  function clearSkillContainers() {
+    document.getElementById('skills_container_10').innerHTML = '';
+    document.getElementById('skills_container_15').innerHTML = '';
+    document.getElementById('skills_container_20').innerHTML = '';
+  }
+
+  function parseAndFillFormExcel(data, sheet) {
+    clearSkillContainers();
+    document.getElementById('weapons_container').innerHTML = '';
+
+    const addedSkills = new Set();
+    const addedWeapons = new Set();
+    const flatTextLines = [];
+
+    try {
+      if (sheet && sheet['M6'] && sheet['M6'].v !== undefined) {
+        document.getElementById('edit_armor').value = sheet['M6'].v;
+      }
+    } catch(e) {}
+
+    for (let r = 0; r < data.length; r++) {
+      const row = data[r];
+      if (!row) continue;
+      flatTextLines.push(row.join(" "));
+
+      for (let c = 0; c < row.length; c++) {
+        const cellVal = String(row[c] || '').trim();
+        if (!cellVal) continue;
+
+        if (/^(角色名称|角色名|姓名|名字)/.test(cellVal) && c + 1 < row.length) {
+          const nextVal = String(row[c + 1]).trim();
+          if (nextVal) document.getElementById('edit_name').value = nextVal;
+        }
+        if (/^(职类|职业)/.test(cellVal) && c + 1 < row.length) {
+          const nextVal = String(row[c + 1]).trim();
+          if (nextVal) {
+            document.getElementById('edit_job').value = nextVal;
+            updateJobResponse();
+          }
+        }
+        if (/^(护甲|AP)/i.test(cellVal)) {
+          const nextVal = String(row[c + 1] || '').trim();
+          if (nextVal && !isNaN(nextVal)) {
+            document.getElementById('edit_armor').value = nextVal;
+          }
+        }
+
+        [10, 15, 20].forEach(tier => {
+          Object.keys(SKILL_DATABASE[tier]).forEach(skillName => {
+            if (cellVal.includes(skillName) && !addedSkills.has(skillName)) {
+              const right1 = (c + 1 < row.length) ? String(row[c + 1]).trim() : '';
+              const right2 = (c + 2 < row.length) ? String(row[c + 2]).trim() : '';
+              const right3 = (c + 3 < row.length) ? String(row[c + 3]).trim() : '';
+
+              let isChecked = false;
+              for (let t of [right1, right2, right3]) {
+                if (t !== '' && t !== '□' && t !== '◯' && t !== 'false' && t !== '0') {
+                  isChecked = true;
+                  break;
+                }
+              }
+
+              if (isChecked) {
+                addedSkills.add(skillName);
+                addSkillRow(tier, skillName, SKILL_DATABASE[tier][skillName]);
+              }
+            }
+          });
+        });
+
+        Object.keys(WEAPON_PRESETS).forEach(wName => {
+          if (cellVal.includes(wName) && !addedWeapons.has(wName)) {
+            addedWeapons.add(wName);
+            const wData = WEAPON_PRESETS[wName];
+            addWeaponRow(wName, wData.attr, '', wData.damage, wData.note);
+          }
+        });
+      }
+    }
+
+    parseBaseAttributesText(flatTextLines.join("\n"));
+    updateSkillDropdownsInWeapons();
+  }
+
+  function updateJobResponse() {
+    const job = document.getElementById('edit_job').value.trim();
+    let response = document.getElementById('edit_response').value;
+    if (job.includes('陆战队员')) response = "只要你陷入惊控，所有临近友方玩家都必须进行一次恐惧豁免。";
+    else if (job.includes('仿生人')) response = "临近友方玩家进行的恐惧豁免带有劣势。";
+    else if (job.includes('科学家')) response = "只要你理智豁免失败，所有临近友方玩家获得1压力。";
+    else if (job.includes('技工')) response = "每游戏场次一回，你可以在某次惊控检定中带有优势。";
+    if (response) document.getElementById('edit_response').value = response;
+  }
+
+  function updateCommandsPreview() {
+    let cmds = [
+      "1d100<{力量} 力量", "1d100<{速度} 速度", "1d100<{智力} 智力", "1d100<{战斗} 战斗",
+      "1d100<{理智} 理智豁免", "1d100<{恐惧} 恐惧豁免", "1d100<{身体} 身体豁免"
+    ];
+
+    [10, 15, 20].forEach(tier => {
+      const container = document.getElementById(`skills_container_${tier}`);
+      if (!container) return;
+      Array.from(container.getElementsByClassName('skill-item')).forEach(row => {
+        const sName = row.querySelector('.skill-name-input').value.trim();
+        const sAttr = row.querySelector('.skill-attr-select').value;
+        if (sName) cmds.push(`1d100<{${sAttr}}+${tier} ${sName}`);
+      });
+    });
+
+    const weaponContainer = document.getElementById('weapons_container');
+    if (weaponContainer) {
+      Array.from(weaponContainer.getElementsByClassName('weapon-item')).forEach(row => {
+        const wSelect = row.querySelector('.weapon-select').value;
+        const wAttr = row.querySelector('.weapon-attr').value;
+        const wSkillVal = row.querySelector('.weapon-skill').value;
+        const wDamage = row.querySelector('.weapon-damage').value.trim();
+        const wNote = row.querySelector('.weapon-note').value.trim();
+
+        if (wSelect) {
+          let bonusStr = "";
+          if (wSkillVal.includes("(+10)")) bonusStr = "+10";
+          else if (wSkillVal.includes("(+15)")) bonusStr = "+15";
+          else if (wSkillVal.includes("(+20)")) bonusStr = "+20";
+
+          const formula = `{${wAttr}}${bonusStr}`;
+          const noteSuffix = wNote ? `（${wNote}）` : "";
+          cmds.push(`1d100<${formula} ${wSelect} 攻击${noteSuffix}`);
+          if (wDamage) {
+            cmds.push(`${wDamage} ${wSelect} 伤害`);
+          }
+        }
+      });
+    }
+
+    document.getElementById('edit_commands').value = cmds.join("\n");
+  }
+
+  function generateCcfoliaJson() {
+    const jobStr = document.getElementById('edit_job').value;
+    const traumaStr = document.getElementById('edit_response').value;
+
+    const ccfoliaData = {
+      kind: "character",
+      data: {
+        name: document.getElementById('edit_name').value || "未命名角色",
+        memo: `职类：${jobStr}\n创伤反应：${traumaStr}`,
+        status: [
+          { label: "HP", value: parseInt(document.getElementById('edit_hp').value)||0, max: parseInt(document.getElementById('edit_hp').value)||0 },
+          { label: "压力", value: parseInt(document.getElementById('edit_stress').value)||0, max: 20 },
+          { label: "损伤", value: parseInt(document.getElementById('edit_damage').value)||0, max: 3 },
+          { label: "护甲", value: parseInt(document.getElementById('edit_armor').value)||0, max: parseInt(document.getElementById('edit_armor').value)||0 }
+        ],
+        params: [
+          { label: "力量", value: String(document.getElementById('edit_str').value||"0") },
+          { label: "速度", value: String(document.getElementById('edit_spd').value||"0") },
+          { label: "智力", value: String(document.getElementById('edit_int').value||"0") },
+          { label: "战斗", value: String(document.getElementById('edit_combat').value||"0") },
+          { label: "理智", value: String(document.getElementById('edit_sanity').value||"0") },
+          { label: "恐惧", value: String(document.getElementById('edit_fear').value||"0") },
+          { label: "身体", value: String(document.getElementById('edit_body').value||"0") }
+        ],
+        commands: document.getElementById('edit_commands').value
+      }
+    };
+
+    document.getElementById('outputJson').value = JSON.stringify(ccfoliaData, null, 2);
+    document.getElementById('outputGroup').style.display = 'block';
+  }
+
+  function copyToClipboard() {
+    const textarea = document.getElementById('outputJson');
+    textarea.select();
+    navigator.clipboard.writeText(textarea.value);
+    alert("已复制到剪贴板！可以直接在 Ccfolia界面 Ctrl+V 粘贴导入。");
+  }
+</script>
+
+</body>
+</html>
