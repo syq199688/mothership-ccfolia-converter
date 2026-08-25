@@ -831,6 +831,15 @@
     else if (job.includes('仿生人')) response = "近距友方玩家进行的恐惧豁免带有劣势。";
     else if (job.includes('科学家')) response = "只要你理智豁免失败，所有近距友方玩家获得1压力。";
     else if (job.includes('技工')) response = "每游戏场次一回，你可以在某次惊控检定中带有优势。";
+    else if (job.includes('熊')) response = "本能反应；陷入惊恐时，会丢下手里的工具和武器用爪子解决问题。";
+    else if (job.includes('混混')) response = "惊恐检定带有劣势。";
+    else if (job.includes('打工人')) response = "每场游戏一次，当你恢复压力时，恢复量加倍。";
+    else if (job.includes('太空野蛮人')) response = "每当有人在操作太空时代科技时检定失败，获得1压力。";
+    else if (job.includes('虚空神甫')) response = "当你理智豁免失败时，恢复1d10生命，额外获得1点压力。";
+    else if (job.includes('罪犯')) response = "当你需要进行恐惧豁免时，你可以让附近的一名友方玩家代替你进行这次豁免。";
+    else if (job.includes('拓荒者')) response = "每场游戏限一次，当你惊恐时，你可以选择改为承受2点压力。";
+    else if (job.includes('旧型号机器人')) response = "当你承受一次损伤时，你的一项属性或豁免也将随之减少1d10点。";
+    else if (job.includes('退休人员')) response = "当你惊恐时，必须进行一次身体豁免，失败则心脏病发（陷入昏迷，若在 1d10 回合内未得到治疗则死亡）。";
     if (response) document.getElementById('edit_response').value = response;
   }
 
