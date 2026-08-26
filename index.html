@@ -851,9 +851,12 @@
 
   <!-- ================= Tab 2: 宠物档案 (独立配置) ================= -->
   <div class="tab-content" id="tab-pet">
-    <h2>🐾 宠物</h2>
+    <div class="section-header">
+      <h2>🐾 宠物</h2>
+      <button class="btn-reset" onclick="resetPetForm()">🧹 清空重置</button>
+    </div>
     
-    <div class="grid-3">
+    <div class="grid-3" style="margin-top: 15px;">
       <div>
         <label for="edit_pet_type">宠物类型</label>
         <select id="edit_pet_type" onchange="onPetTypeChange()">
@@ -1088,6 +1091,17 @@
     addWeaponRow();
     updateCommandsPreview();
     document.getElementById('outputGroup').style.display = 'none';
+  }
+
+  function resetPetForm() {
+    playAudioBeep(400, 'sawtooth', 0.15);
+    document.getElementById('edit_pet_type').value = 'organic';
+    document.getElementById('edit_pet_name').value = '';
+    document.getElementById('pet_skills_10').innerHTML = '';
+    document.getElementById('pet_skills_15').innerHTML = '';
+    document.getElementById('petOutputGroup').style.display = 'none';
+    document.getElementById('outputPetJson').value = '';
+    onPetTypeChange();
   }
 
   function onPetTypeChange() {
