@@ -14,7 +14,7 @@
   <style>
     :root {
       --bg-color: #06080a;
-      --card-bg: rgba(22, 25, 29, 0.92);
+      --card-bg: #16191d;
       --section-bg: #1c2026;
       --input-bg: #111317;
       --border-color: #2b303b;
@@ -45,12 +45,6 @@
       background-attachment: fixed;
     }
 
-    /* 呼吸感霓虹发光动画 */
-    @keyframes titleGlow {
-      0%, 100% { text-shadow: 0 0 12px rgba(255, 63, 52, 0.4); }
-      50% { text-shadow: 0 0 20px rgba(255, 63, 52, 0.8), 0 0 30px rgba(255, 63, 52, 0.4); }
-    }
-
     /* 自定义滚动条样式 */
     textarea::-webkit-scrollbar, ::-webkit-scrollbar {
       width: 6px;
@@ -69,7 +63,6 @@
 
     .card {
       background: var(--card-bg);
-      backdrop-filter: blur(8px);
       padding: 35px;
       border-radius: 6px;
       border: 1px solid rgba(0, 216, 214, 0.2);
@@ -99,7 +92,6 @@
       font-size: 1.8rem;
       letter-spacing: 2px;
       text-transform: uppercase;
-      animation: titleGlow 4s infinite ease-in-out;
       display: flex;
       align-items: center;
       gap: 10px;
