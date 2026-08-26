@@ -1968,14 +1968,14 @@ function rollTrinketItem() {
     const txt = document.getElementById('outputJson');
     txt.select(); document.execCommand('copy');
     playAudioBeep(900, 'sine', 0.15);
-    alert('📋 角色 JSON 已复制到剪贴板！可以直接在 CCfolia 中粘贴 (Ctrl + V)。');
+    alert('角色 JSON 已复制到剪贴板！可以直接在 CCfolia 中粘贴 (Ctrl + V)。');
   }
 
   function copyPetToClipboard() {
     const txt = document.getElementById('outputPetJson');
     txt.select(); document.execCommand('copy');
     playAudioBeep(900, 'sine', 0.15);
-    alert('📋 宠物 JSON 已复制到剪贴板！可以直接在 CCfolia 中粘贴 (Ctrl + V)。');
+    alert('宠物 JSON 已复制到剪贴板！可以直接在 CCfolia 中粘贴 (Ctrl + V)。');
   }
 
 // ================= 本地存储/历史记录 =================
@@ -2007,14 +2007,20 @@ function rollTrinketItem() {
           res_trinket: document.getElementById('res_trinket')?.value || '',
           res_patch: document.getElementById('res_patch')?.value || '',
           
-          // 【新增】保存动态技能列表
+          // 保存动态技能列表
           skills: {
             10: getSkillsByTier(10),
             15: getSkillsByTier(15),
             20: getSkillsByTier(20)
           },
-          // 【新增】保存动态武器列表
+          // 保存动态武器列表
           weapons: getWeaponsList()
+        };
+      } else if (type === 'pet') {
+        // 如果宠物也有需要保存的表单数据，可以在这里扩展
+        currentFormData = {
+          pet_name: document.getElementById('pet_name')?.value || ''
+          // 根据你宠物面板实际的输入框 id 自行补充
         };
       }
 
@@ -2026,10 +2032,15 @@ function rollTrinketItem() {
         time: new Date().toLocaleTimeString() 
       });
 
-      if (history.length > 8) history.pop();
+// 严格限制最多保存 3 个，超出时自动截断多余的旧记录
+if (history.length > 3) {
+  history = history.slice(0, 3);
+}
       localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
       renderHistoryUI();
-    } catch(e) {}
+    } catch(e) {
+      console.error("保存历史记录出错: ", e);
+    }
   }
 
   // 辅助函数：收集指定阶数的技能
@@ -2038,8 +2049,8 @@ function rollTrinketItem() {
     const container = document.getElementById(`skills_container_${tier}`);
     if (!container) return list;
     Array.from(container.querySelectorAll('.skill-item, .skill-row')).forEach(row => {
-      const nameInput = row.querySelector('input[type="text"], .skill-name');
-      const attrSelect = row.querySelector('select, .skill-attr');
+      const nameInput = row.querySelector('input[type="text"], .skill-name-input, .skill-name');
+      const attrSelect = row.querySelector('select, .skill-attr-select, .skill-attr');
       if (nameInput) {
         list.push({
           name: nameInput.value,
@@ -2057,7 +2068,7 @@ function rollTrinketItem() {
     if (!container) return list;
     Array.from(container.querySelectorAll('.weapon-item, .weapon-row')).forEach(row => {
       list.push({
-        name: row.querySelector('.weapon-name')?.value || '',
+        name: row.querySelector('.weapon-name-input, .weapon-name')?.value || '',
         attr: row.querySelector('.weapon-attr')?.value || '',
         skill: row.querySelector('.weapon-skill')?.value || '',
         damage: row.querySelector('.weapon-damage')?.value || '',
@@ -2098,7 +2109,7 @@ function rollTrinketItem() {
           <div class="history-item">
             <div class="history-info">
               <span class="history-tag ${tagClass}">${tagText}</span>
-              <span style="font-weight: bold; color: #fff;">${item.name}</span>
+              <span style="font-weight: bold; color: #fff;">${item.name || '未命名'}</span>
               <span style="color: var(--text-muted); font-size: 9px;">(${item.time})</span>
             </div>
             <div class="history-actions">
@@ -2114,20 +2125,27 @@ function rollTrinketItem() {
 
   // 加载时：一键恢复基础表单、技能和武器
   function loadFromHistory(index) {
-    playAudioBeep(700, 'sine', 0.1);
+    if (typeof playAudioBeep === 'function') {
+      playAudioBeep(700, 'sine', 0.1);
+    }
     try {
       const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
       const item = history[index];
       if (!item) return;
 
       if (item.type === 'character') {
-        switchTab('character');
+        if (typeof switchTab === 'function') switchTab('character');
+        
         const jsonStr = JSON.stringify(item.data, null, 2);
-        document.getElementById('outputJson').value = jsonStr;
-        document.getElementById('outputGroup').style.display = 'block';
+        const outputJsonEl = document.getElementById('outputJson');
+        if (outputJsonEl) outputJsonEl.value = jsonStr;
+        
+        const outputGroupEl = document.getElementById('outputGroup');
+        if (outputGroupEl) outputGroupEl.style.display = 'block';
         
         if (item.formData) {
           const fd = item.formData;
+          
           // 1. 恢复基础输入框
           for (let key in fd) {
             if (key !== 'skills' && key !== 'weapons') {
@@ -2136,19 +2154,25 @@ function rollTrinketItem() {
             }
           }
 
-          // 2. 【新增】恢复动态技能行
+          // 如果有护甲下拉联动函数，触发它以确保护甲数据同步正确
+          if (typeof onArmorPresetChange === 'function') {
+            onArmorPresetChange();
+          }
+
+          // 2. 恢复动态技能行
           if (fd.skills) {
             [10, 15, 20].forEach(tier => {
               const container = document.getElementById(`skills_container_${tier}`);
-              if (container && typeof window.clearSkillContainer === 'function') {
-                window.clearSkillContainer(tier); // 清空现有行
-              } else if (container) {
-                container.innerHTML = ''; // 保底清空
+              if (container) {
+                if (typeof window.clearSkillContainer === 'function') {
+                  window.clearSkillContainer(tier);
+                } else {
+                  container.innerHTML = '';
+                }
               }
               
               if (fd.skills[tier] && fd.skills[tier].length > 0) {
                 fd.skills[tier].forEach(s => {
-                  // 调用你页面原本用于添加技能行的函数（名字通常是 addSkillRow）
                   if (typeof window.addSkillRow === 'function') {
                     window.addSkillRow(tier, s.name, s.attr);
                   }
@@ -2157,24 +2181,24 @@ function rollTrinketItem() {
             });
           }
 
-          // 3. 【新增】恢复动态武器行
+          // 3. 恢复动态武器行
           if (fd.weapons) {
             const weaponContainer = document.getElementById('weapons_container');
             if (weaponContainer) {
               weaponContainer.innerHTML = ''; // 清空现有武器
               if (fd.weapons.length > 0) {
                 fd.weapons.forEach(w => {
-                  // 调用你页面原本用于添加武器行的函数（名字通常是 addWeaponRow）
                   if (typeof window.addWeaponRow === 'function') {
                     window.addWeaponRow(w.name, w.attr, w.skill, w.damage, w.note);
                   }
                 });
               } else {
-                if (typeof window.addWeaponRow === 'function') window.addWeaponRow();
+                if (typeof window.addWeaponRow === 'function') {
+                  window.addWeaponRow(); // 至少留一行空武器
+                }
               }
             }
           }
-
         }
 
         if (typeof updateCommandsPreview === 'function') {
@@ -2182,12 +2206,17 @@ function rollTrinketItem() {
         }
 
       } else {
-        switchTab('pet');
+        if (typeof switchTab === 'function') switchTab('pet');
         const jsonStr = JSON.stringify(item.data, null, 2);
-        document.getElementById('outputPetJson').value = jsonStr;
-        document.getElementById('petOutputGroup').style.display = 'block';
+        const outputPetJsonEl = document.getElementById('outputPetJson');
+        if (outputPetJsonEl) outputPetJsonEl.value = jsonStr;
+        
+        const petOutputGroupEl = document.getElementById('petOutputGroup');
+        if (petOutputGroupEl) petOutputGroupEl.style.display = 'block';
       }
-    } catch(e) {}
+    } catch(e) {
+      console.error("加载历史记录出错: ", e);
+    }
   }
 </script>
 </body>
