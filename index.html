@@ -45,7 +45,6 @@
       background-attachment: fixed;
     }
 
-    /* 自定义滚动条样式 */
     textarea::-webkit-scrollbar, ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -128,7 +127,6 @@
       margin-bottom: 24px;
     }
 
-    /* 历史记录 UI 样式 */
     .history-card {
       background: rgba(17, 19, 23, 0.85);
       border: 1px dashed var(--accent-cyan);
@@ -210,7 +208,6 @@
     }
     .btn-hist-del:hover { border-color: var(--accent-red); color: var(--accent-red); }
 
-    /* Tab 切换栏样式 */
     .tab-bar {
       display: flex;
       gap: 10px;
@@ -254,7 +251,6 @@
       box-shadow: 0 -4px 10px rgba(255, 168, 1, 0.15);
     }
 
-    /* 拖拽上传区域 */
     .drop-zone {
       border: 2px dashed var(--accent-red);
       border-radius: 10px;
@@ -327,15 +323,15 @@
     /* 属性/豁免快速加减按钮样式 */
     .stat-btn-group {
       display: flex;
-      gap: 4px;
+      gap: 2px;
     }
     .btn-adjust {
       background: var(--input-bg);
       border: 1px solid var(--border-color);
       color: var(--accent-cyan);
       font-family: var(--font-mono);
-      font-size: 12px;
-      padding: 2px 6px;
+      font-size: 10px;
+      padding: 2px 4px;
       border-radius: 3px;
       cursor: pointer;
       transition: all 0.2s;
@@ -346,6 +342,74 @@
       border-color: var(--accent-cyan);
       color: #fff;
       box-shadow: 0 0 5px rgba(0, 216, 214, 0.4);
+    }
+
+    /* 装备/配件骰点面板样式 */
+    .loadout-panel {
+      background: rgba(0, 216, 214, 0.04);
+      border: 1px solid rgba(0, 216, 214, 0.25);
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 15px;
+    }
+    .loadout-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .loadout-panel-title {
+      font-family: var(--font-title);
+      font-size: 13px;
+      color: var(--accent-cyan);
+      font-weight: 700;
+    }
+    .btn-roll-all {
+      background: var(--accent-cyan);
+      color: #000;
+      border: none;
+      font-size: 11px;
+      font-weight: bold;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-roll-all:hover { opacity: 0.85; }
+    .loadout-item {
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .loadout-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: bold;
+      color: var(--accent-orange);
+    }
+    .btn-roll-single {
+      background: transparent;
+      border: 1px solid var(--accent-orange);
+      color: var(--accent-orange);
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .btn-roll-single:hover {
+      background: var(--accent-orange);
+      color: #000;
+    }
+    .loadout-res {
+      font-size: 12px;
+      color: var(--text-main);
+      min-height: 20px;
+      word-break: break-all;
     }
 
     .tab-content {
@@ -359,7 +423,6 @@
 
     .tab-content.active { display: block; }
 
-    /* 技能与武器模块 */
     .skill-card, .weapon-card {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
@@ -398,7 +461,6 @@
     .skill-item input { flex: 2.2; padding: 8px; min-width: 0; }
     .skill-item select { flex: 1.2; padding: 8px 4px; min-width: 62px; }
 
-    /* 重构后的武器表样式 */
     .weapon-table-header {
       display: flex;
       gap: 8px;
@@ -526,7 +588,6 @@
       border: 1px solid #22272e;
     }
 
-    /* 宠物专属美化输出面板样式 */
     #petOutputGroup {
       background: rgba(15, 17, 21, 0.75);
       border: 1px solid rgba(255, 168, 1, 0.35);
@@ -600,7 +661,6 @@
       color: var(--text-main);
     }
 
-    /* 移动端/小屏幕自适应媒体查询 */
     @media (max-width: 768px) {
       body { padding: 10px; margin: 10px auto; }
       .card { padding: 20px; }
@@ -695,14 +755,16 @@
       <span title="点我快速掷骰生成属性" onclick="quickRollStatsAndSaves()" class="dice-icon">🎲</span>
     </div>
 
-    <!-- 基础属性带快速加减按钮 -->
+    <!-- 基础属性带快速加减按钮（支持 +-5, +-10） -->
     <div class="grid-4" style="margin-top: 15px;">
       <div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
           <label for="edit_str" style="margin-bottom: 0;">力量</label>
           <div class="stat-btn-group">
+            <button type="button" class="btn-adjust" onclick="adjustValue('edit_str', -10)">-10</button>
             <button type="button" class="btn-adjust" onclick="adjustValue('edit_str', -5)">-5</button>
             <button type="button" class="btn-adjust" onclick="adjustValue('edit_str', 5)">+5</button>
+            <button type="button" class="btn-adjust" onclick="adjustValue('edit_str', 10)">+10</button>
           </div>
         </div>
         <input type="number" id="edit_str" value="" placeholder="0" oninput="updateCommandsPreview()">
@@ -711,8 +773,10 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
           <label for="edit_spd" style="margin-bottom: 0;">速度</label>
           <div class="stat-btn-group">
+            <button type="button" class="btn-adjust" onclick="adjustValue('edit_spd', -10)">-10</button>
             <button type="button" class="btn-adjust" onclick="adjustValue('edit_spd', -5)">-5</button>
             <button type="button" class="btn-adjust" onclick="adjustValue('edit_spd', 5)">+5</button>
+            <button type="button" class="btn-adjust" onclick="adjustValue('edit_spd', 10)">+10</button>
           </div>
         </div>
         <input type="number" id="edit_spd" value="" placeholder="0" oninput="updateCommandsPreview()">
@@ -721,8 +785,10 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
           <label for="edit_int" style="margin-bottom: 0;">智力</label>
           <div class="stat-btn-group">
+            <button type="button" class="btn-adjust" onclick="adjustValue('edit_int', -10)">-10</button>
             <button type="button" class="btn-adjust" onclick="adjustValue('edit_int', -5)">-5</button>
             <button type="button" class="btn-adjust" onclick="adjustValue('edit_int', 5)">+5</button>
+            <button type="button" class="btn-adjust" onclick="adjustValue('edit_int', 10)">+10</button>
           </div>
         </div>
         <input type="number" id="edit_int" value="" placeholder="0" oninput="updateCommandsPreview()">
@@ -731,22 +797,26 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
           <label for="edit_combat" style="margin-bottom: 0;">战斗</label>
           <div class="stat-btn-group">
+            <button type="button" class="btn-adjust" onclick="adjustValue('edit_combat', -10)">-10</button>
             <button type="button" class="btn-adjust" onclick="adjustValue('edit_combat', -5)">-5</button>
             <button type="button" class="btn-adjust" onclick="adjustValue('edit_combat', 5)">+5</button>
+            <button type="button" class="btn-adjust" onclick="adjustValue('edit_combat', 10)">+10</button>
           </div>
         </div>
         <input type="number" id="edit_combat" value="" placeholder="0" oninput="updateCommandsPreview()">
       </div>
     </div>
 
-    <!-- 豁免检定带快速加减按钮 -->
+    <!-- 豁免检定带快速加减按钮（支持 +-5, +-10） -->
     <div class="grid-3" style="margin-top: 12px;">
       <div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
           <label for="edit_sanity" style="margin-bottom: 0;">理智豁免</label>
           <div class="stat-btn-group">
+            <button type="button" class="btn-adjust" onclick="adjustValue('edit_sanity', -10)">-10</button>
             <button type="button" class="btn-adjust" onclick="adjustValue('edit_sanity', -5)">-5</button>
             <button type="button" class="btn-adjust" onclick="adjustValue('edit_sanity', 5)">+5</button>
+            <button type="button" class="btn-adjust" onclick="adjustValue('edit_sanity', 10)">+10</button>
           </div>
         </div>
         <input type="number" id="edit_sanity" value="" placeholder="0" oninput="updateCommandsPreview()">
@@ -755,8 +825,10 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
           <label for="edit_fear" style="margin-bottom: 0;">恐惧豁免</label>
           <div class="stat-btn-group">
+            <button type="button" class="btn-adjust" onclick="adjustValue('edit_fear', -10)">-10</button>
             <button type="button" class="btn-adjust" onclick="adjustValue('edit_fear', -5)">-5</button>
             <button type="button" class="btn-adjust" onclick="adjustValue('edit_fear', 5)">+5</button>
+            <button type="button" class="btn-adjust" onclick="adjustValue('edit_fear', 10)">+10</button>
           </div>
         </div>
         <input type="number" id="edit_fear" value="" placeholder="0" oninput="updateCommandsPreview()">
@@ -765,11 +837,44 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
           <label for="edit_body" style="margin-bottom: 0;">身体豁免</label>
           <div class="stat-btn-group">
+            <button type="button" class="btn-adjust" onclick="adjustValue('edit_body', -10)">-10</button>
             <button type="button" class="btn-adjust" onclick="adjustValue('edit_body', -5)">-5</button>
             <button type="button" class="btn-adjust" onclick="adjustValue('edit_body', 5)">+5</button>
+            <button type="button" class="btn-adjust" onclick="adjustValue('edit_body', 10)">+10</button>
           </div>
         </div>
         <input type="number" id="edit_body" value="" placeholder="0" oninput="updateCommandsPreview()">
+      </div>
+    </div>
+
+    <!-- 🎲 新增：随机行装(1d10)、饰品(1d100)、贴章(1d200) 生成面板 (不进入JSON) -->
+    <div class="loadout-panel">
+      <div class="loadout-panel-header">
+        <span class="loadout-panel-title">🎒 随身物品</span>
+        <button type="button" class="btn-roll-all" onclick="rollAllLoadouts()">🎲 一键生成全部</button>
+      </div>
+      <div class="grid-3">
+        <div class="loadout-item">
+          <div class="loadout-item-header">
+            <span>行装 (1d10)</span>
+            <button type="button" class="btn-roll-single" onclick="rollLoadoutItem()">掷骰</button>
+          </div>
+          <div class="loadout-res" id="res_loadout">点击掷骰生成...</div>
+        </div>
+        <div class="loadout-item">
+          <div class="loadout-item-header">
+            <span>饰品 (1d100)</span>
+            <button type="button" class="btn-roll-single" onclick="rollTrinketItem()">掷骰</button>
+          </div>
+          <div class="loadout-res" id="res_trinket">点击掷骰生成...</div>
+        </div>
+        <div class="loadout-item">
+          <div class="loadout-item-header">
+            <span>贴章 (1d200)</span>
+            <button type="button" class="btn-roll-single" onclick="rollPatchItem()">掷骰</button>
+          </div>
+          <div class="loadout-res" id="res_patch">点击掷骰生成...</div>
+        </div>
       </div>
     </div>
 
@@ -928,6 +1033,381 @@
 <datalist id="weapons-datalist"></datalist>
 
 <script>
+  // 音效模拟（Web Audio API）
+  function playAudioBeep(freq = 600, type = 'sine', duration = 0.1) {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    } catch(e) {}
+  }
+
+  function playDiceRollSound() {
+    playAudioBeep(800, 'triangle', 0.05);
+    setTimeout(() => playAudioBeep(1200, 'triangle', 0.08), 50);
+  }
+
+  // 饰品 1d100 表
+const TRINKET_TABLE = {
+  "00": "指南：《惊恐：灾难的先兆》",
+  "01": "古董公司股票（小行星矿井）",
+  "02": "指南：《生存：用刀喝汤》",
+  "03": "干谷壳娃娃",
+  "04": "异星花标本（普通）",
+  "05": "贝壳项链",
+  "06": "腐蚀的仿生人逻辑核心",
+  "07": "手册：《寄生体感染迹象》",
+  "08": "指南：《像对待女士一样对待步枪》",
+  "09": "骨制小刀",
+  "10": "外星种封面日历",
+  "11": "被拒绝的申请（殖民地飞船）",
+  "12": "全息蜿蜒舞者",
+  "13": "威士忌蛇酒",
+  "14": "医用容器：紫色粉末",
+  "15": "助兴药片（赝品）",
+  "16": "赌场纸牌",
+  "17": "兔脚",
+  "18": "月长石戒指",
+  "19": "指南：《您与采矿安全》",
+  "20": "手册：《对付拟人种》",
+  "21": "动物头骨，3眼，曲角",
+  "22": "调酒师证书（过期）",
+  "23": "文乐木偶",
+  "24": "有凹痕的勘探带把杯",
+  "25": "诡异面具",
+  "26": "超黑大理石",
+  "27": "象牙骰子",
+  "28": "磨损塔罗牌，边缘用黄铁矿镀金",
+  "29": "一袋各种各样的牙齿",
+  "30": "骨灰（某位亲戚）",
+  "31": "DNR 信标项链",
+  "32": "香烟（咧嘴骷髅头）",
+  "33": "槟榔果药片",
+  "34": "吊坠：滴胶贝壳碎片",
+  "35": "手册：《禅与货物管理艺术》",
+  "36": "一对调酒杯（霰弹枪废弹壳）",
+  "37": "钥匙（童年的家）",
+  "38": "狗牌（传家宝）",
+  "39": "代币：“您的士气提高了吗？”",
+  "40": "手册：《血肉圣骸》",
+  "41": "手册：《冷漠群星》",
+  "42": "军事战役封面日历",
+  "43": "指南：《富船长，穷船长》",
+  "44": "活动海报（家园星球）",
+  "45": "昆虫畸变体标本",
+  "46": "钛制牙签",
+  "47": "皮手套（异形皮）",
+  "48": "露骨黄书：《船长有令》",
+  "49": "略有褶皱的毛巾",
+  "50": "黄铜指节",
+  "51": "毛茸手铐",
+  "52": "恩怨日账",
+  "53": "别致香烟盒",
+  "54": "多种电线扭成的球",
+  "55": "扳手",
+  "56": "观赏型弹簧刀",
+  "57": "磨成粉的异形角",
+  "58": "盆景树",
+  "59": "高尔夫球棒（推杆）",
+  "60": "三叶虫化石",
+  "61": "手册：《星港遍留情》",
+  "62": "个性化补丁连体服",
+  "63": "封在阴暗罐子里的肉质体",
+  "64": "带刺手镯",
+  "65": "口琴",
+  "66": "破烂残旧的色情图片",
+  "67": "崩口咖啡杯，写着：“强制快乐”",
+  "68": "指南：《用枪油和燃料酿酒》",
+  "69": "骨质微型象棋套装，少了棋子",
+  "70": "弯曲锡制陀螺仪",
+  "71": "褪色绿扑克筹码",
+  "72": "四弦小吉他（尤克里里）",
+  "73": "喷漆",
+  "74": "老旧的通缉令",
+  "75": "装着发辫的吊坠",
+  "76": "老鼠雕塑（金）",
+  "77": "防火毯",
+  "78": "连帽大衣，羊毛内衬",
+  "79": "BB 枪",
+  "80": "燧石斧",
+  "81": "吊坠：两名宇航员组成的骷髅头",
+  "82": "魔方",
+  "83": "压力球，上书：“零重力，零压力”",
+  "84": "人造卫星别针",
+  "85": "俄式毛帽",
+  "86": "网眼卡车帽，带有灰色外星种标志",
+  "87": "薄荷万金油",
+  "88": "遮阳帽",
+  "89": "帆布（10米×10米）",
+  "90": "《易经》，没有蓍草",
+  "91": "反曲刀",
+  "92": "战壕铲",
+  "93": "磨尖的黄油小刀",
+  "94": "猫标本",
+  "95": "手册：《解读绵羊之梦》",
+  "96": "褪色照片：风拂荒野",
+  "97": "歌剧院眼镜",
+  "98": "手册：《仿生人霸主》",
+  "99": "始终指向母星的星际罗盘"
+};
+
+  // 贴章 1d100 表
+const PATCH_TABLE = {
+  "1": "“我不是火箭科学家/但你是个白痴”",
+  "2": "医护员贴章（十字架上的骷髅头和交叉骨）",
+  "3": "背部贴章：“别跑，你只会累死”",
+  "4": "红衬衫标识",
+  "5": "血型（速查贴章）",
+  "6": "“看起来像专家吗？”",
+  "7": "生物危害标志",
+  "8": "“我氧气面罩呢”",
+  "9": "核能标志",
+  "10": "“吃光富人”",
+  "11": "“保险为上：连开两枪”",
+  "12": "火焰表情符号",
+  "13": "笑脸（夜光）",
+  "14": "“保持微笑：老大盯着呢”",
+  "15": "海盗旗",
+  "16": "维京人头骨",
+  "17": "“顶级掠食种”（剑齿虎头骨）",
+  "18": "海报模特（黑桃 A）",
+  "19": "红心皇后",
+  "20": "安保守卫",
+  "21": "“独行客”",
+  "22": "“此面向敌”（阔剑地雷）",
+  "23": "海报模特（骑着导弹）",
+  "24": "糟糕",
+  "25": "“我是台（有爱的）机器”",
+  "26": "海报模特（机械师）",
+  "27": "“你好，我叫：”",
+  "28": "“咖啡动能”",
+  "29": "“带我去见你们的头”（UFO）",
+  "30": "“好好干活”",
+  "31": "“（请）杀了我就吧”",
+  "32": "“正直公民”",
+  "33": "“对废话过敏”（医护风格贴章）",
+  "34": "“先来救我”（医护蛇杖）",
+  "35": "“我喜欢最好的工具和最坏的爱人”",
+  "36": "“叫得越大声，我来得越快”（护士海报）",
+  "37": "HMFIC（管事的首席王八蛋）",
+  "38": "十字准星中的鸽子",
+  "39": "小小克苏鲁",
+  "40": "“欢迎来到危险区”",
+  "41": "骷髅头和交叉扳手s",
+  "42": "海报模特（魅魔）",
+  "43": "“关我啥事”",
+  "44": "“喝/战/睡觉”",
+  "45": "“工作卖力/嗨时更卖力”",
+  "46": "异形剪影",
+  "47": "乐趣计量器（显示：糟糕时光）",
+  "48": "“游戏结束”（新郎&新娘）",
+  "49": "心脏",
+  "50": "“提高/适应/克服”",
+  "51": "“忍者吧你”",
+  "52": "“牛仔向前”（交叉转轮手枪）",
+  "53": "“疑难解答”",
+  "54": "NASA 标志",
+  "55": "交叉锤子与翅膀",
+  "56": "“保持足够润滑”",
+  "57": "苏联风镰刀&锤子",
+  "58": "“和大伙相处融洽”",
+  "59": "“虎胆虫威”",
+  "60": "背部贴章：“如果我跑了就跟上”",
+  "61": "“皮囊”",
+  "62": "“我不是机器人”",
+  "63": "红色齿轮",
+  "64": "“我治不了蠢货”",
+  "65": "“太空是我家”（伤心的宇航员）",
+  "66": "全视之眼",
+  "67": "“溶解凝结”（巴弗灭）",
+  "68": "“该死的一无所有”（口袋全翻出来的宇航员）",
+  "69": "“去远方旅行/遇到离奇玩意/被吃掉”",
+  "70": "BOHICA（祸事重来，咬紧牙关）",
+  "71": "“我要保护好姐妹”",
+  "72": "“Mama Tried”",
+  "73": "黑寡妇蜘蛛",
+  "74": "“脏东西滚开”",
+  "75": "“一刀切”（手雷）",
+  "76": "背部贴章：阴森死神",
+  "77": "отъебись（俄语“滚开”）",
+  "78": "“八面玲珑”",
+  "79": "原子符号",
+  "80": "“为了科学！”",
+  "81": "“我还真是个火箭科学家”",
+  "82": "“求助启事”",
+  "83": "公主",
+  "84": "“游牧民”",
+  "85": "“好狗狗”",
+  "86": "骰子（出对 1）",
+  "87": "“#1 工人”",
+  "88": "“好”（大脑）",
+  "89": "“太蒂了”",
+  "90": "“靓到死不了”",
+  "91": "“睡到永远”（玫瑰束）",
+  "92": "伊卡洛斯",
+  "93": "“钻石好闺蜜”（钻石）",
+  "94": "触电危险标志",
+  "95": "倒十字架",
+  "96": "背部贴章：“我薪水是你发吗”",
+  "97": "“我 ♥ 我自己”",
+  "98": "双樱桃",
+  "99": "“志愿者”",
+  "100": "拿着扑克的死人手：三张 A 两张 8",
+  "101": "下克上",
+  "102": "“燃起来了”（油桶）",
+  "103": "“算我一票”",
+  "104": "“真相会让你自由”",
+  "105": "“黑暗中的一束微光”",
+  "106": "“态度决定一切”",
+  "107": "“亲吻戒指”",
+  "108": "“我对人类没兴趣”",
+  "109": "虚空神棋子",
+  "110": "“这不是血清吗？”",
+  "111": "“幸运”（墓碑）",
+  "112": "“肆意掠夺”",
+  "113": "“我 ❤️ 摇滚”",
+  "114": "流血的眼睛",
+  "115": "“意大利面！”（一碗意面）",
+  "116": "“审判日”（仿生人头骨）",
+  "117": "“自卫是弱者的借口”",
+  "118": "“保持绿色不容易”（树）",
+  "119": "“爱会慢慢死去”",
+  "120": "“我回来了”（背章）",
+  "121": "“像我这么有名可不容易”",
+  "122": "迷你健美选手",
+  "123": "红十字徽章",
+  "124": "“我们这里全都疯了”（指着脑子）",
+  "125": "“给和平一个机会”",
+  "126": "“开一罐冰的吧”（冷冻舱）",
+  "127": "“我不想死”（背章）",
+  "128": "“枪口放正”（步枪）",
+  "129": "“离我远点，肉块！”",
+  "130": "“我疯了（你也知道）”",
+  "131": "“干杯！”",
+  "132": "“你在找帮手吗？”（背章）",
+  "133": "“当心我这拳头”",
+  "134": "“赌上一切”",
+  "135": "“我只需要一个奇迹”",
+  "136": "“自由基”（试管）",
+  "137": "“战斗到死为止”",
+  "138": "“和平、爱，还有小甜甜圈”",
+  "139": "“生而自由”",
+  "140": "“并肩作战的伙伴”",
+  "141": "“好运”（背章）",
+  "142": "荷鲁斯之眼",
+  "143": "“白骑士”（剑与盾）",
+  "144": "“别再靠近了”",
+  "145": "“团结则存”",
+  "146": "“别眨眼”（第三只眼）",
+  "147": "“爱”（L.O.V.E.）",
+  "148": "性感斗牛士",
+  "149": "“救援正在路上”（背章）",
+  "150": "“犯罪不会有好下场”（背章）",
+  "151": "“尽快赶上世界末日”",
+  "152": "“我上头有人！”",
+  "153": "“神枪手”（冒烟的枪）",
+  "154": "“完全不沾边”（背章）",
+  "155": "“四海皆姐妹”",
+  "156": "“通往地狱的高速公路”",
+  "157": "“无限循环中”（莫比乌斯环）",
+  "158": "美杜莎计划",
+  "159": "“别变老，早点死”",
+  "160": "“这里最酷的家伙”（背章）",
+  "161": "“我挑战了法律，法律赢了”",
+  "162": "黑蛇",
+  "163": "“别把我留在这里”（背章）",
+  "164": "“全系统就绪”",
+  "165": "“别笑、别哭——反正你要死了”",
+  "166": "长着恶魔角的婴儿",
+  "167": "“第一反暴乱部队”（导弹）",
+  "168": "面包腊肠犬",
+  "169": "黄色玫瑰",
+  "170": "“当狗也没什么不好”",
+  "171": "“每天都在开派对”",
+  "172": "独角兽",
+  "173": "吸血蝙蝠",
+  "174": "“命定之人”",
+  "175": "狼人",
+  "176": "“加冰”（高球杯）",
+  "177": "“拿来吧你”",
+  "178": "“要么照我说的做，要么滚”",
+  "179": "占卜水晶",
+  "180": "“当个大块头不容易”",
+  "181": "四张 A",
+  "182": "“让你心碎”（僵尸）",
+  "183": "“改变我的想法”（背章）",
+  "184": "“保证满意”（大拇指）",
+  "185": "截断的手臂",
+  "186": "阴谋论者",
+  "187": "“上来”（宇宙飞船）",
+  "188": "“我没时间去死”",
+  "189": "“机械永生”",
+  "190": "“当我的时刻来临”（光环）",
+  "191": "“你说得对”",
+  "192": "“滴答、滴答”（老式落地钟）",
+  "193": "“这场戏无聊透顶”",
+  "194": "“这些是我的朋友”（锤子与镰刀）",
+  "195": "“红、白、还有蓝屏”",
+  "196": "“我是第一，你是第二”",
+  "197": "“自由不是免费的”",
+  "198": "“拒绝娱乐”（皱眉脸）",
+  "199": "大拇指向下",
+  "200": "“永不放弃”"
+};
+
+  // 掷骰工具函数
+  function rollD10(count = 1) {
+    let total = 0;
+    for (let i = 0; i < count; i++) {
+      total += Math.floor(Math.random() * 10) + 1;
+    }
+    return total;
+  }
+
+  function rollD100() {
+    return Math.floor(Math.random() * 100) + 1;
+  }
+
+  function rollD200() {
+    return Math.floor(Math.random() * 200) + 1;
+  }
+
+  // 独立掷骰行装/饰品/贴章
+  function rollLoadoutItem() {
+    playDiceRollSound();
+    const val = rollD10(1);
+    const txt = `【${val}】根据职类选取`;
+    document.getElementById('res_loadout').innerText = txt;
+  }
+
+  function rollTrinketItem() {
+    playDiceRollSound();
+    const val = rollD100();
+    const txt = TRINKET_TABLE[val] || `【${val}】未知饰品`;
+    document.getElementById('res_trinket').innerText = txt;
+  }
+
+  function rollPatchItem() {
+    playDiceRollSound();
+    const val = rollD200();
+    const txt = PATCH_TABLE[val] || `【${val}】未知贴章`;
+    document.getElementById('res_patch').innerText = txt;
+  }
+
+  function rollAllLoadouts() {
+    rollLoadoutItem();
+    rollTrinketItem();
+    rollPatchItem();
+  }
+
   // 工具函数：解析带斜杠的数值文本（如 10/10）拆分为 val 和 max
   function parseSlashVal(valStr, defaultMax) {
     if (!valStr) return { val: 0, max: defaultMax || 0 };
@@ -1000,14 +1480,6 @@
 
   const STORAGE_KEY = 'MOTHERSHIP_CHARACTERS_HISTORY';
 
-  function rollD10(count = 1) {
-    let total = 0;
-    for (let i = 0; i < count; i++) {
-      total += Math.floor(Math.random() * 10) + 1;
-    }
-    return total;
-  }
-
   // Drag and Drop 拖拽反馈处理
   function handleDragOver(e) {
     e.preventDefault();
@@ -1074,9 +1546,11 @@
       if (el) el.value = '';
     });
     
-    // 给压力和损伤设定初始默认值
     document.getElementById('edit_stress').value = '2/20';
     document.getElementById('edit_damage').value = '0/2';
+    document.getElementById('res_loadout').innerText = '点击掷骰生成...';
+    document.getElementById('res_trinket').innerText = '点击掷骰生成...';
+    document.getElementById('res_patch').innerText = '点击掷骰生成...';
     
     clearSkillContainers();
     document.getElementById('weapons_container').innerHTML = '';
@@ -1432,10 +1906,42 @@
     const addedWeapons = new Set();
     const flatTextLines = [];
 
-    try {
-      if (sheet && sheet['M6'] && sheet['M6'].v !== undefined) {
-        document.getElementById('edit_armor').value = sheet['M6'].v;
+try {
+    // 1. 读取护甲 (M6)
+    if (sheet && sheet['M6'] && sheet['M6'].v !== undefined) {
+      document.getElementById('edit_armor').value = sheet['M6'].v;
+    }
+
+    // ================= 新增：自动导入 行装(B27)、饰品(C19)、贴章(C21) =================
+    if (sheet) {
+      // 读取 B27 (行装)
+      if (sheet['B27'] && sheet['B27'].v !== undefined) {
+        const val = String(sheet['B27'].v).trim();
+        if (val !== '') {
+          document.getElementById('res_loadout').innerText = `【导入】${val}`;
+        }
       }
+      
+      // 读取 C19 (饰品)
+      if (sheet['C19'] && sheet['C19'].v !== undefined) {
+        const val = String(sheet['C19'].v).trim();
+        if (val !== '') {
+          // 如果表格填的是数字（如 15），自动去 TRINKET_TABLE 匹配；如果是文本则直接显示
+          const trinketName = TRINKET_TABLE[val] || val;
+          document.getElementById('res_trinket').innerText = `【导入】${trinketName}`;
+        }
+      }
+
+      // 读取 C21 (贴章)
+      if (sheet['C21'] && sheet['C21'].v !== undefined) {
+        const val = String(sheet['C21'].v).trim();
+        if (val !== '') {
+          // 如果表格填的是数字（如 42），自动去 PATCH_TABLE 匹配；如果是文本则直接显示
+          const patchName = PATCH_TABLE[val] || val;
+          document.getElementById('res_patch').innerText = `【导入】${patchName}`;
+        }
+      }
+    }
     } catch(e) {}
 
     for (let r = 0; r < data.length; r++) {
@@ -1523,7 +2029,6 @@
   function updateCommandsPreview() {
     let cmds = [];
 
-    // 1. 基础属性 & 豁免
     cmds.push("--- 基础属性与豁免 ---");
     const baseAttrs = [
       { name: "力量", key: "力量" }, { name: "速度", key: "速度" },
@@ -1538,7 +2043,6 @@
       cmds.push(`2d100kh1<{${a.key}} ${a.name} [-]劣势`);
     });
 
-    // 2. 专业技能
     let hasSkill = false;
     [10, 15, 20].forEach(tier => {
       const container = document.getElementById(`skills_container_${tier}`);
@@ -1559,7 +2063,6 @@
       });
     });
 
-    // 3. 武器攻击
     const weaponContainer = document.getElementById('weapons_container');
     if (weaponContainer) {
       let hasWeapon = false;
@@ -1793,34 +2296,31 @@
     }
   }
 
-  function loadHistoryItem(id) {
+  function loadHistoryToForm(id) {
+    playAudioBeep(750, 'sine', 0.1);
     const history = getStorageHistory();
     const target = history.find(item => item.id === id);
     if (!target) return;
 
-    playAudioBeep(520, 'sine', 0.1);
-
     if (target.type === 'character') {
       switchTab('character');
-      resetForm();
-
       document.getElementById('edit_name').value = target.name || '';
       document.getElementById('edit_job').value = target.job || '';
       document.getElementById('edit_response').value = target.response || '';
       document.getElementById('edit_hp').value = target.hp || '';
-      document.getElementById('edit_stress').value = target.stress || '';
-      document.getElementById('edit_damage').value = target.damage || '';
+      document.getElementById('edit_stress').value = target.stress || '2/20';
+      document.getElementById('edit_damage').value = target.damage || '0/2';
       document.getElementById('edit_armor').value = target.armor || '';
 
       document.getElementById('edit_str').value = target.str || '';
       document.getElementById('edit_spd').value = target.spd || '';
       document.getElementById('edit_int').value = target.int || '';
       document.getElementById('edit_combat').value = target.combat || '';
-
       document.getElementById('edit_sanity').value = target.sanity || '';
       document.getElementById('edit_fear').value = target.fear || '';
       document.getElementById('edit_body').value = target.body || '';
 
+      clearSkillContainers();
       if (target.skills) {
         [10, 15, 20].forEach(tier => {
           if (target.skills[tier]) {
@@ -1837,8 +2337,6 @@
       }
 
       updateCommandsPreview();
-      generateCcfoliaJson();
-
     } else if (target.type === 'pet') {
       switchTab('pet');
       document.getElementById('edit_pet_type').value = target.petType || 'organic';
@@ -1848,42 +2346,38 @@
 
       document.getElementById('pet_skills_10').innerHTML = '';
       document.getElementById('pet_skills_15').innerHTML = '';
-
       if (target.skills) {
         target.skills.forEach(s => addPetSkillRow(s.bonus, s.name));
       }
-
-      generatePetCcfoliaJson();
     }
   }
 
   function renderHistoryUI() {
     const historyListEl = document.getElementById('historyList');
-    if (!historyListEl) return;
-
     const history = getStorageHistory();
 
     if (history.length === 0) {
-      historyListEl.innerHTML = `<div style="color: var(--text-muted); font-size: 12px; text-align: center;">暂无历史转换记录</div>`;
+      historyListEl.innerHTML = '<div style="color: var(--text-muted); font-size: 12px; text-align: center;">暂无历史记录</div>';
       return;
     }
 
     let html = '';
     history.forEach(item => {
-      const isPet = item.type === 'pet';
-      const tagClass = isPet ? 'tag-pet' : 'tag-character';
-      const tagText = isPet ? '宠物' : '主角色';
-      const displayName = isPet ? item.petName : item.name;
+      const tagClass = item.type === 'character' ? 'tag-character' : 'tag-pet';
+      const typeText = item.type === 'character' ? '角色' : '宠物';
+      const nameText = item.type === 'character' ? (item.name || '未命名角色') : (item.petName || '未命名宠物');
+      const subInfo = item.type === 'character' ? (item.job || '无职业') : (item.petType === 'organic' ? '有机' : '合成');
 
       html += `
         <div class="history-item">
           <div class="history-info">
-            <span class="history-tag ${tagClass}">${tagText}</span>
-            <strong style="color: #fff;">${displayName || '未命名'}</strong>
-            <span style="color: var(--text-muted); font-size: 11px;">(${item.time})</span>
+            <span class="history-tag ${tagClass}">${typeText}</span>
+            <strong style="color: #fff;">${nameText}</strong>
+            <span style="color: var(--text-muted);">(${subInfo})</span>
+            <span style="color: #666; font-size: 9px;">${item.time || ''}</span>
           </div>
           <div class="history-actions">
-            <button class="btn-hist-load" onclick="loadHistoryItem(${item.id})">一键恢复</button>
+            <button class="btn-hist-load" onclick="loadHistoryToForm(${item.id})">载入</button>
             <button class="btn-hist-del" onclick="deleteHistoryItem(${item.id})">✕</button>
           </div>
         </div>
@@ -1894,75 +2388,20 @@
   }
 
   function copyToClipboard() {
-    playAudioBeep(750, 'sine', 0.12);
-    if (navigator.vibrate) navigator.vibrate(50);
+    playAudioBeep(850, 'sine', 0.12);
     const textarea = document.getElementById('outputJson');
     textarea.select();
-    navigator.clipboard.writeText(textarea.value);
-
-    const copyBtn = document.querySelector('#outputGroup button');
-    if (copyBtn) {
-      const originalText = "📋 一键复制到剪贴板";
-      copyBtn.innerText = "✓ 已复制！请直接 CTRL+V 粘贴到 CCfolia 界面";
-      copyBtn.style.backgroundColor = "#00d8d6";
-      copyBtn.style.color = "#000";
-
-      setTimeout(() => {
-        copyBtn.innerText = originalText;
-        copyBtn.style.backgroundColor = "var(--accent-green)";
-        copyBtn.style.color = "#0d0f12";
-      }, 2000);
-    }
+    document.execCommand('copy');
+    alert("已成功复制 JSON 卡到剪贴板！现在可以直接在 CCfolia 房间内粘贴 (Ctrl+V) 生成角色牌。");
   }
 
   function copyPetToClipboard() {
-    playAudioBeep(750, 'sine', 0.12);
-    if (navigator.vibrate) navigator.vibrate(50);
+    playAudioBeep(850, 'sine', 0.12);
     const textarea = document.getElementById('outputPetJson');
     textarea.select();
-    navigator.clipboard.writeText(textarea.value);
-
-    const copyBtn = document.getElementById('btnCopyPet');
-    if (copyBtn) {
-      const originalText = "📋 一键复制";
-      copyBtn.innerText = "✓ 已复制！请直接 CTRL+V 粘贴到 CCfolia";
-      copyBtn.style.backgroundColor = "#00d8d6";
-      copyBtn.style.color = "#000";
-
-      setTimeout(() => {
-        copyBtn.innerText = originalText;
-        copyBtn.style.backgroundColor = "";
-        copyBtn.style.color = "";
-      }, 2000);
-    }
-  }
-
-  // Web Audio API 原生电子音效引擎
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-  function playAudioBeep(freq = 440, type = 'sine', duration = 0.1) {
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = type;
-    osc.frequency.value = freq;
-    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start();
-    osc.stop(audioCtx.currentTime + duration);
-  }
-
-  function playDiceRollSound() {
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    for (let i = 0; i < 6; i++) {
-      setTimeout(() => {
-        playAudioBeep(150 + Math.random() * 300, 'triangle', 0.05);
-      }, i * 40);
-    }
+    document.execCommand('copy');
+    alert("已成功复制宠物 JSON 卡到剪贴板！可以直接在 CCfolia 房间内粘贴 (Ctrl+V)。");
   }
 </script>
-
 </body>
 </html>
