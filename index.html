@@ -140,20 +140,20 @@
       align-items: center;
       margin-bottom: 6px;
     }
-    .history-card title {
+    .history-card title, .history-title {
       color: var(--accent-cyan);
       font-family: var(--font-title);
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 700;
       letter-spacing: 1px;
     }
     .history-list {
-  	display: flex;
-  	flex-direction: column;
-  	gap: 6px;
-  	max-height: 100px;
-  	overflow-y: auto;
-  	padding-right: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 100px;
+      overflow-y: auto;
+      padding-right: 4px;
     }
     .history-item {
       display: flex;
@@ -172,41 +172,58 @@
     }
     .history-info {
       display: flex;
-      gap: 12px;
       align-items: center;
+      gap: 8px;
     }
     .history-tag {
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 9px;
+      font-weight: bold;
+    }
+    .tag-character {
+      background: rgba(0, 216, 214, 0.2);
+      color: var(--accent-cyan);
+      border: 1px solid var(--accent-cyan);
+    }
+    .tag-pet {
+      background: rgba(255, 168, 1, 0.2);
+      color: var(--accent-orange);
+      border: 1px solid var(--accent-orange);
+    }
+    .history-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .btn-hist-load {
+      background: rgba(0, 216, 214, 0.1);
+      border: 1px solid var(--accent-cyan);
+      color: var(--accent-cyan);
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-hist-load:hover {
+      background: var(--accent-cyan);
+      color: #000;
+    }
+    .btn-hist-del {
+      background: transparent;
+      border: 1px solid var(--accent-red);
+      color: var(--accent-red);
       font-size: 10px;
       padding: 2px 6px;
       border-radius: 3px;
-      font-family: var(--font-mono);
-    }
-    .tag-character { background: rgba(255, 63, 52, 0.2); color: var(--accent-red); border: 1px solid var(--accent-red); }
-    .tag-pet { background: rgba(255, 168, 1, 0.2); color: var(--accent-orange); border: 1px solid var(--accent-orange); }
-    .history-actions {
-      display: flex;
-      gap: 8px;
-    }
-    .btn-hist-load {
-      background: transparent;
-      border: 1px solid var(--accent-cyan);
-      color: var(--accent-cyan);
-      font-size: 11px;
-      padding: 3px 8px;
-      border-radius: 4px;
       cursor: pointer;
+      transition: all 0.2s;
     }
-    .btn-hist-load:hover { background: var(--accent-cyan); color: #000; }
-    .btn-hist-del {
-      background: transparent;
-      border: 1px solid #555;
-      color: var(--text-muted);
-      font-size: 11px;
-      padding: 3px 8px;
-      border-radius: 4px;
-      cursor: pointer;
+    .btn-hist-del:hover {
+      background: var(--accent-red);
+      color: #fff;
     }
-    .btn-hist-del:hover { border-color: var(--accent-red); color: var(--accent-red); }
 
     .tab-bar {
       display: flex;
@@ -320,11 +337,7 @@
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
     .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
 
-    /* 属性/豁免快速加减按钮样式 */
-    .stat-btn-group {
-      display: flex;
-      gap: 2px;
-    }
+    .stat-btn-group { display: flex; gap: 2px; }
     .btn-adjust {
       background: var(--input-bg);
       border: 1px solid var(--border-color);
@@ -344,7 +357,6 @@
       box-shadow: 0 0 5px rgba(0, 216, 214, 0.4);
     }
 
-    /* 装备/配件骰点面板样式 */
     .loadout-panel {
       background: rgba(0, 216, 214, 0.04);
       border: 1px solid rgba(0, 216, 214, 0.25);
@@ -401,10 +413,7 @@
       border-radius: 3px;
       cursor: pointer;
     }
-    .btn-roll-single:hover {
-      background: var(--accent-orange);
-      color: #000;
-    }
+    .btn-roll-single:hover { background: var(--accent-orange); color: #000; }
     .loadout-res {
       font-size: 12px;
       color: var(--text-main);
@@ -420,7 +429,6 @@
       border-radius: 0 0 10px 10px;
       padding: 24px;
     }
-
     .tab-content.active { display: block; }
 
     .skill-card, .weapon-card {
@@ -430,7 +438,6 @@
       padding: 16px;
       margin-top: 12px;
     }
-
     .skill-card header, .weapon-card header {
       font-weight: bold;
       margin-bottom: 14px;
@@ -540,10 +547,7 @@
       border-radius: 4px;
       cursor: pointer;
     }
-    .btn-reset:hover {
-      background: var(--accent-red);
-      color: #fff;
-    }
+    .btn-reset:hover { background: var(--accent-red); color: #fff; }
 
     button.btn-primary {
       width: 100%;
@@ -596,37 +600,6 @@
       box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 168, 1, 0.08);
     }
 
-    #outputPetJson {
-      background: #08090c !important;
-      border: 1px solid rgba(255, 168, 1, 0.25);
-      color: #ffc048;
-      border-radius: 8px;
-      padding: 12px;
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
-    }
-
-    #btnCopyPet {
-      background: linear-gradient(135deg, #ffa801, #e17055);
-      color: #06080a;
-      font-family: var(--font-title);
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      margin-top: 14px;
-      cursor: pointer;
-      width: 100%;
-      border: none;
-      padding: 14px;
-      border-radius: 8px;
-      box-shadow: 0 4px 15px rgba(255, 168, 1, 0.3);
-      transition: all 0.2s ease;
-    }
-
-    #btnCopyPet:hover {
-      background: linear-gradient(135deg, #ffc048, #ffa801);
-      box-shadow: 0 6px 20px rgba(255, 168, 1, 0.5);
-      transform: translateY(-1px);
-    }
-
     .status-box {
       margin-top: 15px;
       padding: 12px 16px;
@@ -661,6 +634,22 @@
       color: var(--text-main);
     }
 
+    /* 护甲信息扩展面板样式 */
+    .armor-info-box {
+      grid-column: span 4;
+      background: rgba(0, 216, 214, 0.05);
+      border: 1px dashed var(--accent-cyan);
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--text-main);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+    }
+    .armor-info-detail { font-family: var(--font-mono); color: var(--accent-cyan); }
+
     @media (max-width: 768px) {
       body { padding: 10px; margin: 10px auto; }
       .card { padding: 20px; }
@@ -670,6 +659,7 @@
       .weapon-table-header { display: none; }
       .weapon-item { flex-direction: column; align-items: stretch; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px; }
       .weapon-item button { width: 100%; margin-top: 4px; }
+      .armor-info-box { grid-column: span 2; }
     }
   </style>
 </head>
@@ -745,8 +735,21 @@
         <input type="text" id="edit_damage" value="0/2" placeholder="如: 0/2">
       </div>
       <div>
-        <label for="edit_armor">护甲 (AP)</label>
-        <input type="number" id="edit_armor" value="" placeholder="0">
+        <label for="edit_armor_select">护甲</label>
+        <!-- 修改为 input + datalist 模式，支持下拉选择与手动任意填写 -->
+        <input type="text" id="edit_armor_select" list="armor-datalist" placeholder="选择预设或直接手动填写" oninput="onArmorPresetChange()" onchange="onArmorPresetChange()">
+        <datalist id="armor-datalist">
+          <!-- 动态生成的护甲预设选项 -->
+        </datalist>
+      </div>
+
+      <!-- 护甲AP与详细特性卡 -->
+      <div class="armor-info-box">
+        <div>
+          <span>护甲值 (AP): </span>
+          <input type="number" id="edit_armor" value="0" style="width: 70px; display: inline-block; padding: 4px; margin-left: 5px;" placeholder="0" oninput="updateCommandsPreview()">
+        </div>
+        <div class="armor-info-detail" id="armor_detail_txt">未穿戴特殊防护具</div>
       </div>
     </div>
 
@@ -755,7 +758,7 @@
       <span title="点我快速掷骰生成属性" onclick="quickRollStatsAndSaves()" class="dice-icon">🎲</span>
     </div>
 
-    <!-- 基础属性带快速加减按钮（支持 +-5, +-10） -->
+    <!-- 基础属性 -->
     <div class="grid-4" style="margin-top: 15px;">
       <div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
@@ -807,7 +810,7 @@
       </div>
     </div>
 
-    <!-- 豁免检定带快速加减按钮（支持 +-5, +-10） -->
+    <!-- 豁免检定 -->
     <div class="grid-3" style="margin-top: 12px;">
       <div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
@@ -847,7 +850,7 @@
       </div>
     </div>
 
-    <!-- 🎲 新增：随机行装(1d10)、饰品(1d100)、贴章(1d200) 生成面板 (不进入JSON) -->
+    <!-- 随机行装生成面板 -->
     <div class="loadout-panel">
       <div class="loadout-panel-header">
         <span class="loadout-panel-title">🎒 随身物品</span>
@@ -882,11 +885,11 @@
     <div class="grid-3">
       <div class="skill-card">
         <header>
-          <span style="color:var(--accent-cyan);">训练技能 (Trained)</span>
+          <span style="color:var(--accent-cyan);">受训技能 (Trained)</span>
           <span class="skill-badge badge-10">+10%</span>
         </header>
         <div id="skills_container_10"></div>
-        <button class="btn-add-skill" onclick="addSkillRow(10, '', '战斗')">➕ 添加训练技能</button>
+        <button class="btn-add-skill" onclick="addSkillRow(10, '', '战斗')">➕ 添加受训技能</button>
       </div>
 
       <div class="skill-card">
@@ -914,7 +917,6 @@
         <span style="color:var(--accent-red);">武器列表</span>
       </header>
       
-      <!-- 统一武器表头 -->
       <div class="weapon-table-header">
         <div class="col-name">武器名称</div>
         <div class="col-attr">属性</div>
@@ -945,8 +947,7 @@
     </div>
   </div>
 
-
-  <!-- ================= Tab 2: 宠物档案 (独立配置) ================= -->
+  <!-- ================= Tab 2: 宠物档案 ================= -->
   <div class="tab-content" id="tab-pet">
     <div class="section-header">
       <h2>🐾 宠物</h2>
@@ -971,19 +972,17 @@
       </div>
     </div>
 
-    <div class="rule-info-card" id="pet_rule_box">
-      <!-- 动态填充宠物规则说明 -->
-    </div>
+    <div class="rule-info-card" id="pet_rule_box"></div>
 
     <h2>🐾 宠物技能</h2>
     <div class="grid-2">
       <div class="skill-card">
         <header>
-          <span style="color:var(--accent-cyan);">训练技能 (+10%)</span>
+          <span style="color:var(--accent-cyan);">受训技能 (+10%)</span>
           <span class="skill-badge badge-10" id="pet_trained_count_badge">可选 1 项</span>
         </header>
         <div id="pet_skills_10"></div>
-        <button class="btn-add-skill" onclick="addPetSkillRow(10)">➕ 添加宠物训练技能</button>
+        <button class="btn-add-skill" onclick="addPetSkillRow(10)">➕ 添加宠物受训技能</button>
       </div>
 
       <div class="skill-card">
@@ -1029,11 +1028,10 @@
   <option value="超空间"><option value="异种密教"><option value="指挥">
 </datalist>
 
-<!-- 武器联想 Datalist -->
 <datalist id="weapons-datalist"></datalist>
 
 <script>
-  // 音效模拟（Web Audio API）
+  // 音效模拟
   function playAudioBeep(freq = 600, type = 'sine', duration = 0.1) {
     try {
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1055,360 +1053,142 @@
     setTimeout(() => playAudioBeep(1200, 'triangle', 0.08), 50);
   }
 
-  // 饰品 1d100 表
-const TRINKET_TABLE = {
-  "00": "指南：《惊恐：灾难的先兆》",
-  "01": "古董公司股票（小行星矿井）",
-  "02": "指南：《生存：用刀喝汤》",
-  "03": "干谷壳娃娃",
-  "04": "异星花标本（普通）",
-  "05": "贝壳项链",
-  "06": "腐蚀的仿生人逻辑核心",
-  "07": "手册：《寄生体感染迹象》",
-  "08": "指南：《像对待女士一样对待步枪》",
-  "09": "骨制小刀",
-  "10": "外星种封面日历",
-  "11": "被拒绝的申请（殖民地飞船）",
-  "12": "全息蜿蜒舞者",
-  "13": "威士忌蛇酒",
-  "14": "医用容器：紫色粉末",
-  "15": "助兴药片（赝品）",
-  "16": "赌场纸牌",
-  "17": "兔脚",
-  "18": "月长石戒指",
-  "19": "指南：《您与采矿安全》",
-  "20": "手册：《对付拟人种》",
-  "21": "动物头骨，3眼，曲角",
-  "22": "调酒师证书（过期）",
-  "23": "文乐木偶",
-  "24": "有凹痕的勘探带把杯",
-  "25": "诡异面具",
-  "26": "超黑大理石",
-  "27": "象牙骰子",
-  "28": "磨损塔罗牌，边缘用黄铁矿镀金",
-  "29": "一袋各种各样的牙齿",
-  "30": "骨灰（某位亲戚）",
-  "31": "DNR 信标项链",
-  "32": "香烟（咧嘴骷髅头）",
-  "33": "槟榔果药片",
-  "34": "吊坠：滴胶贝壳碎片",
-  "35": "手册：《禅与货物管理艺术》",
-  "36": "一对调酒杯（霰弹枪废弹壳）",
-  "37": "钥匙（童年的家）",
-  "38": "狗牌（传家宝）",
-  "39": "代币：“您的士气提高了吗？”",
-  "40": "手册：《血肉圣骸》",
-  "41": "手册：《冷漠群星》",
-  "42": "军事战役封面日历",
-  "43": "指南：《富船长，穷船长》",
-  "44": "活动海报（家园星球）",
-  "45": "昆虫畸变体标本",
-  "46": "钛制牙签",
-  "47": "皮手套（异形皮）",
-  "48": "露骨黄书：《船长有令》",
-  "49": "略有褶皱的毛巾",
-  "50": "黄铜指节",
-  "51": "毛茸手铐",
-  "52": "恩怨日账",
-  "53": "别致香烟盒",
-  "54": "多种电线扭成的球",
-  "55": "扳手",
-  "56": "观赏型弹簧刀",
-  "57": "磨成粉的异形角",
-  "58": "盆景树",
-  "59": "高尔夫球棒（推杆）",
-  "60": "三叶虫化石",
-  "61": "手册：《星港遍留情》",
-  "62": "个性化补丁连体服",
-  "63": "封在阴暗罐子里的肉质体",
-  "64": "带刺手镯",
-  "65": "口琴",
-  "66": "破烂残旧的色情图片",
-  "67": "崩口咖啡杯，写着：“强制快乐”",
-  "68": "指南：《用枪油和燃料酿酒》",
-  "69": "骨质微型象棋套装，少了棋子",
-  "70": "弯曲锡制陀螺仪",
-  "71": "褪色绿扑克筹码",
-  "72": "四弦小吉他（尤克里里）",
-  "73": "喷漆",
-  "74": "老旧的通缉令",
-  "75": "装着发辫的吊坠",
-  "76": "老鼠雕塑（金）",
-  "77": "防火毯",
-  "78": "连帽大衣，羊毛内衬",
-  "79": "BB 枪",
-  "80": "燧石斧",
-  "81": "吊坠：两名宇航员组成的骷髅头",
-  "82": "魔方",
-  "83": "压力球，上书：“零重力，零压力”",
-  "84": "人造卫星别针",
-  "85": "俄式毛帽",
-  "86": "网眼卡车帽，带有灰色外星种标志",
-  "87": "薄荷万金油",
-  "88": "遮阳帽",
-  "89": "帆布（10米×10米）",
-  "90": "《易经》，没有蓍草",
-  "91": "反曲刀",
-  "92": "战壕铲",
-  "93": "磨尖的黄油小刀",
-  "94": "猫标本",
-  "95": "手册：《解读绵羊之梦》",
-  "96": "褪色照片：风拂荒野",
-  "97": "歌剧院眼镜",
-  "98": "手册：《仿生人霸主》",
-  "99": "始终指向母星的星际罗盘"
+// 融合护甲数据库 (ARMOR_PRESETS)
+const ARMOR_PRESETS = {
+  "标准乘组制服": { 
+    ap: 1, 
+    cost: "Cr 100", 
+    notes: "基本服装" 
+  },
+  "真空服": { 
+    ap: 3, 
+    cost: "Cr 10,000", 
+    notes: "旨在用于外太空作业。12小时氧气，速度检定劣势[-]。包括：短程通信器、头灯以及辐射防护。穿孔会在 1d5 轮内失压。" 
+  },
+  "防危服": { 
+    ap: 5, 
+    cost: "Cr 4,000", 
+    notes: "探索未知行星时提供环境防护。1小时氧气。包括：空气过滤器、极热/极寒防护、水分回收（1L水坚持4天）、短程通信器、头灯和辐射防护" 
+  },
+  "标准作战服": { 
+    ap: 7, 
+    cost: "Cr 2,000", 
+    notes: "大部分陆战队员穿的轻型插板护甲。包括：短程通信器" 
+  },
+  "先进作战服": { 
+    ap: 10, 
+    cost: "Cr 12,000", 
+    notes: "陆战队员部署到外星遭遇战时穿着的重型护甲。1小时氧气，速度检定劣势[-]。包括：短程通信器、随身摄像机、头灯、HUD、外骨骼织物（力量检定优势[+]）、辐射防御。伤害减免：3" 
+  }
 };
+
+  // 饰品 1d100 表
+  const TRINKET_TABLE = {
+    "00": "指南：《惊恐：灾难的先兆》", "01": "古董公司股票（小行星矿井）", "02": "指南：《生存：用刀喝汤》", "03": "干谷壳娃娃",
+    "04": "异星花标本（普通）", "05": "贝壳项链", "06": "腐蚀的仿生人逻辑核心", "07": "手册：《寄生体感染迹象》",
+    "08": "指南：《像对待女士一样对待步枪》", "09": "骨制小刀", "10": "外星种封面日历", "11": "被拒绝的申请（殖民地飞船）",
+    "12": "全息蜿蜒舞者", "13": "威士忌蛇酒", "14": "医用容器：紫色粉末", "15": "助兴药片（赝品）",
+    "16": "赌场纸牌", "17": "兔脚", "18": "月长石戒指", "19": "指南：《您与采矿安全》",
+    "20": "手册：《对付拟人种》", "21": "动物头骨，3眼，曲角", "22": "调酒师证书（过期）", "23": "文乐木偶",
+    "24": "有凹痕的勘探带把杯", "25": "诡异面具", "26": "超黑大理石", "27": "象牙骰子",
+    "28": "磨损塔罗牌，边缘用黄铁矿镀金", "29": "一袋各种各样的牙齿", "30": "骨灰（某位亲戚）", "31": "DNR 信标项链",
+    "32": "香烟（咧嘴骷髅头）", "33": "槟榔果药片", "34": "吊坠：滴胶贝壳碎片", "35": "手册：《禅与货物管理艺术》",
+    "36": "一对调酒杯（霰弹枪废弹壳）", "37": "钥匙（童年的家）", "38": "狗牌（传家宝）", "39": "代币：“您的士气提高了吗？”",
+    "40": "手册：《血肉圣骸》", "41": "手册：《冷漠群星》", "42": "军事战役封面日历", "43": "指南：《富船长，穷船长》",
+    "44": "活动海报（家园星球）", "45": "昆虫畸变体标本", "46": "钛制牙签", "47": "皮手套（异形皮）",
+    "48": "露骨黄书：《船长有令》", "49": "略有褶皱的毛巾", "50": "黄铜指节", "51": "毛茸手铐",
+    "52": "恩怨日账", "53": "别致香烟盒", "54": "多种电线扭成的球", "55": "扳手",
+    "56": "观赏型弹簧刀", "57": "磨成粉的异形角", "58": "盆景树", "59": "高尔夫球棒（推杆）",
+    "60": "三叶虫化石", "61": "手册：《星港遍留情》", "62": "个性化补丁连体服", "63": "封在阴暗罐子里的肉质体",
+    "64": "带刺手镯", "65": "口琴", "66": "破烂残旧的色情图片", "67": "崩口咖啡杯，写着：“强制快乐”",
+    "68": "指南：《用枪油和燃料酿酒》", "69": "骨质微型象棋套装，少了棋子", "70": "弯曲锡制陀螺仪", "71": "褪色绿扑克筹码",
+    "72": "四弦小吉他（尤克里里）", "73": "喷漆", "74": "老旧的通缉令", "75": "装着发辫的吊坠",
+    "76": "老鼠雕塑（金）", "77": "防火毯", "78": "连帽大衣，羊毛内衬", "79": "BB 枪",
+    "80": "燧石斧", "81": "吊坠：两名宇航员组成的骷髅头", "82": "魔方", "83": "压力球，上书：“零重力，零压力”",
+    "84": "人造卫星别针", "85": "俄式毛帽", "86": "网眼卡车帽，带有灰色外星种标志", "87": "薄荷万金油",
+    "88": "遮阳帽", "89": "帆布（10米×10米）", "90": "《易经》，没有蓍草", "91": "反曲刀",
+    "92": "战壕铲", "93": "磨尖的黄油小刀", "94": "猫标本", "95": "手册：《解读绵羊之梦》",
+    "96": "褪色照片：风拂荒野", "97": "歌剧院眼镜", "98": "手册：《仿生人霸主》", "99": "始终指向母星的星际罗盘"
+  };
 
   // 贴章 1d100 表
-const PATCH_TABLE = {
-  "1": "“我不是火箭科学家/但你是个白痴”",
-  "2": "医护员贴章（十字架上的骷髅头和交叉骨）",
-  "3": "背部贴章：“别跑，你只会累死”",
-  "4": "红衬衫标识",
-  "5": "血型（速查贴章）",
-  "6": "“看起来像专家吗？”",
-  "7": "生物危害标志",
-  "8": "“我氧气面罩呢”",
-  "9": "核能标志",
-  "10": "“吃光富人”",
-  "11": "“保险为上：连开两枪”",
-  "12": "火焰表情符号",
-  "13": "笑脸（夜光）",
-  "14": "“保持微笑：老大盯着呢”",
-  "15": "海盗旗",
-  "16": "维京人头骨",
-  "17": "“顶级掠食种”（剑齿虎头骨）",
-  "18": "海报模特（黑桃 A）",
-  "19": "红心皇后",
-  "20": "安保守卫",
-  "21": "“独行客”",
-  "22": "“此面向敌”（阔剑地雷）",
-  "23": "海报模特（骑着导弹）",
-  "24": "糟糕",
-  "25": "“我是台（有爱的）机器”",
-  "26": "海报模特（机械师）",
-  "27": "“你好，我叫：”",
-  "28": "“咖啡动能”",
-  "29": "“带我去见你们的头”（UFO）",
-  "30": "“好好干活”",
-  "31": "“（请）杀了我就吧”",
-  "32": "“正直公民”",
-  "33": "“对废话过敏”（医护风格贴章）",
-  "34": "“先来救我”（医护蛇杖）",
-  "35": "“我喜欢最好的工具和最坏的爱人”",
-  "36": "“叫得越大声，我来得越快”（护士海报）",
-  "37": "HMFIC（管事的首席王八蛋）",
-  "38": "十字准星中的鸽子",
-  "39": "小小克苏鲁",
-  "40": "“欢迎来到危险区”",
-  "41": "骷髅头和交叉扳手s",
-  "42": "海报模特（魅魔）",
-  "43": "“关我啥事”",
-  "44": "“喝/战/睡觉”",
-  "45": "“工作卖力/嗨时更卖力”",
-  "46": "异形剪影",
-  "47": "乐趣计量器（显示：糟糕时光）",
-  "48": "“游戏结束”（新郎&新娘）",
-  "49": "心脏",
-  "50": "“提高/适应/克服”",
-  "51": "“忍者吧你”",
-  "52": "“牛仔向前”（交叉转轮手枪）",
-  "53": "“疑难解答”",
-  "54": "NASA 标志",
-  "55": "交叉锤子与翅膀",
-  "56": "“保持足够润滑”",
-  "57": "苏联风镰刀&锤子",
-  "58": "“和大伙相处融洽”",
-  "59": "“虎胆虫威”",
-  "60": "背部贴章：“如果我跑了就跟上”",
-  "61": "“皮囊”",
-  "62": "“我不是机器人”",
-  "63": "红色齿轮",
-  "64": "“我治不了蠢货”",
-  "65": "“太空是我家”（伤心的宇航员）",
-  "66": "全视之眼",
-  "67": "“溶解凝结”（巴弗灭）",
-  "68": "“该死的一无所有”（口袋全翻出来的宇航员）",
-  "69": "“去远方旅行/遇到离奇玩意/被吃掉”",
-  "70": "BOHICA（祸事重来，咬紧牙关）",
-  "71": "“我要保护好姐妹”",
-  "72": "“Mama Tried”",
-  "73": "黑寡妇蜘蛛",
-  "74": "“脏东西滚开”",
-  "75": "“一刀切”（手雷）",
-  "76": "背部贴章：阴森死神",
-  "77": "отъебись（俄语“滚开”）",
-  "78": "“八面玲珑”",
-  "79": "原子符号",
-  "80": "“为了科学！”",
-  "81": "“我还真是个火箭科学家”",
-  "82": "“求助启事”",
-  "83": "公主",
-  "84": "“游牧民”",
-  "85": "“好狗狗”",
-  "86": "骰子（出对 1）",
-  "87": "“#1 工人”",
-  "88": "“好”（大脑）",
-  "89": "“太蒂了”",
-  "90": "“靓到死不了”",
-  "91": "“睡到永远”（玫瑰束）",
-  "92": "伊卡洛斯",
-  "93": "“钻石好闺蜜”（钻石）",
-  "94": "触电危险标志",
-  "95": "倒十字架",
-  "96": "背部贴章：“我薪水是你发吗”",
-  "97": "“我 ♥ 我自己”",
-  "98": "双樱桃",
-  "99": "“志愿者”",
-  "100": "拿着扑克的死人手：三张 A 两张 8",
-  "101": "下克上",
-  "102": "“燃起来了”（油桶）",
-  "103": "“算我一票”",
-  "104": "“真相会让你自由”",
-  "105": "“黑暗中的一束微光”",
-  "106": "“态度决定一切”",
-  "107": "“亲吻戒指”",
-  "108": "“我对人类没兴趣”",
-  "109": "虚空神棋子",
-  "110": "“这不是血清吗？”",
-  "111": "“幸运”（墓碑）",
-  "112": "“肆意掠夺”",
-  "113": "“我 ❤️ 摇滚”",
-  "114": "流血的眼睛",
-  "115": "“意大利面！”（一碗意面）",
-  "116": "“审判日”（仿生人头骨）",
-  "117": "“自卫是弱者的借口”",
-  "118": "“保持绿色不容易”（树）",
-  "119": "“爱会慢慢死去”",
-  "120": "“我回来了”（背章）",
-  "121": "“像我这么有名可不容易”",
-  "122": "迷你健美选手",
-  "123": "红十字徽章",
-  "124": "“我们这里全都疯了”（指着脑子）",
-  "125": "“给和平一个机会”",
-  "126": "“开一罐冰的吧”（冷冻舱）",
-  "127": "“我不想死”（背章）",
-  "128": "“枪口放正”（步枪）",
-  "129": "“离我远点，肉块！”",
-  "130": "“我疯了（你也知道）”",
-  "131": "“干杯！”",
-  "132": "“你在找帮手吗？”（背章）",
-  "133": "“当心我这拳头”",
-  "134": "“赌上一切”",
-  "135": "“我只需要一个奇迹”",
-  "136": "“自由基”（试管）",
-  "137": "“战斗到死为止”",
-  "138": "“和平、爱，还有小甜甜圈”",
-  "139": "“生而自由”",
-  "140": "“并肩作战的伙伴”",
-  "141": "“好运”（背章）",
-  "142": "荷鲁斯之眼",
-  "143": "“白骑士”（剑与盾）",
-  "144": "“别再靠近了”",
-  "145": "“团结则存”",
-  "146": "“别眨眼”（第三只眼）",
-  "147": "“爱”（L.O.V.E.）",
-  "148": "性感斗牛士",
-  "149": "“救援正在路上”（背章）",
-  "150": "“犯罪不会有好下场”（背章）",
-  "151": "“尽快赶上世界末日”",
-  "152": "“我上头有人！”",
-  "153": "“神枪手”（冒烟的枪）",
-  "154": "“完全不沾边”（背章）",
-  "155": "“四海皆姐妹”",
-  "156": "“通往地狱的高速公路”",
-  "157": "“无限循环中”（莫比乌斯环）",
-  "158": "美杜莎计划",
-  "159": "“别变老，早点死”",
-  "160": "“这里最酷的家伙”（背章）",
-  "161": "“我挑战了法律，法律赢了”",
-  "162": "黑蛇",
-  "163": "“别把我留在这里”（背章）",
-  "164": "“全系统就绪”",
-  "165": "“别笑、别哭——反正你要死了”",
-  "166": "长着恶魔角的婴儿",
-  "167": "“第一反暴乱部队”（导弹）",
-  "168": "面包腊肠犬",
-  "169": "黄色玫瑰",
-  "170": "“当狗也没什么不好”",
-  "171": "“每天都在开派对”",
-  "172": "独角兽",
-  "173": "吸血蝙蝠",
-  "174": "“命定之人”",
-  "175": "狼人",
-  "176": "“加冰”（高球杯）",
-  "177": "“拿来吧你”",
-  "178": "“要么照我说的做，要么滚”",
-  "179": "占卜水晶",
-  "180": "“当个大块头不容易”",
-  "181": "四张 A",
-  "182": "“让你心碎”（僵尸）",
-  "183": "“改变我的想法”（背章）",
-  "184": "“保证满意”（大拇指）",
-  "185": "截断的手臂",
-  "186": "阴谋论者",
-  "187": "“上来”（宇宙飞船）",
-  "188": "“我没时间去死”",
-  "189": "“机械永生”",
-  "190": "“当我的时刻来临”（光环）",
-  "191": "“你说得对”",
-  "192": "“滴答、滴答”（老式落地钟）",
-  "193": "“这场戏无聊透顶”",
-  "194": "“这些是我的朋友”（锤子与镰刀）",
-  "195": "“红、白、还有蓝屏”",
-  "196": "“我是第一，你是第二”",
-  "197": "“自由不是免费的”",
-  "198": "“拒绝娱乐”（皱眉脸）",
-  "199": "大拇指向下",
-  "200": "“永不放弃”"
-};
+  const PATCH_TABLE = {
+    "1": "“我不是火箭科学家/但你是个白痴”", "2": "医护员贴章（十字架上的骷髅头和交叉骨）", "3": "背部贴章：“别跑，你只会累死”", "4": "红衬衫标识",
+    "5": "血型（速查贴章）", "6": "“看起来像专家吗？”", "7": "生物危害标志", "8": "“我氧气面罩呢”",
+    "9": "核能标志", "10": "“吃光富人”", "11": "“保险为上：连开两枪”", "12": "火焰表情符号",
+    "13": "笑脸（夜光）", "14": "“保持微笑：老大盯着呢”", "15": "海盗旗", "16": "维京人头骨",
+    "17": "“顶级掠食种”（剑齿虎头骨）", "18": "海报模特（黑桃 A）", "19": "红心皇后", "20": "安保守卫",
+    "21": "“独行客”", "22": "“此面向敌”（阔剑地雷）", "23": "海报模特（骑着导弹）", "24": "糟糕",
+    "25": "“我是台（有爱的）机器”", "26": "海报模特（机械师）", "27": "“你好，我叫：”", "28": "“咖啡动能”",
+    "29": "“带我去见你们的头”（UFO）", "30": "“好好干活”", "31": "“（请）杀了我就吧”", "32": "“正直公民”",
+    "33": "“对废话过敏”（医护风格贴章）", "34": "“先来救我”（医护蛇杖）", "35": "“我喜欢最好的工具和最坏的爱人”", "36": "“叫得越大声，我来得越快”（护士海报）",
+    "37": "HMFIC（管事的首席王八蛋）", "38": "十字准星中的鸽子", "39": "小小克苏鲁", "40": "“欢迎来到危险区”",
+    "41": "骷髅头和交叉扳手s", "42": "海报模特（魅魔）", "43": "“关我啥事”", "44": "“喝/战/睡觉”",
+    "45": "“工作卖力/嗨时更卖力”", "46": "异形剪影", "47": "乐趣计量器（显示：糟糕时光）", "48": "“游戏结束”（新郎&新娘）",
+    "49": "心脏", "50": "“提高/适应/克服”", "51": "“忍者吧你”", "52": "“牛仔向前”（交叉转轮手枪）",
+    "53": "“疑难解答”", "54": "NASA 标志", "55": "交叉锤子与翅膀", "56": "“保持足够润滑”",
+    "57": "苏联风镰刀&锤子", "58": "“和大伙相处融洽”", "59": "“虎胆虫威”", "60": "背部贴章：“如果我跑了就跟上”",
+    "61": "“皮囊”", "62": "“我不是机器人”", "63": "红色齿轮", "64": "“我治不了蠢货”",
+    "65": "“太空是我家”（伤心的宇航员）", "66": "全视之眼", "67": "“溶解凝结”（巴弗灭）", "68": "“该死的一无所有”（口袋全翻出来的宇航员）",
+    "69": "“去远方旅行/遇到离奇玩意/被吃掉”", "70": "BOHICA（祸事重来，咬紧牙关）", "71": "“我要保护好姐妹”", "72": "“Mama Tried”",
+    "73": "黑寡妇蜘蛛", "74": "“脏东西滚开”", "75": "“一刀切”（手雷）", "76": "背部贴章：阴森死神",
+    "77": "отъебись（俄语“滚开”）", "78": "“八面玲珑”", "79": "原子符号", "80": "“为了科学！”",
+    "81": "“我还真是个火箭科学家”", "82": "“求助启事”", "83": "公主", "84": "“游牧民”",
+    "85": "“好狗狗”", "86": "骰子（出对 1）", "87": "“#1 工人”", "88": "“好”（大脑）",
+    "89": "“太蒂了”", "90": "“靓到死不了”", "91": "“睡到永远”（玫瑰束）", "92": "伊卡洛斯",
+    "93": "“钻石好闺蜜”（钻石）", "94": "触电危险标志", "95": "倒十字架", "96": "背部贴章：“我薪水是你发吗”",
+    "97": "“我 ♥ 我自己”", "98": "双樱桃", "99": "“志愿者”", "100": "拿着扑克的死人手：三张 A 两张 8",
+    "101": "下克上", "102": "“燃起来了”（油桶）", "103": "“算我一票”", "104": "“真相会让你自由”",
+    "105": "“黑暗中的一束微光”", "106": "“态度决定一切”", "107": "“亲吻戒指”", "108": "“我对人类没兴趣”",
+    "109": "虚空神棋子", "110": "“这不是血清吗？”", "111": "“幸运”（墓碑）", "112": "“肆意掠夺”",
+    "113": "“我 ❤️ 摇滚”", "114": "流血的眼睛", "115": "“意大利面！”（一碗意面）", "116": "“审判日”（仿生人头骨）",
+    "117": "“自卫是弱者的借口”", "118": "“保持绿色不容易”（树）", "119": "“爱会慢慢死去”", "120": "“我回来了”（背章）",
+    "121": "“像我这么有名可不容易”", "122": "迷你健美选手", "123": "红十字徽章", "124": "“我们这里全都疯了”（指着脑子）",
+    "125": "“给和平一个机会”", "126": "“开一罐冰的吧”（冷冻舱）", "127": "“我不想死”（背章）", "128": "“枪口放正”（步枪）",
+    "129": "“离我远点，肉块！”", "130": "“我疯了（你也知道）”", "131": "“干杯！”", "132": "“你在找帮手吗？”（背章）",
+    "133": "“当心我这拳头”", "134": "“赌上一切”", "135": "“我只需要一个奇迹”", "136": "“自由基”（试管）",
+    "137": "“战斗到死为止”", "138": "“和平、爱，还有小甜甜圈”", "139": "“生而自由”", "140": "“并肩作战的伙伴”",
+    "141": "“好运”（背章）", "142": "荷鲁斯之眼", "143": "“白骑士”（剑与盾）", "144": "“别再靠近了”",
+    "145": "“团结则存”", "146": "“别眨眼”（第三只眼）", "147": "“爱”（L.O.V.E.）", "148": "性感斗牛士",
+    "149": "“救援正在路上”（背章）", "150": "“犯罪不会有好下场”（背章）", "151": "“尽快赶上世界末日”", "152": "“我上头有人！”",
+    "153": "“神枪手”（冒烟的枪）", "154": "“完全不沾边”（背章）", "155": "“四海皆姐妹”", "156": "“通往地狱的高速公路”",
+    "157": "“无限循环中”（莫比乌斯环）", "158": "美杜莎计划", "159": "“别变老，早点死”", "160": "“这里最酷的家伙”（背章）",
+    "161": "“我挑战了法律，法律赢了”", "162": "黑蛇", "163": "“别把我留在这里”（背章）", "164": "“全系统就绪”",
+    "165": "“别笑、别哭——反正你要死了”", "166": "长着恶魔角的婴儿", "167": "“第一反暴乱部队”（导弹）", "168": "面包腊肠犬",
+    "169": "黄色玫瑰", "170": "“当狗也没什么不好”", "171": "“每天都在开派对”", "172": "独角兽",
+    "173": "吸血蝙蝠", "174": "“命定之人”", "175": "狼人", "176": "“加冰”（高球杯）",
+    "177": "“拿来吧你”", "178": "“要么照我说的做，要么滚”", "179": "占卜水晶", "180": "“当个大块头不容易”",
+    "181": "四张 A", "182": "“让你心碎”（僵尸）", "183": "“改变我的想法”（背章）", "184": "“保证满意”（大拇指）",
+    "185": "截断的手臂", "186": "阴谋论者", "187": "“上来”（宇宙飞船）", "188": "“我没时间去死”",
+    "189": "“机械永生”", "190": "“当我的时刻来临”（光环）", "191": "“你说得对”", "192": "“滴答、滴答”（老式落地钟）",
+    "193": "“这场戏无聊透顶”", "194": "“这些是我的朋友”（锤子与镰刀）", "195": "“红、白、还有蓝屏”", "196": "“我是第一，你是第二”",
+    "197": "“自由不是免费的”", "198": "“拒绝娱乐”（皱眉脸）", "199": "大拇指向下", "200": "“永不放弃”"
+  };
 
-  // 掷骰工具函数
   function rollD10(count = 1) {
     let total = 0;
-    for (let i = 0; i < count; i++) {
-      total += Math.floor(Math.random() * 10) + 1;
-    }
+    for (let i = 0; i < count; i++) total += Math.floor(Math.random() * 10) + 1;
     return total;
   }
+  function rollD100() { return Math.floor(Math.random() * 100) + 1; }
+  function rollD200() { return Math.floor(Math.random() * 200) + 1; }
 
-  function rollD100() {
-    return Math.floor(Math.random() * 100) + 1;
-  }
-
-  function rollD200() {
-    return Math.floor(Math.random() * 200) + 1;
-  }
-
-  // 独立掷骰行装/饰品/贴章
   function rollLoadoutItem() {
     playDiceRollSound();
-    const val = rollD10(1);
-    const txt = `【${val}】根据职类选取`;
-    document.getElementById('res_loadout').innerText = txt;
+    document.getElementById('res_loadout').innerText = `【${rollD10(1)}】根据职类选取`;
   }
-
   function rollTrinketItem() {
     playDiceRollSound();
     const val = rollD100();
-    const txt = TRINKET_TABLE[val] || `【${val}】未知饰品`;
-    document.getElementById('res_trinket').innerText = txt;
+    document.getElementById('res_trinket').innerText = TRINKET_TABLE[val] || `【${val}】未知饰品`;
   }
-
   function rollPatchItem() {
     playDiceRollSound();
     const val = rollD200();
-    const txt = PATCH_TABLE[val] || `【${val}】未知贴章`;
-    document.getElementById('res_patch').innerText = txt;
+    document.getElementById('res_patch').innerText = PATCH_TABLE[val] || `【${val}】未知贴章`;
   }
+  function rollAllLoadouts() { rollLoadoutItem(); rollTrinketItem(); rollPatchItem(); }
 
-  function rollAllLoadouts() {
-    rollLoadoutItem();
-    rollTrinketItem();
-    rollPatchItem();
-  }
-
-  // 工具函数：解析带斜杠的数值文本（如 10/10）拆分为 val 和 max
   function parseSlashVal(valStr, defaultMax) {
     if (!valStr) return { val: 0, max: defaultMax || 0 };
     const s = String(valStr).trim();
@@ -1420,37 +1200,19 @@ const PATCH_TABLE = {
     return { val: num, max: defaultMax !== undefined ? defaultMax : num };
   }
 
-  // 快速增减数值工具函数（下限为0）
   function adjustValue(elementId, delta) {
     playAudioBeep(700, 'sine', 0.05);
     const input = document.getElementById(elementId);
     if (!input) return;
     let val = parseInt(input.value) || 0;
-    val = Math.max(0, val + delta);
-    input.value = val;
-    if (typeof updateCommandsPreview === 'function') {
-      updateCommandsPreview();
-    }
+    input.value = Math.max(0, val + delta);
+    updateCommandsPreview();
   }
 
   const SKILL_DATABASE = {
-    10: {
-      '语言学': '智力', '动物学': '智力', '植物学': '智力', '地质学': '智力',
-      '工业装备': '力量', '临时拼凑': '智力', '化学': '智力', '计算机': '智力',
-      '零重力': '速度', '数学': '智力', '艺术': '智力', '考古': '智力',
-      '神学': '智力', '军事训练': '战斗', '外环门道': '智力', '运动': '力量'
-    },
-    15: {
-      '心理学': '智力', '病理学': '智力', '战地医疗': '智力', '生态学': '智力',
-      '小行星采矿': '力量', '机械修理': '智力', '爆炸物': '智力', '药理学': '智力',
-      '骇客': '智力', '导航': '智力', '物理学': '智力', '神秘主义': '智力',
-      '荒野生存': '智力', '枪械': '战斗', '近身搏斗': '战斗'
-    },
-    20: {
-      '知性学': '智力', '外星生物学': '智力', '手术': '速度', '行星学': '智力',
-      '机器人学': '智力', '工程学': '智力', '神经机械学': '智力', '人工智能': '智力',
-      '超空间': '智力', '异种密教': '智力', '指挥': '战斗'
-    }
+    10: { '语言学': '智力', '动物学': '智力', '植物学': '智力', '地质学': '智力', '工业装备': '力量', '临时拼凑': '智力', '化学': '智力', '计算机': '智力', '零重力': '速度', '数学': '智力', '艺术': '智力', '考古': '智力', '神学': '智力', '军事训练': '战斗', '外环门道': '智力', '运动': '力量' },
+    15: { '心理学': '智力', '病理学': '智力', '战地医疗': '智力', '生态学': '智力', '小行星采矿': '力量', '机械修理': '智力', '爆炸物': '智力', '药理学': '智力', '骇客': '智力', '导航': '智力', '物理学': '智力', '神秘主义': '智力', '荒野生存': '智力', '枪械': '战斗', '近身搏斗': '战斗' },
+    20: { '知性学': '智力', '外星生物学': '智力', '手术': '速度', '行星学': '智力', '机器人学': '智力', '工程学': '智力', '神经机械学': '智力', '人工智能': '智力', '超空间': '智力', '异种密教': '智力', '指挥': '战斗' }
   };
   const DEFAULT_SKILL_ATTRS = { ...SKILL_DATABASE[10], ...SKILL_DATABASE[15], ...SKILL_DATABASE[20] };
 
@@ -1480,27 +1242,14 @@ const PATCH_TABLE = {
 
   const STORAGE_KEY = 'MOTHERSHIP_CHARACTERS_HISTORY';
 
-  // Drag and Drop 拖拽反馈处理
-  function handleDragOver(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    document.getElementById('dropZone').classList.add('dragover');
-  }
-  function handleDragLeave(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    document.getElementById('dropZone').classList.remove('dragover');
-  }
+  function handleDragOver(e) { e.preventDefault(); e.stopPropagation(); document.getElementById('dropZone').classList.add('dragover'); }
+  function handleDragLeave(e) { e.preventDefault(); e.stopPropagation(); document.getElementById('dropZone').classList.remove('dragover'); }
   function handleDrop(e) {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault(); e.stopPropagation();
     document.getElementById('dropZone').classList.remove('dragover');
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleFile(e.dataTransfer.files[0]);
-    }
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
   }
 
-  // Tab 切换逻辑
   function switchTab(tabName) {
     playAudioBeep(650, 'sine', 0.08);
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -1515,7 +1264,6 @@ const PATCH_TABLE = {
     }
   }
 
-  // 快速生成生命值 (1d10 + 10) - 更改为直接输出为 max/max
   function quickRollHP() {
     playDiceRollSound();
     const result = rollD10(1) + 10;
@@ -1523,7 +1271,6 @@ const PATCH_TABLE = {
     updateCommandsPreview();
   }
 
-  // 快速生成基础属性、豁免
   function quickRollStatsAndSaves() {
     playDiceRollSound();
     document.getElementById('edit_str').value = rollD10(2) + 25;
@@ -1548,6 +1295,8 @@ const PATCH_TABLE = {
     
     document.getElementById('edit_stress').value = '2/20';
     document.getElementById('edit_damage').value = '0/2';
+    document.getElementById('edit_armor_select').value = '';
+    onArmorPresetChange();
     document.getElementById('res_loadout').innerText = '点击掷骰生成...';
     document.getElementById('res_trinket').innerText = '点击掷骰生成...';
     document.getElementById('res_patch').innerText = '点击掷骰生成...';
@@ -1579,8 +1328,7 @@ const PATCH_TABLE = {
 
     if (petType === 'organic') {
       document.getElementById('edit_pet_instinct').value = rollD10(2) + 40;
-      badge10.innerText = "1 项技能";
-      badge15.innerText = "不可选";
+      badge10.innerText = "1 项技能"; badge15.innerText = "不可选";
       ruleBox.innerHTML = `
         <strong>【有机宠物规则与能力】</strong><br>
         • <strong>属性</strong>：损伤 1 (HP 10) | 本能 2d10+40<br>
@@ -1590,8 +1338,7 @@ const PATCH_TABLE = {
       `;
     } else {
       document.getElementById('edit_pet_instinct').value = rollD10(2) + 30;
-      badge10.innerText = "最多 2 项技能";
-      badge15.innerText = "或 1 项专家技能";
+      badge10.innerText = "最多 2 项技能"; badge15.innerText = "或 1 项专家技能";
       ruleBox.innerHTML = `
         <strong>【合成宠物规则与能力】</strong><br>
         • <strong>属性</strong>：损伤 2 (HP 15) | 本能 2d10+30<br>
@@ -1600,6 +1347,36 @@ const PATCH_TABLE = {
         • <strong>负面效果</strong>：只要宠物遭受伤害，主人就要通过<strong>理智豁免</strong>，否则造成 <strong>1 压力</strong>；若宠物被摧毁，主人造成 <strong>1 压力</strong>。
       `;
     }
+  }
+
+  // 护甲预设切换与手动输入处理
+  function onArmorPresetChange() {
+    const armorName = document.getElementById('edit_armor_select').value.trim();
+    const armorInput = document.getElementById('edit_armor');
+    const detailTxt = document.getElementById('armor_detail_txt');
+
+    if (ARMOR_PRESETS[armorName]) {
+      const data = ARMOR_PRESETS[armorName];
+      armorInput.value = data.ap;
+      detailTxt.innerText = `价格:${data.cost} | 特性:${data.notes}`;
+    } else {
+      if (armorName !== "") {
+        detailTxt.innerText = `自定义防护设备：${armorName}`;
+      } else {
+        detailTxt.innerText = "未穿戴特殊防护具";
+      }
+    }
+    updateCommandsPreview();
+  }
+
+  function initArmorSelect() {
+    const dl = document.getElementById('armor-datalist');
+    if (!dl) return;
+    let html = '';
+    Object.keys(ARMOR_PRESETS).forEach(name => {
+      html += `<option value="${name}">AP ${ARMOR_PRESETS[name].ap} - ${ARMOR_PRESETS[name].notes}</option>`;
+    });
+    dl.innerHTML = html;
   }
 
   function addPetSkillRow(tier, skillName = '') {
@@ -1620,6 +1397,7 @@ const PATCH_TABLE = {
       const el = document.getElementById(id);
       if (el) el.addEventListener('input', updateCommandsPreview);
     });
+    initArmorSelect();
     initWeaponDatalist();
     addWeaponRow();
     updateCommandsPreview();
@@ -1631,19 +1409,14 @@ const PATCH_TABLE = {
     const dl = document.getElementById('weapons-datalist');
     if (!dl) return;
     let html = '';
-    Object.keys(WEAPON_PRESETS).forEach(w => {
-      html += `<option value="${w}">`;
-    });
+    Object.keys(WEAPON_PRESETS).forEach(w => { html += `<option value="${w}">`; });
     dl.innerHTML = html;
   }
 
   const fileInput = document.getElementById('fileInput');
   fileInput.addEventListener('change', (e) => { if (e.target.files.length) handleFile(e.target.files[0]); });
 
-  function showStatus(text) {
-    const s = document.getElementById('statusBox');
-    s.innerText = text; s.style.display = 'block';
-  }
+  function showStatus(text) { const s = document.getElementById('statusBox'); s.innerText = text; s.style.display = 'block'; }
   function hideStatus() { document.getElementById('statusBox').style.display = 'none'; }
 
   function handleFile(file) {
@@ -1668,9 +1441,7 @@ const PATCH_TABLE = {
         const workbook = XLSX.read(data, { type: 'array', cellStyles: true });
 
         let weaponSheetName = workbook.SheetNames.find(name => name.trim().includes("武器"));
-        if (weaponSheetName) {
-          parseWeaponSheet(workbook.Sheets[weaponSheetName]);
-        }
+        if (weaponSheetName) parseWeaponSheet(workbook.Sheets[weaponSheetName]);
         
         let targetSheetName = workbook.SheetNames.find(name => name.trim() === "角色档案") || workbook.SheetNames[0];
         const sheet = workbook.Sheets[targetSheetName];
@@ -1722,11 +1493,7 @@ const PATCH_TABLE = {
         if (wType && wType !== '—' && wType !== 'NaN') combinedNote.push(wType);
         if (wNoteRaw && wNoteRaw !== '—' && wNoteRaw !== 'NaN' && wNoteRaw !== '——') combinedNote.push(wNoteRaw);
 
-        WEAPON_PRESETS[wName] = {
-          attr: attrNorm,
-          damage: wDmg,
-          note: combinedNote.join('；')
-        };
+        WEAPON_PRESETS[wName] = { attr: attrNorm, damage: wDmg, note: combinedNote.join('；') };
       }
     }
     initWeaponDatalist();
@@ -1746,7 +1513,6 @@ const PATCH_TABLE = {
       const m = rawText.match(reg);
       return m ? m[1] : '';
     }
-    
     function matchSlashNum(keyStr) {
       const reg = new RegExp(`${keyStr}[^\\d]*?(\\d{1,3})\\s*[/\\\\|]\\s*(\\d{1,3})`, 'i');
       const m = rawText.match(reg);
@@ -1906,42 +1672,39 @@ const PATCH_TABLE = {
     const addedWeapons = new Set();
     const flatTextLines = [];
 
-try {
-    // 1. 读取护甲 (M6)
-    if (sheet && sheet['M6'] && sheet['M6'].v !== undefined) {
-      document.getElementById('edit_armor').value = sheet['M6'].v;
-    }
-
-    // ================= 新增：自动导入 行装(B27)、饰品(C19)、贴章(C21) =================
-    if (sheet) {
-      // 读取 B27 (行装)
-      if (sheet['B27'] && sheet['B27'].v !== undefined) {
-        const val = String(sheet['B27'].v).trim();
-        if (val !== '') {
-          document.getElementById('res_loadout').innerText = `【导入】${val}`;
-        }
-      }
-      
-      // 读取 C19 (饰品)
-      if (sheet['C19'] && sheet['C19'].v !== undefined) {
-        const val = String(sheet['C19'].v).trim();
-        if (val !== '') {
-          // 如果表格填的是数字（如 15），自动去 TRINKET_TABLE 匹配；如果是文本则直接显示
-          const trinketName = TRINKET_TABLE[val] || val;
-          document.getElementById('res_trinket').innerText = `【导入】${trinketName}`;
+    try {
+      // 1. 读取 B41 格子中的护甲名称，填入输入框
+      if (sheet && sheet['B41'] && sheet['B41'].v !== undefined) {
+        const armorNameInExcel = String(sheet['B41'].v).trim();
+        if (armorNameInExcel) {
+          document.getElementById('edit_armor_select').value = armorNameInExcel;
+          onArmorPresetChange();
         }
       }
 
-      // 读取 C21 (贴章)
-      if (sheet['C21'] && sheet['C21'].v !== undefined) {
-        const val = String(sheet['C21'].v).trim();
-        if (val !== '') {
-          // 如果表格填的是数字（如 42），自动去 PATCH_TABLE 匹配；如果是文本则直接显示
-          const patchName = PATCH_TABLE[val] || val;
-          document.getElementById('res_patch').innerText = `【导入】${patchName}`;
+      // 2. M6 护甲 AP 补全
+      if (sheet && sheet['M6'] && sheet['M6'].v !== undefined) {
+        const armorVal = parseInt(sheet['M6'].v);
+        if (!isNaN(armorVal)) {
+          document.getElementById('edit_armor').value = armorVal;
         }
       }
-    }
+
+      // 3. 随身物品/贴章/饰品读取
+      if (sheet) {
+        if (sheet['B27'] && sheet['B27'].v !== undefined) {
+          const val = String(sheet['B27'].v).trim();
+          if (val !== '') document.getElementById('res_loadout').innerText = `【导入】${val}`;
+        }
+        if (sheet['C19'] && sheet['C19'].v !== undefined) {
+          const val = String(sheet['C19'].v).trim();
+          if (val !== '') document.getElementById('res_trinket').innerText = `【导入】${TRINKET_TABLE[val] || val}`;
+        }
+        if (sheet['C21'] && sheet['C21'].v !== undefined) {
+          const val = String(sheet['C21'].v).trim();
+          if (val !== '') document.getElementById('res_patch').innerText = `【导入】${PATCH_TABLE[val] || val}`;
+        }
+      }
     } catch(e) {}
 
     for (let r = 0; r < data.length; r++) {
@@ -1959,10 +1722,7 @@ try {
         }
         if (/^(职类|职业)/.test(cellVal) && c+1 < row.length) {
           const nextVal = String(row[c+1]).trim();
-          if (nextVal) {
-            document.getElementById('edit_job').value = nextVal;
-            updateJobResponse();
-          }
+          if (nextVal) { document.getElementById('edit_job').value = nextVal; updateJobResponse(); }
         }
         if (/^(护甲|AP)/i.test(cellVal)) {
           const nextVal = String(row[c+1] || '').trim();
@@ -1979,8 +1739,7 @@ try {
               let isChecked = false;
               for (let t of [right1, right2, right3]) {
                 if (t !== '' && t !== '□' && t !== '◯' && t !== 'false' && t !== '0') {
-                  isChecked = true;
-                  break;
+                  isChecked = true; break;
                 }
               }
 
@@ -2051,11 +1810,7 @@ try {
         const sName = row.querySelector('.skill-name-input').value.trim();
         const sAttr = row.querySelector('.skill-attr-select').value;
         if (sName) {
-          if (!hasSkill) {
-            cmds.push("");
-            cmds.push("--- 专业技能 ---");
-            hasSkill = true;
-          }
+          if (!hasSkill) { cmds.push(""); cmds.push("--- 专业技能 ---"); hasSkill = true; }
           cmds.push(`1d100<{${sAttr}}+${tier} ${sName}`);
           cmds.push(`2d100kl1<{${sAttr}}+${tier} ${sName} [+]优势`);
           cmds.push(`2d100kh1<{${sAttr}}+${tier} ${sName} [-]劣势`);
@@ -2074,12 +1829,7 @@ try {
         const wNote = row.querySelector('.weapon-note').value.trim();
 
         if (wName) {
-          if (!hasWeapon) {
-            cmds.push("");
-            cmds.push("--- 武器攻击 ---");
-            hasWeapon = true;
-          }
-
+          if (!hasWeapon) { cmds.push(""); cmds.push("--- 武器攻击 ---"); hasWeapon = true; }
           let bonusStr = "";
           if (wSkillVal.includes("(+10)")) bonusStr = "+10";
           else if (wSkillVal.includes("(+15)")) bonusStr = "+15";
@@ -2088,9 +1838,7 @@ try {
           const formula = `{${wAttr}}${bonusStr}`;
           const noteSuffix = wNote ? `（${wNote}）` : "";
           cmds.push(`1d100<${formula} ${wName} 攻击${noteSuffix}`);
-          if (wDamage) {
-            cmds.push(`${wDamage} ${wName} 伤害`);
-          }
+          if (wDamage) cmds.push(`${wDamage} ${wName} 伤害`);
         }
       });
     }
@@ -2098,7 +1846,7 @@ try {
     document.getElementById('edit_commands').value = cmds.join("\n");
   }
 
-  // 生成主角色 JSON
+  // 生成角色 JSON
   function generateCcfoliaJson() {
     playAudioBeep(600, 'square', 0.15);
     const jobStr = document.getElementById('edit_job').value;
@@ -2106,301 +1854,196 @@ try {
 
     const hpParsed = parseSlashVal(document.getElementById('edit_hp').value, 0);
     const stressParsed = parseSlashVal(document.getElementById('edit_stress').value, 20);
-    const dmgParsed = parseSlashVal(document.getElementById('edit_damage').value, 3);
+    const damageParsed = parseSlashVal(document.getElementById('edit_damage').value, 2);
 
-    let statusList = [
-      { label: "HP", value: hpParsed.val, max: hpParsed.max || hpParsed.val },
-      { label: "压力", value: stressParsed.val, max: stressParsed.max },
-      { label: "损伤", value: dmgParsed.val, max: dmgParsed.max },
-      { label: "护甲", value: parseInt(document.getElementById('edit_armor').value)||0, max: parseInt(document.getElementById('edit_armor').value)||0 }
-    ];
+    const charName = document.getElementById('edit_name').value || "未命名员";
 
-    let paramsList = [
-      { label: "力量", value: String(document.getElementById('edit_str').value||"0") },
-      { label: "速度", value: String(document.getElementById('edit_spd').value||"0") },
-      { label: "智力", value: String(document.getElementById('edit_int').value||"0") },
-      { label: "战斗", value: String(document.getElementById('edit_combat').value||"0") },
-      { label: "理智", value: String(document.getElementById('edit_sanity').value||"0") },
-      { label: "恐惧", value: String(document.getElementById('edit_fear').value||"0") },
-      { label: "身体", value: String(document.getElementById('edit_body').value||"0") }
-    ];
-
-    const ccfoliaData = {
+    const characterData = {
       kind: "character",
       data: {
-        name: document.getElementById('edit_name').value || "未命名角色",
-        memo: `职类：${jobStr}\n创伤反应：${traumaStr}`,
-        status: statusList,
-        params: paramsList,
+        name: charName,
+        memo: `${jobStr ? "职类：" + jobStr + "\n" : ""}${traumaStr ? "创伤反应/备注：" + traumaStr : ""}`,
+        status: [
+          { label: "生命值", value: hpParsed.val, max: hpParsed.max },
+          { label: "压力", value: stressParsed.val, max: stressParsed.max },
+          { label: "损伤", value: damageParsed.val, max: damageParsed.max },
+          { label: "护甲", value: parseInt(document.getElementById('edit_armor').value) || 0, max: 0 }
+        ],
+        params: [
+          { label: "力量", value: document.getElementById('edit_str').value },
+          { label: "速度", value: document.getElementById('edit_spd').value },
+          { label: "智力", value: document.getElementById('edit_int').value },
+          { label: "战斗", value: document.getElementById('edit_combat').value },
+          { label: "理智", value: document.getElementById('edit_sanity').value },
+          { label: "恐惧", value: document.getElementById('edit_fear').value },
+          { label: "身体", value: document.getElementById('edit_body').value }
+        ],
         commands: document.getElementById('edit_commands').value
       }
     };
 
-    document.getElementById('outputJson').value = JSON.stringify(ccfoliaData, null, 2);
+    const jsonStr = JSON.stringify(characterData, null, 2);
+    document.getElementById('outputJson').value = jsonStr;
     document.getElementById('outputGroup').style.display = 'block';
 
-    const rawSkills = { 10: [], 15: [], 20: [] };
-    [10, 15, 20].forEach(tier => {
-      document.querySelectorAll(`#skills_container_${tier} .skill-item`).forEach(item => {
-        rawSkills[tier].push({
-          name: item.querySelector('.skill-name-input').value,
-          attr: item.querySelector('.skill-attr-select').value
-        });
-      });
-    });
-
-    const rawWeapons = [];
-    document.querySelectorAll('#weapons_container .weapon-item').forEach(item => {
-      rawWeapons.push({
-        name: item.querySelector('.weapon-name-input').value,
-        attr: item.querySelector('.weapon-attr').value,
-        skill: item.querySelector('.weapon-skill').value,
-        damage: item.querySelector('.weapon-damage').value,
-        note: item.querySelector('.weapon-note').value
-      });
-    });
-
-    const charRecord = {
-      type: 'character',
-      name: document.getElementById('edit_name').value || "未命名角色",
-      job: jobStr,
-      response: traumaStr,
-      hp: document.getElementById('edit_hp').value,
-      stress: document.getElementById('edit_stress').value,
-      damage: document.getElementById('edit_damage').value,
-      armor: document.getElementById('edit_armor').value,
-      str: document.getElementById('edit_str').value,
-      spd: document.getElementById('edit_spd').value,
-      int: document.getElementById('edit_int').value,
-      combat: document.getElementById('edit_combat').value,
-      sanity: document.getElementById('edit_sanity').value,
-      fear: document.getElementById('edit_fear').value,
-      body: document.getElementById('edit_body').value,
-      skills: rawSkills,
-      weapons: rawWeapons
-    };
-
-    saveCharacterToStorage(charRecord);
+    saveToHistory(charName, 'character', characterData);
   }
 
-  // 生成宠物独立 JSON
+  // 生成宠物 JSON
   function generatePetCcfoliaJson() {
     playAudioBeep(600, 'square', 0.15);
     const petType = document.getElementById('edit_pet_type').value;
-    const petName = document.getElementById('edit_pet_name').value.trim() || "宠物";
-    const petHP = petType === 'organic' ? 10 : 15;
-    const petDmg = petType === 'organic' ? 1 : 2;
-    const petInstinct = document.getElementById('edit_pet_instinct').value || "0";
+    const petName = document.getElementById('edit_pet_name').value || (petType === 'organic' ? "有机宠物" : "合成宠物");
+    const petInstinct = document.getElementById('edit_pet_instinct').value || "40";
 
-    let petMemo = `【${petType === 'organic' ? '有机宠物' : '合成宠物'}】\n\n`;
-    if (petType === 'organic') {
-      petMemo += "【规则提醒】\n• 休息豁免带有 [ + ] 优势\n• 受到伤害：主人造成 1 压力\n• 遇害：主人进行惊恐检定，压力下限 +1。";
-    } else {
-      petMemo += "【规则提醒】\n• 休息豁免 +5\n• 受到伤害：主人进行理智豁免，失败造成 1 压力\n• 被摧毁：主人造成 1 压力。";
-    }
+    const hpValue = petType === 'organic' ? 10 : 15;
+    const damageValue = petType === 'organic' ? 1 : 2;
 
-    let petCmds = [];
-    petCmds.push(`--- 🐾 ${petName} 本能检定 ---`);
-    petCmds.push(`1d100<{本能} ${petName} 本能检定`);
-    petCmds.push(`2d100kl1<{本能} ${petName} 本能检定 [+]优势`);
-    petCmds.push(`2d100kh1<{本能} ${petName} 本能检定 [-]劣势`);
+    let petCommands = [
+      `--- ${petName} 常用指令 ---`,
+      `1d100<{本能} 本能检定`,
+      `2d100kl1<{本能} 本能检定 [+]优势`,
+      `2d100kh1<{本能} 本能检定 [-]劣势`
+    ];
 
-    let petSkills = [];
-    document.querySelectorAll('#pet_skills_10 .pet-skill-input').forEach(inp => {
-      if (inp.value.trim()) petSkills.push({ name: inp.value.trim(), bonus: 10 });
-    });
-    document.querySelectorAll('#pet_skills_15 .pet-skill-input').forEach(inp => {
-      if (inp.value.trim()) petSkills.push({ name: inp.value.trim(), bonus: 15 });
-    });
-
-    if (petSkills.length > 0) {
-      petCmds.push("");
-      petCmds.push(`--- 🐾 ${petName} 技能检定 ---`);
-      petSkills.forEach(s => {
-        petCmds.push(`1d100<{本能}+${s.bonus} ${s.name}`);
-        petCmds.push(`2d100kl1<{本能}+${s.bonus} ${s.name} [+]优势`);
-        petCmds.push(`2d100kh1<{本能}+${s.bonus} ${s.name} [-]劣势`);
+    ['10', '15'].forEach(tier => {
+      const container = document.getElementById(`pet_skills_${tier}`);
+      if (!container) return;
+      Array.from(container.getElementsByClassName('skill-item')).forEach(row => {
+        const sName = row.querySelector('.pet-skill-input').value.trim();
+        if (sName) {
+          petCommands.push(`1d100<{本能}+${tier} ${sName}`);
+          petCommands.push(`2d100kl1<{本能}+${tier} ${sName} [+]优势`);
+          petCommands.push(`2d100kh1<{本能}+${tier} ${sName} [-]劣势`);
+        }
       });
-    }
+    });
 
-    const petCcfoliaData = {
+    const petData = {
       kind: "character",
       data: {
         name: petName,
-        memo: petMemo,
+        memo: petType === 'organic' ? "🐾 有机宠物卡" : "🤖 合成宠物卡",
         status: [
-          { label: "HP", value: petHP, max: petHP },
-          { label: "损伤", value: 0, max: petDmg }
+          { label: "生命值", value: hpValue, max: hpValue },
+          { label: "损伤", value: 0, max: damageValue }
         ],
         params: [
           { label: "本能", value: String(petInstinct) }
         ],
-        commands: petCmds.join("\n")
+        commands: petCommands.join("\n")
       }
     };
 
-    document.getElementById('outputPetJson').value = JSON.stringify(petCcfoliaData, null, 2);
+    const jsonStr = JSON.stringify(petData, null, 2);
+    document.getElementById('outputPetJson').value = jsonStr;
     document.getElementById('petOutputGroup').style.display = 'block';
 
-    const petRecord = {
-      type: 'pet',
-      petType: petType,
-      petName: petName,
-      petInstinct: petInstinct,
-      skills: petSkills
-    };
-
-    saveCharacterToStorage(petRecord);
-  }
-
-  /* ================= 历史记录 & 本地存储核心逻辑 ================= */
-
-  function getStorageHistory() {
-    try {
-      const data = localStorage.getItem(STORAGE_KEY);
-      return data ? JSON.parse(data) : [];
-    } catch (e) {
-      return [];
-    }
-  }
-
-  function saveCharacterToStorage(record) {
-    let history = getStorageHistory();
-    record.id = Date.now();
-    record.time = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
-    
-    history.unshift(record);
-    if (history.length > 5) {
-      history = history.slice(0, 5);
-    }
-
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-      renderHistoryUI();
-    } catch (e) {
-      console.warn("localStorage 写入失败:", e);
-    }
-  }
-
-  function deleteHistoryItem(id) {
-    let history = getStorageHistory();
-    history = history.filter(item => item.id !== id);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-    renderHistoryUI();
-  }
-
-  function clearAllHistory() {
-    if (confirm("确定要清空保存的本地历史记录吗？")) {
-      localStorage.removeItem(STORAGE_KEY);
-      renderHistoryUI();
-    }
-  }
-
-  function loadHistoryToForm(id) {
-    playAudioBeep(750, 'sine', 0.1);
-    const history = getStorageHistory();
-    const target = history.find(item => item.id === id);
-    if (!target) return;
-
-    if (target.type === 'character') {
-      switchTab('character');
-      document.getElementById('edit_name').value = target.name || '';
-      document.getElementById('edit_job').value = target.job || '';
-      document.getElementById('edit_response').value = target.response || '';
-      document.getElementById('edit_hp').value = target.hp || '';
-      document.getElementById('edit_stress').value = target.stress || '2/20';
-      document.getElementById('edit_damage').value = target.damage || '0/2';
-      document.getElementById('edit_armor').value = target.armor || '';
-
-      document.getElementById('edit_str').value = target.str || '';
-      document.getElementById('edit_spd').value = target.spd || '';
-      document.getElementById('edit_int').value = target.int || '';
-      document.getElementById('edit_combat').value = target.combat || '';
-      document.getElementById('edit_sanity').value = target.sanity || '';
-      document.getElementById('edit_fear').value = target.fear || '';
-      document.getElementById('edit_body').value = target.body || '';
-
-      clearSkillContainers();
-      if (target.skills) {
-        [10, 15, 20].forEach(tier => {
-          if (target.skills[tier]) {
-            target.skills[tier].forEach(s => addSkillRow(tier, s.name, s.attr));
-          }
-        });
-      }
-
-      document.getElementById('weapons_container').innerHTML = '';
-      if (target.weapons && target.weapons.length > 0) {
-        target.weapons.forEach(w => addWeaponRow(w.name, w.attr, w.skill, w.damage, w.note));
-      } else {
-        addWeaponRow();
-      }
-
-      updateCommandsPreview();
-    } else if (target.type === 'pet') {
-      switchTab('pet');
-      document.getElementById('edit_pet_type').value = target.petType || 'organic';
-      onPetTypeChange();
-      document.getElementById('edit_pet_name').value = target.petName || '';
-      document.getElementById('edit_pet_instinct').value = target.petInstinct || '';
-
-      document.getElementById('pet_skills_10').innerHTML = '';
-      document.getElementById('pet_skills_15').innerHTML = '';
-      if (target.skills) {
-        target.skills.forEach(s => addPetSkillRow(s.bonus, s.name));
-      }
-    }
-  }
-
-  function renderHistoryUI() {
-    const historyListEl = document.getElementById('historyList');
-    const history = getStorageHistory();
-
-    if (history.length === 0) {
-      historyListEl.innerHTML = '<div style="color: var(--text-muted); font-size: 12px; text-align: center;">暂无历史记录</div>';
-      return;
-    }
-
-    let html = '';
-    history.forEach(item => {
-      const tagClass = item.type === 'character' ? 'tag-character' : 'tag-pet';
-      const typeText = item.type === 'character' ? '角色' : '宠物';
-      const nameText = item.type === 'character' ? (item.name || '未命名角色') : (item.petName || '未命名宠物');
-      const subInfo = item.type === 'character' ? (item.job || '无职业') : (item.petType === 'organic' ? '有机' : '合成');
-
-      html += `
-        <div class="history-item">
-          <div class="history-info">
-            <span class="history-tag ${tagClass}">${typeText}</span>
-            <strong style="color: #fff;">${nameText}</strong>
-            <span style="color: var(--text-muted);">(${subInfo})</span>
-            <span style="color: #666; font-size: 9px;">${item.time || ''}</span>
-          </div>
-          <div class="history-actions">
-            <button class="btn-hist-load" onclick="loadHistoryToForm(${item.id})">载入</button>
-            <button class="btn-hist-del" onclick="deleteHistoryItem(${item.id})">✕</button>
-          </div>
-        </div>
-      `;
-    });
-
-    historyListEl.innerHTML = html;
+    saveToHistory(petName, 'pet', petData);
   }
 
   function copyToClipboard() {
-    playAudioBeep(850, 'sine', 0.12);
-    const textarea = document.getElementById('outputJson');
-    textarea.select();
-    document.execCommand('copy');
-    alert("已成功复制 JSON 卡到剪贴板！现在可以直接在 CCfolia 房间内粘贴 (Ctrl+V) 生成角色牌。");
+    const txt = document.getElementById('outputJson');
+    txt.select(); document.execCommand('copy');
+    playAudioBeep(900, 'sine', 0.15);
+    alert('📋 角色 JSON 已复制到剪贴板！可以直接在 CCfolia 中粘贴 (Ctrl + V)。');
   }
 
   function copyPetToClipboard() {
-    playAudioBeep(850, 'sine', 0.12);
-    const textarea = document.getElementById('outputPetJson');
-    textarea.select();
-    document.execCommand('copy');
-    alert("已成功复制宠物 JSON 卡到剪贴板！可以直接在 CCfolia 房间内粘贴 (Ctrl+V)。");
+    const txt = document.getElementById('outputPetJson');
+    txt.select(); document.execCommand('copy');
+    playAudioBeep(900, 'sine', 0.15);
+    alert('📋 宠物 JSON 已复制到剪贴板！可以直接在 CCfolia 中粘贴 (Ctrl + V)。');
+  }
+
+  // 本地存储/历史记录
+  function saveToHistory(name, type, jsonObject) {
+    try {
+      let history = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      history = history.filter(item => item.name !== name || item.type !== type);
+      history.unshift({ name, type, data: jsonObject, time: new Date().toLocaleTimeString() });
+      if (history.length > 8) history.pop();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+      renderHistoryUI();
+    } catch(e) {}
+  }
+
+  function clearAllHistory() {
+    localStorage.removeItem(STORAGE_KEY);
+    renderHistoryUI();
+  }
+
+  function deleteHistoryItem(index) {
+    try {
+      let history = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      history.splice(index, 1);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+      renderHistoryUI();
+    } catch(e) {}
+  }
+
+  function renderHistoryUI() {
+    const listEl = document.getElementById('historyList');
+    if (!listEl) return;
+    try {
+      const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      if (history.length === 0) {
+        listEl.innerHTML = `<div style="color: var(--text-muted); font-size: 12px; text-align: center;">暂无历史记录</div>`;
+        return;
+      }
+      let html = '';
+      history.forEach((item, index) => {
+        const tagClass = item.type === 'character' ? 'tag-character' : 'tag-pet';
+        const tagText = item.type === 'character' ? '角色' : '宠物';
+        html += `
+          <div class="history-item">
+            <div class="history-info">
+              <span class="history-tag ${tagClass}">${tagText}</span>
+              <span style="font-weight: bold; color: #fff;">${item.name}</span>
+              <span style="color: var(--text-muted); font-size: 9px;">(${item.time})</span>
+            </div>
+            <div class="history-actions">
+              <button class="btn-hist-load" onclick="loadFromHistory(${index})">加载</button>
+              <button class="btn-hist-del" onclick="deleteHistoryItem(${index})">✕</button>
+            </div>
+          </div>
+        `;
+      });
+      listEl.innerHTML = html;
+    } catch(e) {}
+  }
+
+  function loadFromHistory(index) {
+    playAudioBeep(700, 'sine', 0.1);
+    try {
+      const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      const item = history[index];
+      if (!item) return;
+
+      if (item.type === 'character') {
+        switchTab('character');
+        const jsonStr = JSON.stringify(item.data, null, 2);
+        document.getElementById('outputJson').value = jsonStr;
+        document.getElementById('outputGroup').style.display = 'block';
+        
+        // 反填基本数据
+        const data = item.data.data;
+        if (data.name) document.getElementById('edit_name').value = data.name;
+        if (data.status) {
+          data.status.forEach(s => {
+            if (s.label === '生命值') document.getElementById('edit_hp').value = `${s.value}/${s.max}`;
+            if (s.label === '压力') document.getElementById('edit_stress').value = `${s.value}/${s.max}`;
+            if (s.label === '损伤') document.getElementById('edit_damage').value = `${s.value}/${s.max}`;
+            if (s.label === '护甲') document.getElementById('edit_armor').value = s.value;
+          });
+        }
+      } else {
+        switchTab('pet');
+        const jsonStr = JSON.stringify(item.data, null, 2);
+        document.getElementById('outputPetJson').value = jsonStr;
+        document.getElementById('petOutputGroup').style.display = 'block';
+      }
+    } catch(e) {}
   }
 </script>
 </body>
