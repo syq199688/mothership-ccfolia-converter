@@ -414,11 +414,24 @@
       cursor: pointer;
     }
     .btn-roll-single:hover { background: var(--accent-orange); color: #000; }
-    .loadout-res {
-      font-size: 12px;
-      color: var(--text-main);
+    
+    /* 修改随身物品文本框为一致的无痕输入框 */
+    .loadout-res-input {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: var(--text-main) !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      font-size: 12px !important;
+      font-family: var(--font-body) !important;
       min-height: 20px;
-      word-break: break-all;
+      width: 100% !important;
+    }
+    .loadout-res-input:focus {
+      outline: none !important;
+      border-bottom: 1px dashed var(--accent-cyan) !important;
+      border-radius: 0;
     }
 
     .tab-content {
@@ -857,26 +870,27 @@
         <button type="button" class="btn-roll-all" onclick="rollAllLoadouts()">🎲 一键生成全部</button>
       </div>
       <div class="grid-3">
+        <!-- 全部改为一致的无痕输入框，以支持用户手动修改和无缝展示 -->
         <div class="loadout-item">
           <div class="loadout-item-header">
             <span>行装 (1d10)</span>
             <button type="button" class="btn-roll-single" onclick="rollLoadoutItem()">掷骰</button>
           </div>
-          <div class="loadout-res" id="res_loadout">点击掷骰生成...</div>
+          <input type="text" class="loadout-res-input" id="res_loadout" value="点击掷骰生成...">
         </div>
         <div class="loadout-item">
           <div class="loadout-item-header">
             <span>饰品 (1d100)</span>
             <button type="button" class="btn-roll-single" onclick="rollTrinketItem()">掷骰</button>
           </div>
-          <div class="loadout-res" id="res_trinket">点击掷骰生成...</div>
+          <input type="text" class="loadout-res-input" id="res_trinket" value="点击掷骰生成...">
         </div>
         <div class="loadout-item">
           <div class="loadout-item-header">
             <span>贴章 (1d200)</span>
             <button type="button" class="btn-roll-single" onclick="rollPatchItem()">掷骰</button>
           </div>
-          <div class="loadout-res" id="res_patch">点击掷骰生成...</div>
+          <input type="text" class="loadout-res-input" id="res_patch" value="点击掷骰生成...">
         </div>
       </div>
     </div>
@@ -1084,32 +1098,32 @@ const ARMOR_PRESETS = {
 
   // 饰品 1d100 表
   const TRINKET_TABLE = {
-    "00": "指南：《惊恐：灾难的先兆》", "01": "古董公司股票（小行星矿井）", "02": "指南：《生存：用刀喝汤》", "03": "干谷壳娃娃",
-    "04": "异星花标本（普通）", "05": "贝壳项链", "06": "腐蚀的仿生人逻辑核心", "07": "手册：《寄生体感染迹象》",
-    "08": "指南：《像对待女士一样对待步枪》", "09": "骨制小刀", "10": "外星种封面日历", "11": "被拒绝的申请（殖民地飞船）",
-    "12": "全息蜿蜒舞者", "13": "威士忌蛇酒", "14": "医用容器：紫色粉末", "15": "助兴药片（赝品）",
-    "16": "赌场纸牌", "17": "兔脚", "18": "月长石戒指", "19": "指南：《您与采矿安全》",
-    "20": "手册：《对付拟人种》", "21": "动物头骨，3眼，曲角", "22": "调酒师证书（过期）", "23": "文乐木偶",
-    "24": "有凹痕的勘探带把杯", "25": "诡异面具", "26": "超黑大理石", "27": "象牙骰子",
-    "28": "磨损塔罗牌，边缘用黄铁矿镀金", "29": "一袋各种各样的牙齿", "30": "骨灰（某位亲戚）", "31": "DNR 信标项链",
-    "32": "香烟（咧嘴骷髅头）", "33": "槟榔果药片", "34": "吊坠：滴胶贝壳碎片", "35": "手册：《禅与货物管理艺术》",
-    "36": "一对调酒杯（霰弹枪废弹壳）", "37": "钥匙（童年的家）", "38": "狗牌（传家宝）", "39": "代币：“您的士气提高了吗？”",
-    "40": "手册：《血肉圣骸》", "41": "手册：《冷漠群星》", "42": "军事战役封面日历", "43": "指南：《富船长，穷船长》",
-    "44": "活动海报（家园星球）", "45": "昆虫畸变体标本", "46": "钛制牙签", "47": "皮手套（异形皮）",
-    "48": "露骨黄书：《船长有令》", "49": "略有褶皱的毛巾", "50": "黄铜指节", "51": "毛茸手铐",
-    "52": "恩怨日账", "53": "别致香烟盒", "54": "多种电线扭成的球", "55": "扳手",
-    "56": "观赏型弹簧刀", "57": "磨成粉的异形角", "58": "盆景树", "59": "高尔夫球棒（推杆）",
-    "60": "三叶虫化石", "61": "手册：《星港遍留情》", "62": "个性化补丁连体服", "63": "封在阴暗罐子里的肉质体",
-    "64": "带刺手镯", "65": "口琴", "66": "破烂残旧的色情图片", "67": "崩口咖啡杯，写着：“强制快乐”",
-    "68": "指南：《用枪油和燃料酿酒》", "69": "骨质微型象棋套装，少了棋子", "70": "弯曲锡制陀螺仪", "71": "褪色绿扑克筹码",
-    "72": "四弦小吉他（尤克里里）", "73": "喷漆", "74": "老旧的通缉令", "75": "装着发辫的吊坠",
-    "76": "老鼠雕塑（金）", "77": "防火毯", "78": "连帽大衣，羊毛内衬", "79": "BB 枪",
-    "80": "燧石斧", "81": "吊坠：两名宇航员组成的骷髅头", "82": "魔方", "83": "压力球，上书：“零重力，零压力”",
-    "84": "人造卫星别针", "85": "俄式毛帽", "86": "网眼卡车帽，带有灰色外星种标志", "87": "薄荷万金油",
-    "88": "遮阳帽", "89": "帆布（10米×10米）", "90": "《易经》，没有蓍草", "91": "反曲刀",
-    "92": "战壕铲", "93": "磨尖的黄油小刀", "94": "猫标本", "95": "手册：《解读绵羊之梦》",
-    "96": "褪色照片：风拂荒野", "97": "歌剧院眼镜", "98": "手册：《仿生人霸主》", "99": "始终指向母星的星际罗盘"
-  };
+  "01": "指南：《惊恐：灾难的先兆》", "02": "古董公司股票（小行星矿井）", "03": "指南：《生存：用刀喝汤》", "04": "干谷壳娃娃",
+  "05": "异星花标本（普通）", "06": "贝壳项链", "07": "腐蚀的仿生人逻辑核心", "08": "手册：《寄生体感染迹象》",
+  "09": "指南：《像对待女士一样对待步枪》", "10": "骨制小刀", "11": "外星种封面日历", "12": "被拒绝的申请（殖民地飞船）",
+  "13": "全息蜿蜒舞者", "14": "威士忌蛇酒", "15": "医用容器：紫色粉末", "16": "助兴药片（赝品）",
+  "17": "赌场纸牌", "18": "兔脚", "19": "月长石戒指", "20": "指南：《您与采矿安全》",
+  "21": "手册：《对付拟人种》", "22": "动物头骨，3眼，曲角", "23": "调酒师证书（过期）", "24": "文乐木偶",
+  "25": "有凹痕的勘探带把杯", "26": "诡异面具", "27": "超黑大理石", "28": "象牙骰子",
+  "29": "磨损塔罗牌，边缘用黄铁矿镀金", "30": "一袋各种各样的牙齿", "31": "骨灰（某位亲戚）", "32": "DNR 信标项链",
+  "33": "香烟（咧嘴骷髅头）", "34": "槟榔果药片", "35": "吊坠：滴胶贝壳碎片", "36": "手册：《禅与货物管理艺术》",
+  "37": "一对调酒杯（霰弹枪废弹壳）", "38": "钥匙（童年的家）", "39": "狗牌（传家宝）", "40": "代币：“您的士气提高了吗？”",
+  "41": "手册：《血肉圣骸》", "42": "手册：《冷漠群星》", "43": "军事战役封面日历", "44": "指南：《富船长，穷船长》",
+  "45": "活动海报（家园星球）", "46": "昆虫畸变体标本", "47": "钛制牙签", "48": "皮手套（异形皮）",
+  "49": "露骨黄书：《船长有令》", "50": "略有褶皱的毛巾", "51": "黄铜指节", "52": "毛茸手铐",
+  "53": "恩怨日账", "54": "别致香烟盒", "55": "多种电线扭成的球", "56": "扳手",
+  "57": "观赏型弹簧刀", "58": "磨成粉的异形角", "59": "盆景树", "60": "高尔夫球棒（推杆）",
+  "61": "三叶虫化石", "62": "手册：《星港遍留情》", "63": "个性化补丁连体服", "64": "封在阴暗罐子里的肉质体",
+  "65": "带刺手镯", "66": "口琴", "67": "破烂残旧的色情图片", "68": "崩口咖啡杯，写着：“强制快乐”",
+  "69": "指南：《用枪油和燃料酿酒》", "70": "骨质微型象棋套装，少了棋子", "71": "弯曲锡制陀螺仪", "72": "褪色绿扑克筹码",
+  "73": "四弦小吉他（尤克里里）", "74": "喷漆", "75": "老旧的通缉令", "76": "装着发辫的吊坠",
+  "77": "老鼠雕塑（金）", "78": "防火毯", "79": "连帽大衣，羊毛内衬", "80": "BB 枪",
+  "81": "燧石斧", "82": "吊坠：两名宇航员组成的骷髅头", "83": "魔方", "84": "压力球，上书：“零重力，零压力”",
+  "85": "人造卫星别针", "86": "俄式毛帽", "87": "网眼卡车帽，带有灰色外星种标志", "88": "薄荷万金油",
+  "89": "遮阳帽", "90": "帆布（10米×10米）", "91": "《易经》，没有蓍草", "92": "反曲刀",
+  "93": "战壕铲", "94": "磨尖的黄油小刀", "95": "猫标本", "96": "手册：《解读绵羊之梦》",
+  "97": "褪色照片：风拂荒野", "98": "歌剧院眼镜", "99": "手册：《仿生人霸主》", "100": "始终指向母星的星际罗盘"
+};
 
   // 贴章 1d100 表
   const PATCH_TABLE = {
@@ -1175,18 +1189,26 @@ const ARMOR_PRESETS = {
 
   function rollLoadoutItem() {
     playDiceRollSound();
-    document.getElementById('res_loadout').innerText = `【${rollD10(1)}】根据职类选取`;
+    const num = rollD10(1); // 掷出 1d10 结果
+    const inputEl = document.getElementById('res_loadout');
+    // 将数字与规则拼接写入 value，供后续手动修改
+    inputEl.value = `【${num}】根据职类填入`; 
   }
-  function rollTrinketItem() {
+
+function rollTrinketItem() {
     playDiceRollSound();
     const val = rollD100();
-    document.getElementById('res_trinket').innerText = TRINKET_TABLE[val] || `【${val}】未知饰品`;
+    // 将 1-100 转换为两位数的字符串，例如 5 变成 "05"，100 保持 "100"
+    const key = String(val).padStart(2, '0');
+    document.getElementById('res_trinket').value = TRINKET_TABLE[key] || `【${val}】未知饰品`;
   }
+  
   function rollPatchItem() {
     playDiceRollSound();
     const val = rollD200();
-    document.getElementById('res_patch').innerText = PATCH_TABLE[val] || `【${val}】未知贴章`;
+    document.getElementById('res_patch').value = PATCH_TABLE[val] || `【${val}】未知贴章`;
   }
+  
   function rollAllLoadouts() { rollLoadoutItem(); rollTrinketItem(); rollPatchItem(); }
 
   function parseSlashVal(valStr, defaultMax) {
@@ -1297,9 +1319,9 @@ const ARMOR_PRESETS = {
     document.getElementById('edit_damage').value = '0/2';
     document.getElementById('edit_armor_select').value = '';
     onArmorPresetChange();
-    document.getElementById('res_loadout').innerText = '点击掷骰生成...';
-    document.getElementById('res_trinket').innerText = '点击掷骰生成...';
-    document.getElementById('res_patch').innerText = '点击掷骰生成...';
+    document.getElementById('res_loadout').value = '点击掷骰生成...';
+    document.getElementById('res_trinket').value = '点击掷骰生成...';
+    document.getElementById('res_patch').value = '点击掷骰生成...';
     
     clearSkillContainers();
     document.getElementById('weapons_container').innerHTML = '';
@@ -1692,17 +1714,17 @@ const ARMOR_PRESETS = {
 
       // 3. 随身物品/贴章/饰品读取
       if (sheet) {
-        if (sheet['B27'] && sheet['B27'].v !== undefined) {
-          const val = String(sheet['B27'].v).trim();
-          if (val !== '') document.getElementById('res_loadout').innerText = `【导入】${val}`;
+        if (sheet['C23'] && sheet['C23'].v !== undefined) {
+          const val = String(sheet['C23'].v).trim();
+          if (val !== '') document.getElementById('res_loadout').value = `【导入】${val}`;
         }
         if (sheet['C19'] && sheet['C19'].v !== undefined) {
           const val = String(sheet['C19'].v).trim();
-          if (val !== '') document.getElementById('res_trinket').innerText = `【导入】${TRINKET_TABLE[val] || val}`;
+          if (val !== '') document.getElementById('res_trinket').value = `【导入】${TRINKET_TABLE[val] || val}`;
         }
         if (sheet['C21'] && sheet['C21'].v !== undefined) {
           const val = String(sheet['C21'].v).trim();
-          if (val !== '') document.getElementById('res_patch').innerText = `【导入】${PATCH_TABLE[val] || val}`;
+          if (val !== '') document.getElementById('res_patch').value = `【导入】${PATCH_TABLE[val] || val}`;
         }
       }
     } catch(e) {}
@@ -1956,16 +1978,93 @@ const ARMOR_PRESETS = {
     alert('📋 宠物 JSON 已复制到剪贴板！可以直接在 CCfolia 中粘贴 (Ctrl + V)。');
   }
 
-  // 本地存储/历史记录
+// ================= 本地存储/历史记录 =================
+
   function saveToHistory(name, type, jsonObject) {
     try {
       let history = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
       history = history.filter(item => item.name !== name || item.type !== type);
-      history.unshift({ name, type, data: jsonObject, time: new Date().toLocaleTimeString() });
+      
+      let currentFormData = {};
+      if (type === 'character') {
+        currentFormData = {
+          edit_name: document.getElementById('edit_name')?.value || '',
+          edit_job: document.getElementById('edit_job')?.value || '',
+          edit_response: document.getElementById('edit_response')?.value || '',
+          edit_hp: document.getElementById('edit_hp')?.value || '',
+          edit_stress: document.getElementById('edit_stress')?.value || '',
+          edit_damage: document.getElementById('edit_damage')?.value || '',
+          edit_armor_select: document.getElementById('edit_armor_select')?.value || '',
+          edit_armor: document.getElementById('edit_armor')?.value || '',
+          edit_str: document.getElementById('edit_str')?.value || '',
+          edit_spd: document.getElementById('edit_spd')?.value || '',
+          edit_int: document.getElementById('edit_int')?.value || '',
+          edit_combat: document.getElementById('edit_combat')?.value || '',
+          edit_sanity: document.getElementById('edit_sanity')?.value || '',
+          edit_fear: document.getElementById('edit_fear')?.value || '',
+          edit_body: document.getElementById('edit_body')?.value || '',
+          res_loadout: document.getElementById('res_loadout')?.value || '',
+          res_trinket: document.getElementById('res_trinket')?.value || '',
+          res_patch: document.getElementById('res_patch')?.value || '',
+          
+          // 【新增】保存动态技能列表
+          skills: {
+            10: getSkillsByTier(10),
+            15: getSkillsByTier(15),
+            20: getSkillsByTier(20)
+          },
+          // 【新增】保存动态武器列表
+          weapons: getWeaponsList()
+        };
+      }
+
+      history.unshift({ 
+        name, 
+        type, 
+        data: jsonObject, 
+        formData: currentFormData, 
+        time: new Date().toLocaleTimeString() 
+      });
+
       if (history.length > 8) history.pop();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
       renderHistoryUI();
     } catch(e) {}
+  }
+
+  // 辅助函数：收集指定阶数的技能
+  function getSkillsByTier(tier) {
+    let list = [];
+    const container = document.getElementById(`skills_container_${tier}`);
+    if (!container) return list;
+    Array.from(container.querySelectorAll('.skill-item, .skill-row')).forEach(row => {
+      const nameInput = row.querySelector('input[type="text"], .skill-name');
+      const attrSelect = row.querySelector('select, .skill-attr');
+      if (nameInput) {
+        list.push({
+          name: nameInput.value,
+          attr: attrSelect ? attrSelect.value : ''
+        });
+      }
+    });
+    return list;
+  }
+
+  // 辅助函数：收集武器列表
+  function getWeaponsList() {
+    let list = [];
+    const container = document.getElementById('weapons_container');
+    if (!container) return list;
+    Array.from(container.querySelectorAll('.weapon-item, .weapon-row')).forEach(row => {
+      list.push({
+        name: row.querySelector('.weapon-name')?.value || '',
+        attr: row.querySelector('.weapon-attr')?.value || '',
+        skill: row.querySelector('.weapon-skill')?.value || '',
+        damage: row.querySelector('.weapon-damage')?.value || '',
+        note: row.querySelector('.weapon-note')?.value || ''
+      });
+    });
+    return list;
   }
 
   function clearAllHistory() {
@@ -2013,6 +2112,7 @@ const ARMOR_PRESETS = {
     } catch(e) {}
   }
 
+  // 加载时：一键恢复基础表单、技能和武器
   function loadFromHistory(index) {
     playAudioBeep(700, 'sine', 0.1);
     try {
@@ -2026,17 +2126,61 @@ const ARMOR_PRESETS = {
         document.getElementById('outputJson').value = jsonStr;
         document.getElementById('outputGroup').style.display = 'block';
         
-        // 反填基本数据
-        const data = item.data.data;
-        if (data.name) document.getElementById('edit_name').value = data.name;
-        if (data.status) {
-          data.status.forEach(s => {
-            if (s.label === '生命值') document.getElementById('edit_hp').value = `${s.value}/${s.max}`;
-            if (s.label === '压力') document.getElementById('edit_stress').value = `${s.value}/${s.max}`;
-            if (s.label === '损伤') document.getElementById('edit_damage').value = `${s.value}/${s.max}`;
-            if (s.label === '护甲') document.getElementById('edit_armor').value = s.value;
-          });
+        if (item.formData) {
+          const fd = item.formData;
+          // 1. 恢复基础输入框
+          for (let key in fd) {
+            if (key !== 'skills' && key !== 'weapons') {
+              const el = document.getElementById(key);
+              if (el) el.value = fd[key];
+            }
+          }
+
+          // 2. 【新增】恢复动态技能行
+          if (fd.skills) {
+            [10, 15, 20].forEach(tier => {
+              const container = document.getElementById(`skills_container_${tier}`);
+              if (container && typeof window.clearSkillContainer === 'function') {
+                window.clearSkillContainer(tier); // 清空现有行
+              } else if (container) {
+                container.innerHTML = ''; // 保底清空
+              }
+              
+              if (fd.skills[tier] && fd.skills[tier].length > 0) {
+                fd.skills[tier].forEach(s => {
+                  // 调用你页面原本用于添加技能行的函数（名字通常是 addSkillRow）
+                  if (typeof window.addSkillRow === 'function') {
+                    window.addSkillRow(tier, s.name, s.attr);
+                  }
+                });
+              }
+            });
+          }
+
+          // 3. 【新增】恢复动态武器行
+          if (fd.weapons) {
+            const weaponContainer = document.getElementById('weapons_container');
+            if (weaponContainer) {
+              weaponContainer.innerHTML = ''; // 清空现有武器
+              if (fd.weapons.length > 0) {
+                fd.weapons.forEach(w => {
+                  // 调用你页面原本用于添加武器行的函数（名字通常是 addWeaponRow）
+                  if (typeof window.addWeaponRow === 'function') {
+                    window.addWeaponRow(w.name, w.attr, w.skill, w.damage, w.note);
+                  }
+                });
+              } else {
+                if (typeof window.addWeaponRow === 'function') window.addWeaponRow();
+              }
+            }
+          }
+
         }
+
+        if (typeof updateCommandsPreview === 'function') {
+          updateCommandsPreview();
+        }
+
       } else {
         switchTab('pet');
         const jsonStr = JSON.stringify(item.data, null, 2);
