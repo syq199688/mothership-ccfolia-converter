@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🌠 Mothership角色卡Ccfolia转换器</title>
+  <title>🌠 Mothership角色车卡转换器</title>
   <!-- 引入 Excel 解析库 -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <!-- 引入科幻感 Google Web Fonts -->
@@ -472,6 +472,10 @@
     .badge-15 { background-color: var(--accent-orange); }
     .badge-20 { background-color: var(--accent-red); }
 
+    .skills-data-hidden {
+      display: none;
+    }
+
     .skill-item {
       display: flex;
       gap: 8px;
@@ -480,6 +484,77 @@
     }
     .skill-item input { flex: 2.2; padding: 8px; min-width: 0; }
     .skill-item select { flex: 1.2; padding: 8px 4px; min-width: 62px; }
+
+    .skill-tree-help {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin: 10px 0 14px;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.025);
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+    .skill-tree {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      align-items: start;
+    }
+    .skill-tree-column {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px;
+      min-width: 0;
+    }
+    .skill-tree-column-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding-bottom: 9px;
+      border-bottom: 1px solid var(--border-color);
+      font-family: var(--font-title);
+      font-weight: 700;
+    }
+    .skill-tree-column-header small { color: var(--text-muted); font-family: var(--font-body); font-weight: 400; }
+.skill-node {
+      position: relative;
+      margin: 8px 0;
+      padding: 12px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: rgba(0,0,0,0.2);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .skill-node:hover {
+      border-color: var(--accent-cyan);
+      background: rgba(0, 216, 214, 0.05);
+      transform: translateY(-1px);
+    }
+    .skill-node.learned {
+      border-color: var(--accent-cyan);
+      background: rgba(0, 216, 214, 0.15);
+      color: #fff;
+    }
+    .skill-node.learned::after {
+      content: "✓";
+      color: var(--accent-cyan);
+      font-size: 16px;
+      font-weight: 900;
+    }
+    .skill-node-name { 
+      font-weight: 700; 
+      font-size: 13px;
+    }
 
     .weapon-table-header {
       display: flex;
@@ -679,7 +754,7 @@
 <body>
 
 <div class="card">
-  <h1>🌠 Mothership角色卡Ccfolia转换器</h1>
+  <h1>🌠 Mothership角色车卡转换器</h1>
   <div class="subtitle">支持Excel表一键导入转换，也可以手动填写</div>
 
   <!-- 本地存储/历史记录 UI 模块 -->
@@ -895,35 +970,18 @@
       </div>
     </div>
 
-    <h2>专业技能</h2>
-    <div class="grid-3">
-      <div class="skill-card">
-        <header>
-          <span style="color:var(--accent-cyan);">受训技能 (Trained)</span>
-          <span class="skill-badge badge-10">+10%</span>
-        </header>
-        <div id="skills_container_10"></div>
-        <button class="btn-add-skill" onclick="addSkillRow(10, '', '战斗')">➕ 添加受训技能</button>
-      </div>
+    <h2>专业技能树</h2>
+<div class="skill-tree-help">
+  <span>👆 点击技能块即可学习或取消</span>
+  <span>✓ 亮起表示已掌握该技能</span>
+</div>
+    <div id="skill_tree" class="skill-tree"></div>
 
-      <div class="skill-card">
-        <header>
-          <span style="color:var(--accent-orange);">专家技能 (Expert)</span>
-          <span class="skill-badge badge-15">+15%</span>
-        </header>
-        <div id="skills_container_15"></div>
-        <button class="btn-add-skill" onclick="addSkillRow(15, '', '智力')">➕ 添加专家技能</button>
-      </div>
-
-      <div class="skill-card">
-        <header>
-          <span style="color:var(--accent-red);">大师技能 (Master)</span>
-          <span class="skill-badge badge-20">+20%</span>
-        </header>
-        <div id="skills_container_20"></div>
-        <button class="btn-add-skill" onclick="addSkillRow(20, '', '智力')">➕ 添加大师技能</button>
-      </div>
-    </div>
+    <!-- 保留原有技能容器，作为数据层；技能树的学习结果会同步到这里，
+         因而 Excel、历史记录、武器技能和 CCfolia 指令仍然使用原有接口。 -->
+    <div id="skills_container_10" class="skills-data-hidden"></div>
+    <div id="skills_container_15" class="skills-data-hidden"></div>
+    <div id="skills_container_20" class="skills-data-hidden"></div>
 
     <h2>武器表</h2>
     <div class="weapon-card">
@@ -1027,7 +1085,7 @@
 <datalist id="skills-list-10">
   <option value="语言学"><option value="动物学"><option value="植物学"><option value="地质学">
   <option value="工业装备"><option value="临时拼凑"><option value="化学"><option value="计算机">
-  <option value="零重力"><option value="数学"><option value="艺术"><option value="考古">
+  <option value="零重力"><option value="数学"><option value="艺术"><option value="考古学">
   <option value="神学"><option value="军事训练"><option value="外环门道"><option value="运动">
 </datalist>
 <datalist id="skills-list-15">
@@ -1232,11 +1290,41 @@ function rollTrinketItem() {
   }
 
   const SKILL_DATABASE = {
-    10: { '语言学': '智力', '动物学': '智力', '植物学': '智力', '地质学': '智力', '工业装备': '力量', '临时拼凑': '智力', '化学': '智力', '计算机': '智力', '零重力': '速度', '数学': '智力', '艺术': '智力', '考古': '智力', '神学': '智力', '军事训练': '战斗', '外环门道': '智力', '运动': '力量' },
+    10: { '语言学': '智力', '动物学': '智力', '植物学': '智力', '地质学': '智力', '工业装备': '力量', '临时拼凑': '智力', '化学': '智力', '计算机': '智力', '零重力': '速度', '数学': '智力', '艺术': '智力', '考古学': '智力', '神学': '智力', '军事训练': '战斗', '外环门道': '智力', '运动': '力量' },
     15: { '心理学': '智力', '病理学': '智力', '战地医疗': '智力', '生态学': '智力', '小行星采矿': '力量', '机械修理': '智力', '爆炸物': '智力', '药理学': '智力', '骇客': '智力', '导航': '智力', '物理学': '智力', '神秘主义': '智力', '荒野生存': '智力', '枪械': '战斗', '近身搏斗': '战斗' },
     20: { '知性学': '智力', '外星生物学': '智力', '手术': '速度', '行星学': '智力', '机器人学': '智力', '工程学': '智力', '神经机械学': '智力', '人工智能': '智力', '超空间': '智力', '异种密教': '智力', '指挥': '战斗' }
   };
+  const SKILL_PREREQUISITES = {
+    '小行星采矿': ['地质学', '工业装备'],
+    '生态学': ['植物学', '地质学'],
+    '爆炸物': ['临时拼凑', '化学', '军事训练'],
+    '战地医疗': ['动物学'],
+    '枪械': ['军事训练', '外环门道'],
+    '骇客': ['计算机'],
+    '近身搏斗': ['军事训练', '外环门道', '运动'],
+    '神秘主义': ['艺术', '考古学', '神学'],
+    '病理学': ['动物学', '植物学'],
+    '药理学': ['化学'],
+    '物理学': ['数学'],
+    '导航': ['零重力'],
+    '心理学': ['语言学', '动物学'],
+    '荒野生存': ['植物学', '军事训练'],
+    '人工智能': ['骇客'],
+    '指挥': ['导航', '枪械'],
+    '神经机械学': ['机械修理'],
+    '工程学': ['机械修理'],
+    '外星生物学': ['病理学'],
+    '超空间': ['导航', '物理学', '神秘主义'],
+    '行星学': ['生态学', '小行星采矿'],
+    '机械修理': ['工业装备', '临时拼凑'],
+    '机器人学': ['机械修理'],
+    '知性学': ['心理学'],
+    '手术': ['病理学', '战地医疗'],
+    '异种密教': ['神秘主义']
+  };
   const DEFAULT_SKILL_ATTRS = { ...SKILL_DATABASE[10], ...SKILL_DATABASE[15], ...SKILL_DATABASE[20] };
+  const SKILL_TIER_NAMES = {10:'受训技能',15:'专家技能',20:'大师技能'};
+  let learnedSkills = new Set();
 
   let WEAPON_PRESETS = {
     "跳帮斧": { attr: "战斗", damage: "2d10", note: "范围:邻接；狰狞[+]" },
@@ -1421,6 +1509,7 @@ function rollTrinketItem() {
     });
     initArmorSelect();
     initWeaponDatalist();
+    renderSkillTree();
     addWeaponRow();
     updateCommandsPreview();
     onPetTypeChange();
@@ -1569,26 +1658,124 @@ function rollTrinketItem() {
     updateCommandsPreview();
   }
 
-  function addSkillRow(bonusTier, skillName = '', defaultAttr = '智力') {
+  function addSkillRow(bonusTier, skillName = '', defaultAttr = '智力', options = {}) {
+    if (!skillName || !SKILL_DATABASE[bonusTier] || !SKILL_DATABASE[bonusTier][skillName]) return;
+    learnedSkills.add(skillName);
     const container = document.getElementById(`skills_container_${bonusTier}`);
+    if (!container) return;
+    if (container.querySelector(`[data-skill-name="${CSS.escape(skillName)}"]`)) {
+      renderSkillTree(); updateCommandsPreview(); updateSkillDropdownsInWeapons(); return;
+    }
     const row = document.createElement('div');
     row.className = 'skill-item';
+    row.dataset.skillName = skillName;
     const attrToUse = DEFAULT_SKILL_ATTRS[skillName] || defaultAttr;
-
     row.innerHTML = `
-      <input type="text" class="skill-name-input" value="${skillName}" placeholder="技能名称" list="skills-list-${bonusTier}" oninput="onSkillNameInput(this); updateSkillDropdownsInWeapons();">
+      <input type="text" class="skill-name-input" value="${skillName.replace(/"/g,'&quot;')}" readonly>
       <select class="skill-attr-select" onchange="updateCommandsPreview()">
         <option value="战斗" ${attrToUse==='战斗'?'selected':''}>战斗</option>
         <option value="力量" ${attrToUse==='力量'?'selected':''}>力量</option>
         <option value="速度" ${attrToUse==='速度'?'selected':''}>速度</option>
         <option value="智力" ${attrToUse==='智力'?'selected':''}>智力</option>
       </select>
-      <button onclick="this.parentElement.remove(); updateCommandsPreview(); updateSkillDropdownsInWeapons();">✕</button>
     `;
     container.appendChild(row);
+    renderSkillTree();
     updateCommandsPreview();
     updateSkillDropdownsInWeapons();
   }
+
+  function removeLearnedSkill(skillName) {
+    if (!learnedSkills.has(skillName)) return;
+    const toRemove = new Set([skillName]);
+    let changed = true;
+    while (changed) {
+      changed = false;
+      Object.entries(SKILL_PREREQUISITES).forEach(([name, prereqs]) => {
+        if (learnedSkills.has(name) && prereqs.some(p => toRemove.has(p))) {
+          const stillAvailable = prereqs.some(p => learnedSkills.has(p) && !toRemove.has(p));
+          if (!stillAvailable && !toRemove.has(name)) { toRemove.add(name); changed = true; }
+        }
+      });
+    }
+    toRemove.forEach(name => {
+      learnedSkills.delete(name);
+      [10,15,20].forEach(tier => {
+        const row = document.getElementById(`skills_container_${tier}`)?.querySelector(`[data-skill-name="${CSS.escape(name)}"]`);
+        if (row) row.remove();
+      });
+    });
+    playAudioBeep(420, 'sawtooth', .08);
+    renderSkillTree(); updateCommandsPreview(); updateSkillDropdownsInWeapons();
+  }
+
+  function getSkillTier(skillName) {
+    for (const tier of [10,15,20]) if (SKILL_DATABASE[tier][skillName]) return tier;
+    return null;
+  }
+
+  function isSkillUnlocked(skillName) {
+    const prereqs = SKILL_PREREQUISITES[skillName] || [];
+    return prereqs.length === 0 || prereqs.some(p => learnedSkills.has(p));
+  }
+
+function renderSkillTree() {
+    const tree = document.getElementById('skill_tree');
+    if (!tree) return;
+    tree.innerHTML = '';
+    
+    [10, 15, 20].forEach(tier => {
+      const col = document.createElement('div');
+      col.className = 'skill-tree-column';
+      col.innerHTML = `<div class="skill-tree-column-header"><span>${SKILL_TIER_NAMES[tier]}</span><span class="skill-badge badge-${tier}">+${tier}%</span></div>`;
+      
+      Object.keys(SKILL_DATABASE[tier]).forEach(skillName => {
+        const learned = learnedSkills.has(skillName);
+        const attr = DEFAULT_SKILL_ATTRS[skillName] || '智力';
+        
+        // 检查前置技能是否已全部满足
+        const unlocked = isSkillUnlocked(skillName);
+        
+        const node = document.createElement('div');
+        // 根据是否解锁和是否已学习给予对应的 CSS 样式类
+        let nodeClasses = ['skill-node'];
+        if (learned) nodeClasses.push('learned');
+        if (!unlocked && !learned) nodeClasses.push('locked'); // 可选：未解锁样式
+        
+        node.className = nodeClasses.join(' ');
+        node.innerHTML = `
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="skill-node-name">${skillName}</span>
+            <span style="font-size:11px; opacity:0.6;">(${attr})</span>
+          </div>
+          ${!unlocked && !learned ? '<span style="font-size:10px; color:var(--text-muted);">🔒</span>' : ''}
+        `;
+        
+// 点击交互控制（仅切换高亮状态，不触发下方DOM动态添加）
+node.onclick = () => {
+          if (!unlocked && !learned) {
+            playAudioBeep(300, 'sawtooth', 0.1);
+            return;
+          }
+          playAudioBeep(760, 'sine', 0.07);
+          
+          if (learned) {
+            // 如果已经学习，点击则取消（会自动处理前置依赖并移除底层条目）
+            removeLearnedSkill(skillName);
+          } else {
+            // 如果未学习，点击则调用 addSkillRow 生成底层技能条
+            const tier = getSkillTier(skillName);
+            if (tier) {
+              addSkillRow(tier, skillName, SKILL_DATABASE[tier][skillName]);
+            }
+          }
+        };
+        
+        col.appendChild(node);
+      });
+      tree.appendChild(col);
+    });
+}
 
   function getAllTrainedSkills() {
     let skills = [];
@@ -1681,9 +1868,11 @@ function rollTrinketItem() {
   }
 
   function clearSkillContainers() {
+    learnedSkills.clear();
     document.getElementById('skills_container_10').innerHTML = '';
     document.getElementById('skills_container_15').innerHTML = '';
     document.getElementById('skills_container_20').innerHTML = '';
+    renderSkillTree();
   }
 
   function parseAndFillFormExcel(data, sheet) {
