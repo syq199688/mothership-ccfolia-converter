@@ -966,7 +966,7 @@
         <span class="loadout-panel-title">🎒 随身物品</span>
         <button type="button" class="btn-roll-all" onclick="rollAllLoadouts()">🎲 一键生成全部</button>
       </div>
-      <div class="grid-3">
+      <div class="grid-4">
         <!-- 全部改为一致的无痕输入框，以支持用户手动修改和无缝展示 -->
         <div class="loadout-item">
           <div class="loadout-item-header">
@@ -989,10 +989,17 @@
           </div>
           <input type="text" class="loadout-res-input" id="res_patch" value="点击掷骰生成...">
         </div>
+        <div class="loadout-item">
+          <div class="loadout-item-header">
+            <span>信用点 (2d10x10)</span>
+            <button type="button" class="btn-roll-single" onclick="rollCreditsItem()">掷骰</button>
+          </div>
+          <input type="text" class="loadout-res-input" id="res_credits" value="点击掷骰生成...">
+        </div>
       </div>
     </div>
 
-    <h2>专业技能树</h2>
+    <h2>专业技能</h2>
 <div class="skill-tree-help">
   <span>👆 点击技能块即可学习或取消</span>
   <span>✓ 亮起表示已掌握该技能</span>
@@ -1034,11 +1041,11 @@
     <div class="form-group" id="outputGroup" style="display: none; margin-top: 25px;">
       <h2>✨角色JSON卡</h2>
       <div style="color: var(--text-muted); font-size: 12px; margin-bottom: 10px;">
-        💡 提示：点击下方按钮复制后，直接在CCfolia房间窗口使用 <code style="color: var(--accent-orange);">Ctrl + V</code> 粘贴即可生成角色Token。
+        💡 提示：点击下方按钮复制后，直接在CCfolia房间窗口 <code style="color: var(--accent-orange);">Ctrl + V</code> 粘贴即可生成角色Token。
       </div>
       <textarea id="outputJson" readonly></textarea>
       <div style="display:flex; gap:10px; margin-top:10px;">
-        <button id="btnCopyJson" onclick="copyToClipboard()" style="flex:1; background-color: var(--accent-green); color: #0d0f12; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">📋 一键复制到剪贴板</button>
+        <button id="btnCopyJson" onclick="copyToClipboard()" style="flex:1; background-color: var(--accent-green); color: #0d0f12; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">📋 一键复制</button>
         <button id="btnCardImage" onclick="generateCharacterCardImage()" style="flex:1; background-color: var(--accent-cyan); color: #0d0f12; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">🖼️ 生成角色卡图片</button>
       </div>
     </div>
@@ -1102,11 +1109,11 @@
     <div class="form-group" id="petOutputGroup" style="display: none; margin-top: 25px;">
       <h2 style="color: var(--accent-orange); border-bottom: 1px solid rgba(255,168,1,0.2); padding-bottom: 8px;">✨ 宠物 JSON 角色卡</h2>
       <div style="color: var(--text-muted); font-size: 12px; margin-bottom: 10px;">
-        💡 提示：点击下方按钮复制后，直接在 CCfolia 房间窗口使用 <code style="color: var(--accent-orange);">Ctrl + V</code> 粘贴即可生成宠物Token。
+        💡 提示：点击下方按钮复制后，直接在 CCfolia 房间窗口 <code style="color: var(--accent-orange);">Ctrl + V</code> 粘贴即可生成宠物Token。
       </div>
       <textarea id="outputPetJson" readonly></textarea>
       <div style="display:flex; gap:10px; margin-top:10px;">
-        <button id="btnCopyPet" onclick="copyPetToClipboard()" style="flex:1; background-color: var(--accent-green); color: #0d0f12; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">📋 一键复制到剪贴板</button>
+        <button id="btnCopyPet" onclick="copyPetToClipboard()" style="flex:1; background-color: var(--accent-green); color: #0d0f12; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">📋 一键复制</button>
         <button id="btnPetCardImage" onclick="generatePetCardImage()" style="flex:1; background-color: var(--accent-orange); color: #0d0f12; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">🖼️ 生成宠物卡图片</button>
       </div>
     </div>
@@ -1474,7 +1481,15 @@ function rollTrinketItem() {
     document.getElementById('res_patch').value = PATCH_TABLE[val] || `【${val}】未知贴章`;
   }
   
-  function rollAllLoadouts() { rollLoadoutItem(); rollTrinketItem(); rollPatchItem(); }
+  function rollCreditsItem() {
+    playDiceRollSound();
+    const d1 = rollD10(1);
+    const d2 = rollD10(1);
+    const total = (d1 + d2) * 10;
+    document.getElementById('res_credits').value = `${total} 信用点（2D10: ${d1}+${d2}=${d1 + d2} ×10）`;
+  }
+
+  function rollAllLoadouts() { rollLoadoutItem(); rollTrinketItem(); rollPatchItem(); rollCreditsItem(); }
 
   function parseSlashVal(valStr, defaultMax) {
     if (!valStr) return { val: 0, max: defaultMax || 0 };
@@ -1617,6 +1632,7 @@ function rollTrinketItem() {
     document.getElementById('res_loadout').value = '点击掷骰生成...';
     document.getElementById('res_trinket').value = '点击掷骰生成...';
     document.getElementById('res_patch').value = '点击掷骰生成...';
+    document.getElementById('res_credits').value = '点击掷骰生成...';
     
     clearSkillContainers();
     document.getElementById('weapons_container').innerHTML = '';
@@ -2122,6 +2138,11 @@ node.onclick = () => {
           const val = String(sheet['C21'].v).trim();
           if (val !== '') document.getElementById('res_patch').value = `【导入】${PATCH_TABLE[val] || val}`;
         }
+        // 信用点：读取"角色档案"表 C17（B17 标签"信用点"对应的合并数值格）
+        if (sheet['C17'] && sheet['C17'].v !== undefined) {
+          const val = String(sheet['C17'].v).trim();
+          if (val !== '') document.getElementById('res_credits').value = `【导入】${val} 信用点`;
+        }
       }
     } catch(e) {}
 
@@ -2405,6 +2426,7 @@ node.onclick = () => {
       res_loadout: document.getElementById('res_loadout')?.value || '',
       res_trinket: document.getElementById('res_trinket')?.value || '',
       res_patch: document.getElementById('res_patch')?.value || '',
+      res_credits: document.getElementById('res_credits')?.value || '',
 
       // 动态技能列表
       skills: {
@@ -2756,6 +2778,7 @@ if (history.length > 3) {
           ${statBox('行装', fd.res_loadout)}
           ${statBox('饰品', fd.res_trinket)}
           ${statBox('贴章', fd.res_patch)}
+          ${statBox('信用点', fd.res_credits)}
         </div>
       </div>`;
   }
