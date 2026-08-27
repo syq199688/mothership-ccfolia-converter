@@ -339,24 +339,39 @@
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
     .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
 
-    .stat-btn-group { display: flex; gap: 2px; }
+    .stat-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px 10px;
+      margin-bottom: 8px;
+    }
+
+    .stat-btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
     .btn-adjust {
       background: var(--input-bg);
       border: 1px solid var(--border-color);
       color: var(--accent-cyan);
       font-family: var(--font-mono);
-      font-size: 10px;
-      padding: 2px 4px;
-      border-radius: 3px;
+      font-weight: 600;
+      font-size: 13px;
+      padding: 6px 11px;
+      min-width: 40px;
+      border-radius: 5px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.15s;
       line-height: 1;
     }
     .btn-adjust:hover {
       background: rgba(0, 216, 214, 0.2);
       border-color: var(--accent-cyan);
       color: #fff;
-      box-shadow: 0 0 5px rgba(0, 216, 214, 0.4);
+      box-shadow: 0 0 6px rgba(0, 216, 214, 0.4);
+    }
+    .btn-adjust:active {
+      transform: scale(0.94);
+      background: rgba(0, 216, 214, 0.35);
     }
 
     .loadout-panel {
@@ -856,7 +871,7 @@
     <!-- 基础属性 -->
     <div class="grid-4" style="margin-top: 15px;">
       <div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <div class="stat-header">
           <label for="edit_str" style="margin-bottom: 0;">力量</label>
           <div class="stat-btn-group">
             <button type="button" class="btn-adjust" onclick="adjustValue('edit_str', -10)">-10</button>
@@ -868,7 +883,7 @@
         <input type="number" id="edit_str" value="" placeholder="0" oninput="updateCommandsPreview()">
       </div>
       <div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <div class="stat-header">
           <label for="edit_spd" style="margin-bottom: 0;">速度</label>
           <div class="stat-btn-group">
             <button type="button" class="btn-adjust" onclick="adjustValue('edit_spd', -10)">-10</button>
@@ -880,7 +895,7 @@
         <input type="number" id="edit_spd" value="" placeholder="0" oninput="updateCommandsPreview()">
       </div>
       <div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <div class="stat-header">
           <label for="edit_int" style="margin-bottom: 0;">智力</label>
           <div class="stat-btn-group">
             <button type="button" class="btn-adjust" onclick="adjustValue('edit_int', -10)">-10</button>
@@ -892,7 +907,7 @@
         <input type="number" id="edit_int" value="" placeholder="0" oninput="updateCommandsPreview()">
       </div>
       <div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <div class="stat-header">
           <label for="edit_combat" style="margin-bottom: 0;">战斗</label>
           <div class="stat-btn-group">
             <button type="button" class="btn-adjust" onclick="adjustValue('edit_combat', -10)">-10</button>
@@ -908,7 +923,7 @@
     <!-- 豁免检定 -->
     <div class="grid-3" style="margin-top: 12px;">
       <div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <div class="stat-header">
           <label for="edit_sanity" style="margin-bottom: 0;">理智豁免</label>
           <div class="stat-btn-group">
             <button type="button" class="btn-adjust" onclick="adjustValue('edit_sanity', -10)">-10</button>
@@ -920,7 +935,7 @@
         <input type="number" id="edit_sanity" value="" placeholder="0" oninput="updateCommandsPreview()">
       </div>
       <div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <div class="stat-header">
           <label for="edit_fear" style="margin-bottom: 0;">恐惧豁免</label>
           <div class="stat-btn-group">
             <button type="button" class="btn-adjust" onclick="adjustValue('edit_fear', -10)">-10</button>
@@ -932,7 +947,7 @@
         <input type="number" id="edit_fear" value="" placeholder="0" oninput="updateCommandsPreview()">
       </div>
       <div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <div class="stat-header">
           <label for="edit_body" style="margin-bottom: 0;">身体豁免</label>
           <div class="stat-btn-group">
             <button type="button" class="btn-adjust" onclick="adjustValue('edit_body', -10)">-10</button>
@@ -1172,6 +1187,168 @@ const ARMOR_PRESETS = {
   }
 };
 
+  // 各职类专属初始行装 (1d10)，取自官方角色卡模板
+  const LOADOUT_TABLES_BY_JOB = {
+    "陆战队员": {
+      "0": "背心与迷彩裤（AP 1）、战斗刀（如同手术刀伤害 [ + ]）、兴奋药（×5）",
+      "1": "先进作战服（AP 10）、喷火器、跳帮斧",
+      "2": "标准作战服（AP 7）、战斗霰弹枪（4 发）、背包、野营装备",
+      "3": "标准作战服（AP 7）、脉冲步枪（弹匣×3）、红外目镜",
+      "4": "标准作战服（AP 7）、智能步枪（弹匣×3）、双筒望远镜、个人定位器",
+      "5": "标准作战服（AP 7）、冲锋枪（弹匣×3）、MRE 口粮（×7）",
+      "6": "宽松军服（AP 2）、战斗霰弹枪（弹药×2）、狗（宠物）、狗绳、网球",
+      "7": "宽松军服（AP 2）、转轮手枪（弹药×12）、破片手雷",
+      "8": "军礼服（AP 1）、转轮手枪（弹药×1）、挑战纪念币",
+      "9": "先进作战服（AP 10）、通用机枪（1 箱弹药）、HUD",
+    },
+    "仿生人": {
+      "0": "真空服（AP 3）、智能步枪（弹匣×2）、红外目镜、聚酯薄膜毯子",
+      "1": "真空服（AP 3）、转轮手枪（弹药×12）、远程通信器、单肩包",
+      "2": "防危服（AP 5）、转轮手枪（弹药×6）、除颤器、急救套件、手电",
+      "3": "防危服（AP 5）、泡沫枪（2 发）、样本采集套件、螺丝刀（如同各种工具）",
+      "4": "标准作战服（AP 7）、镇静手枪（3 发）、伞绳（100 米）",
+      "5": "标准乘组制服（AP 1）、震慑电棒、小型宠物（有机）",
+      "6": "标准乘组制服（AP 1）、手术刀、生物扫描仪",
+      "7": "标准乘组制服（AP 1）、破片手雷×1、钢笔刀",
+      "8": "制造商提供的制服（AP 1）、Jump-9 旅票（目的地空白）",
+      "9": "公司制服（AP 1）、VIP 公司密钥卡",
+    },
+    "科学家": {
+      "0": "防危服（AP 5）、镇静手枪（3 发）、生物扫描仪、样本采集套件",
+      "1": "防危服（AP 5）、喷火器（1 发）、兴奋药（×1）、电子工具套组",
+      "2": "真空服（AP 3）、钩索枪、样本采集套件、手电、实验室老鼠（宠物）",
+      "3": "真空服（AP 3）、泡沫枪（2 发）、折叠担架、急救套件、抗辐灵",
+      "4": "实验室外套（AP 1）、螺丝刀（如同各种工具）、医疗扫描仪、疫苗（1 剂）",
+      "5": "实验室外套（AP 1）、神经机械诊断扫描仪、便携计算机终端",
+      "6": "手术服（AP 1）、手术刀、自动化医药（×6）、带氧气罐的防毒面具",
+      "7": "手术服（AP 1）、酸液瓶、聚酯薄膜毯子、急救套件",
+      "8": "标准乘组制服（AP 1）、多用途刀（如同手术刀）、神经机械诊断扫描仪、强力胶带",
+      "9": "平民服装（AP 1）、公文包、处方笺、钢笔（注毒器）",
+    },
+    "技工": {
+      "0": "真空服（AP 3）、激光切割器（1 份额外电池）、修补套件、插着各种工具的工具腰带",
+      "1": "真空服（AP 3）、转轮手枪（6 发）、撬棍、手电",
+      "2": "真空服（AP 3）、钩索枪、铲子、打捞无人机",
+      "3": "防危服（AP 5）、共振砍刀、扳钳、野营工具、滤水器",
+      "4": "重型工作服（AP 2）、爆炸物&引爆器、香烟",
+      "5": "重型工作服（AP 2）、钻头（如同各种工具）、伞绳（100 米）、打捞无人机",
+      "6": "标准乘组制服（AP 1）、战斗霰弹枪（4 发）、延长电线（20 米）、猫咪",
+      "7": "标准乘组制服（AP 1）、射钉枪（32 发）、头灯、插着各种工具的工具腰带、饭盒",
+      "8": "标准乘组制服（AP 1）、信号枪（2 发）、滤水器、个人定位器、地下扫描仪",
+      "9": "便服（AP 1）、撬棍、兴奋药、半打啤酒",
+    },
+
+    // ===== 扩展职业（自定义/社区职业行装表） =====
+    "熊": {
+      "0": "拼凑而成的作战服（6 护甲），共振砍刀，兴奋药 x5",
+      "1": "真空服（3 护甲），跳帮斧，钩索枪，激光切割器",
+      "2": "公路皮衣，战斗霰弹枪（8 发子弹），一包香烟",
+      "3": "实验室白大褂（1 护甲），医疗扫描仪，一份大熊猫肠道微生物样本",
+      "4": "迷彩服（2 护甲），十字弩（7 支弩箭），HUD，战斗刀",
+      "5": "弹药带，挎包，自定义脉冲步枪（10 个弹夹）",
+      "6": "真空服（3 护甲），手持焊枪，磁力靴，抗辐灵（x5）",
+      "7": "雪地服（2 护甲），红外目镜，荧光棒（x10）",
+      "8": "标准乘组制服（1 护甲），各种工具，狗粮（x5）",
+      "9": "实验室连体服（1 护甲），小刀，研究员 ID 卡，条形码",
+    },
+    "混混": {
+      "0": "内衣，极重的宿醉，丑陋的领带，气溶胶安非他命 x5",
+      "1": "囚犯制服，损坏的电击项圈，小刀，色情海报",
+      "2": "囚犯制服，止痛药 x10，切肉刀，厨师帽",
+      "3": "定制真空服（3 护甲），剪线钳刀（同共振砍刀），定位器，左轮手枪（弹夹x1）",
+      "4": "商务西装（1 护甲），射钉枪（弹夹x1），10 包扎带，兴奋药 x2",
+      "5": "打满补丁的牛仔夹克（1 护甲），弹簧刀（同手术刀），手电筒，打火机，包装皱巴巴的香烟。",
+      "6": "内嵌钢板的风衣（3 护甲，速度检定[ - ]），锯短霰弹枪（同战斗霰弹枪，弹夹x2），头巾，墨镜",
+      "7": "仿军装（2 护甲），冲锋枪，一辆全地形卡车的钥匙，飞行员墨镜，装满可卡因的手提箱",
+      "8": "颜色鲜艳的街头服装（1 护甲），本地夜店的门票，双截棍（同撬棍，不过关键失败格外搞笑），赛博义手",
+      "9": "真空服（3 护甲），压缩空气刀（3d10，损伤骰获得[ + ]），贴片炸药 x2，个人用大气层空降伞，内存管理单元，军用级加密无线电",
+    },
+    "打工人": {
+      "0": "乐队T恤，密码破解器，伪造企业ID，口香糖",
+      "1": "白领服装，环形活页夹（账本），一杯合成咖啡，香烟 x10",
+      "2": "白领服装，压力球，微型磁带播放器（企业口号），圆珠笔",
+      "3": "商务西装（1 护甲），兴奋药，冲锋枪（弹夹x2）",
+      "4": "白领服装，止痛药 x10，切纸刀（同手术刀），（偷来的）经理钥匙卡",
+      "5": "白领服装，自热泡面（同 1 份MRE），手持电脑（见《黑客手册》），延长数据线（50米）",
+      "6": "保安制服（1 护甲），随身摄像机，震慑电棒，短程通讯器",
+      "7": "夏威夷衬衫，随身酒壶（空），腕部电脑（见《黑客手册》），集线器",
+      "8": "白领服装，荧光背心（\"疏散引导员\"），写着你所有同事名单的写字板，灭火器，急救套组",
+      "9": "可笑的服务业员工制服（2 护甲），（1d5：菜刀/平底锅/卸胎棒/手持广告板/扫把），兴奋药 x2",
+    },
+    "太空野蛮人": {
+      "0": "平民服装，远古步枪（1d10[ - ]，弹夹 x2），短程通讯器，骨瘦嶙峋的山羊",
+      "1": "标准乘组制服（1 护甲），战斗霰弹枪（弹夹 x1），燧石小刀（同手术刀），石制维纳斯雕像（在星港放松压力时[ + ]）",
+      "2": "装饰着各种护身符的真空服（3 护甲），左轮手枪（弹夹 x2），MRE x7，抗辐灵 x10",
+      "3": "远古作战服（6 护甲），野营装备（同 MoHab 单元），猎犬，捕熊夹，步枪（2d10，3 发，弹夹 x3）",
+      "4": "羊毛衫（2 护甲），双手大锤（2d10，关键成功时[ + ]），号角杯",
+      "5": "标准乘组制服（1 护甲），短刀（同振动砍刀），电子工具套组，脸部油彩，一小包致幻草药，储存有几个世纪前维基百科某个分支的腕部电脑",
+      "6": "旅行服装（2 护甲），字典，带有非常亮的闪光灯的相机，口袋手枪（1d10，3 发，弹夹 x3）",
+      "7": "羊毛衫（1 护甲），弓（1d10，无法穿透护甲，箭 x10），宠物，折叠滑翔机",
+      "8": "锁子甲（2 护甲），火绳枪（2d10，战斗检定[ - ]，需花一轮装弹），装满火药和弹丸的号角（12 次装弹），跃迁邮轮船票",
+      "9": "平民服装，手推车，犁地无人机，1d5 家庭成员",
+    },
+    "虚空神甫": {
+      "0": "袍子（2 护甲），激光剑（2d10，关键失败时伤害自己）",
+      "1": "苏格兰方格裙，撬棍，一小包干瘪的异形尸体",
+      "2": "老旧的毛衣，磁力靴，便携计算机终端",
+      "3": "白西装，熔融共振砍刀（损伤：火焰），LED光环",
+      "4": "宠物蜥蜴，标准制服，兴奋药 x5，止痛药 x3",
+      "5": "牧师领，圣经（新·钦定版），止痛药 x3",
+      "6": "凿子（1d10），钉子，木工工具，保温杯（红酒）",
+      "7": "真空服，红外目镜，拐杖（1d10），扩音器",
+      "8": "标准作战服，脉冲步枪（\"luci\"），紧急信标",
+      "9": "风衣（2 护甲），左轮手枪，带有金色五芒星图案的平檐帽",
+    },
+    "罪犯": {
+      "0": "便服 (护甲值 1)、便携计算机终端、头部显示器 (HUD)、斜挎包、咖啡因片",
+      "1": "便服 (护甲值 1)、生物扫描仪、电子工具套组、解锁套组、螺丝刀",
+      "2": "标准乘组制服 (护甲值 1)、转轮手枪 (12发子弹)、双筒望远镜、震慑电棒",
+      "3": "重型工作服 (护甲值 2)、镇静手枪 (6发子弹)、电钻、解锁套组、伪造的身份证件",
+      "4": "真空服 (护甲值 3)、激光切割器 (已充能)、撬棍、萤光棒 (5支)",
+      "5": "真空服  (护甲值 3)、冲锋枪 (2发子弹)、磁力靴、斜挎包、娱乐性药物 (12剂)",
+      "6": "拼凑护甲 (护甲值 4)、钩索枪、红外目镜、电子工具箱",
+      "7": "拼凑护甲 (护甲值 4)、转轮手枪 (12发子弹)、背包、止痛药",
+      "8": "企业正装 (护甲值 1)、紧凑型手枪 (属性同转轮手枪但极易隐蔽，6发子弹)、娱乐性药物 (2剂)",
+      "9": "标准作战服 (护甲值 7)、战斗霰弹枪 (12发子弹)、兴奋药 (5支)",
+    },
+    "拓荒者": {
+      "0": "标准乘组制服 (护甲值 1)、格斗刀 (1d10 伤害)、双筒望远镜、远程通信器、紧急信标",
+      "1": "重型工作服 (护甲值 2)、手持焊枪、撬棍、生物扫描仪",
+      "2": "迷彩服 (护甲值 2)、共振砍刀、MoHab 单元、滤水器、手电筒",
+      "3": "真空服 (护甲值 3)、冲锋枪 (3发子弹)、头部显示器 (HUD)、无人机 (侦察型)",
+      "4": "真空服 (护甲值 3)、镇静手枪 (6发子弹)、生物扫描仪、医疗扫描仪、急救套件、止痛药",
+      "5": "真空服  (护甲值 3)、钩索枪、手持焊枪、伞绳、修补套件 (2套)",
+      "6": "防危服 (护甲值 5)、转轮手枪 (12发子弹)、生物扫描仪、盖革计数器、抗辐灵 (5粒)",
+      "7": "防危服 (护甲值 5)、战斗霰弹枪 (8发子弹)、MoHab 单元、战斗刀 (属性同手术刀)、滤水器",
+      "8": "防危服 (护甲值 5)、泡沫枪 (3发子弹)、跳帮斧、折叠担架、急救套件",
+      "9": "标准作战服 (护甲值 7)、脉冲步枪 (3发子弹)、随身摄像机、信号枪 (2发)",
+    },
+    "旧型号机器人": {
+      "0": "拖把与水桶、清洁化学品、高可见度反光马甲 (护甲值 1)、个人定位器",
+      "1": "磁力靴、短程通信器、射钉枪 (32发子弹)、各种工具",
+      "2": "手持焊枪、钩索枪 (2发弹药)、无线电干扰器、爆炸物&引爆器",
+      "3": "冲锋枪 (10发)、随身摄像机、太阳镜、剃刀莫西干头、喷涂得五颜六色的机身",
+      "4": "喷火器 (4发)、生物扫描仪、老鼠药 (5剂)、防毒面具 (仅装饰用)",
+      "5": "耐火涂层、泡沫枪 (3发)、短程通信器、跳帮斧",
+      "6": "微型履带假腿组件、紧急信标、信号枪 (6发)、样本采集套件",
+      "7": "神经机械诊断扫描仪、电子工具套组、便携计算机终端、转轮手枪 (12发子弹)",
+      "8": "装甲外骨骼 (护甲值 7)、战斗霰弹枪 (4发)、生物扫描仪、猎杀名单",
+      "9": "额外机械臂、冲锋枪 x2 (共20发)、共振砍刀、自爆装置",
+    },
+    "退休人员": {
+      "0": "夏威夷衬衫与短裤 (护甲值 1)、精致容器装的水果鸡尾酒、止痛药",
+      "1": "运动服与塑料遮阳帽 (护甲值 1)、转轮手枪 (6发子弹)、一副扑克牌、优惠券",
+      "2": "磨损的工作服 (护甲值 1)、伐木斧 (属性同跳帮斧)、木工工具、聚酯薄膜毯子",
+      "3": "磨损的连身工作服 (护甲值 1)、扳手、折刀 (属性同手术刀)、手电筒、6管装啤酒",
+      "4": "纽扣衬衫与长裤 (护甲值 1)、电子工具套组箱、盖革计数器、红外目镜、短程通信器",
+      "5": "便服 (护甲值 1)、相机、纸质星系地图、斜挎包",
+      "6": "体面的衣装 (护甲值 1)、宠物 (猫或小型犬)、拉杆行李箱、氧气罐",
+      "7": "舒适的毛衣与灯芯绒裤 (护甲值 1)、猎枪 (远距，2d10 伤害) (6发子弹)、双筒望远镜、背包",
+      "8": "高尔夫毛衣与长裤 (护甲值 1)、高尔夫球杆 (属性同撬棍)、医疗扫描仪、一瓶威士忌、傲慢自大的特权感",
+      "9": "企业正装 (护甲值 1)、企业 VIP 卡 (退休)、个人定位器、数额惊人但死活不肯花的信用点",
+    },
+  };
+
   // 饰品 1d100 表
   const TRINKET_TABLE = {
   "01": "指南：《惊恐：灾难的先兆》", "02": "古董公司股票（小行星矿井）", "03": "指南：《生存：用刀喝汤》", "04": "干谷壳娃娃",
@@ -1265,10 +1442,22 @@ const ARMOR_PRESETS = {
 
   function rollLoadoutItem() {
     playDiceRollSound();
-    const num = rollD10(1); // 掷出 1d10 结果
+    const num = rollD10(1) - 1; // 转换为 0-9 索引，对应表格行
     const inputEl = document.getElementById('res_loadout');
-    // 将数字与规则拼接写入 value，供后续手动修改
-    inputEl.value = `【${num}】根据职类填入`; 
+    const jobRaw = (document.getElementById('edit_job')?.value || '').trim();
+
+    // 按职类名称匹配对应的行装表（支持职类文本里带其他描述文字的模糊匹配）
+    const matchedJob = Object.keys(LOADOUT_TABLES_BY_JOB).find(job => jobRaw.includes(job));
+
+    if (matchedJob) {
+      const item = LOADOUT_TABLES_BY_JOB[matchedJob][String(num)];
+      inputEl.value = `【${matchedJob} D10:${num}】${item}`;
+    } else if (jobRaw) {
+      // 职类是自定义/非官方四类之一，没有对应表，提示手动填写
+      inputEl.value = `【${num}】"${jobRaw}"暂无内置行装表，请手动填写`;
+    } else {
+      inputEl.value = `【${num}】请先填写"职类"（陆战队员/科学家/技工/仿生人）后再掷骰`;
+    }
   }
 
 function rollTrinketItem() {
