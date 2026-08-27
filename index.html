@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🌠 Mothership角色车卡转换器</title>
+  <title>🌠 Mothership角色卡Ccfolia转换器</title>
   <!-- 引入 Excel 解析库 -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <!-- 引入 html2canvas 用于导出角色卡图片 -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <!-- 引入科幻感 Google Web Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -754,7 +756,7 @@
 <body>
 
 <div class="card">
-  <h1>🌠 Mothership角色车卡转换器</h1>
+  <h1>🌠 Mothership角色卡Ccfolia转换器</h1>
   <div class="subtitle">支持Excel表一键导入转换，也可以手动填写</div>
 
   <!-- 本地存储/历史记录 UI 模块 -->
@@ -785,7 +787,12 @@
 
     <div class="section-header">
       <h2>背景资料</h2>
-      <button class="btn-reset" onclick="resetForm()">🧹 清空重置</button>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn-reset" onclick="exportCharacterCard()" style="border-color: var(--accent-cyan); color: var(--accent-cyan);">📤 导出档案</button>
+        <button class="btn-reset" onclick="triggerCharacterImport()" style="border-color: var(--accent-cyan); color: var(--accent-cyan);">📥 导入档案</button>
+        <input type="file" id="characterImportInput" accept=".json" style="display:none;" onchange="importCharacterCard(event)">
+        <button class="btn-reset" onclick="resetForm()">🧹 清空重置</button>
+      </div>
     </div>
     
     <div class="grid-2" style="margin-top: 15px;">
@@ -1015,7 +1022,10 @@
         💡 提示：点击下方按钮复制后，直接在CCfolia房间窗口使用 <code style="color: var(--accent-orange);">Ctrl + V</code> 粘贴即可生成角色Token。
       </div>
       <textarea id="outputJson" readonly></textarea>
-      <button onclick="copyToClipboard()" style="background-color: var(--accent-green); color: #0d0f12; font-weight:bold; margin-top:10px; cursor:pointer; width:100%; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">📋 一键复制到剪贴板</button>
+      <div style="display:flex; gap:10px; margin-top:10px;">
+        <button id="btnCopyJson" onclick="copyToClipboard()" style="flex:1; background-color: var(--accent-green); color: #0d0f12; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">📋 一键复制到剪贴板</button>
+        <button id="btnCardImage" onclick="generateCharacterCardImage()" style="flex:1; background-color: var(--accent-cyan); color: #0d0f12; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">🖼️ 生成角色卡图片</button>
+      </div>
     </div>
   </div>
 
@@ -1023,7 +1033,12 @@
   <div class="tab-content" id="tab-pet">
     <div class="section-header">
       <h2>🐾 宠物</h2>
-      <button class="btn-reset" onclick="resetPetForm()">🧹 清空重置</button>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn-reset" onclick="exportPetCard()" style="border-color: var(--accent-cyan); color: var(--accent-cyan);">📤 导出档案</button>
+        <button class="btn-reset" onclick="triggerPetImport()" style="border-color: var(--accent-cyan); color: var(--accent-cyan);">📥 导入档案</button>
+        <input type="file" id="petImportInput" accept=".json" style="display:none;" onchange="importPetCard(event)">
+        <button class="btn-reset" onclick="resetPetForm()">🧹 清空重置</button>
+      </div>
     </div>
     
     <div class="grid-3" style="margin-top: 15px;">
@@ -1075,7 +1090,10 @@
         💡 提示：点击下方按钮复制后，直接在 CCfolia 房间窗口使用 <code style="color: var(--accent-orange);">Ctrl + V</code> 粘贴即可生成宠物Token。
       </div>
       <textarea id="outputPetJson" readonly></textarea>
-      <button id="btnCopyPet" onclick="copyPetToClipboard()">📋 一键复制</button>
+      <div style="display:flex; gap:10px; margin-top:10px;">
+        <button id="btnCopyPet" onclick="copyPetToClipboard()" style="flex:1; background-color: var(--accent-green); color: #0d0f12; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">📋 一键复制到剪贴板</button>
+        <button id="btnPetCardImage" onclick="generatePetCardImage()" style="flex:1; background-color: var(--accent-orange); color: #0d0f12; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">🖼️ 生成宠物卡图片</button>
+      </div>
     </div>
   </div>
 
@@ -1429,15 +1447,15 @@ function rollTrinketItem() {
     onPetTypeChange();
   }
 
-  function onPetTypeChange() {
-    playDiceRollSound();
+  function onPetTypeChange(reroll = true) {
+    if (reroll) playDiceRollSound();
     const petType = document.getElementById('edit_pet_type').value;
     const ruleBox = document.getElementById('pet_rule_box');
     const badge10 = document.getElementById('pet_trained_count_badge');
     const badge15 = document.getElementById('pet_expert_count_badge');
 
     if (petType === 'organic') {
-      document.getElementById('edit_pet_instinct').value = rollD10(2) + 40;
+      if (reroll) document.getElementById('edit_pet_instinct').value = rollD10(2) + 40;
       badge10.innerText = "1 项技能"; badge15.innerText = "不可选";
       ruleBox.innerHTML = `
         <strong>【有机宠物规则与能力】</strong><br>
@@ -1447,7 +1465,7 @@ function rollTrinketItem() {
         • <strong>负面效果</strong>：只要宠物受到伤害，主人就会造成 <strong>1 压力</strong>；若宠物遇害，主人需进行<strong>惊恐检定</strong>且压力下限 +1。
       `;
     } else {
-      document.getElementById('edit_pet_instinct').value = rollD10(2) + 30;
+      if (reroll) document.getElementById('edit_pet_instinct').value = rollD10(2) + 30;
       badge10.innerText = "最多 2 项技能"; badge15.innerText = "或 1 项专家技能";
       ruleBox.innerHTML = `
         <strong>【合成宠物规则与能力】</strong><br>
@@ -2153,64 +2171,181 @@ node.onclick = () => {
     saveToHistory(petName, 'pet', petData);
   }
 
+  function showCopiedFeedback(btn, originalText) {
+    if (!btn) return;
+    if (btn.dataset.resetTimer) clearTimeout(Number(btn.dataset.resetTimer));
+    btn.textContent = '✅ 已复制！';
+    const timer = setTimeout(() => { btn.textContent = originalText; }, 1500);
+    btn.dataset.resetTimer = String(timer);
+  }
+
   function copyToClipboard() {
     const txt = document.getElementById('outputJson');
     txt.select(); document.execCommand('copy');
     playAudioBeep(900, 'sine', 0.15);
-    alert('角色 JSON 已复制到剪贴板！可以直接在 CCfolia 中粘贴 (Ctrl + V)。');
+    showCopiedFeedback(document.getElementById('btnCopyJson'), '📋 一键复制到剪贴板');
   }
 
   function copyPetToClipboard() {
     const txt = document.getElementById('outputPetJson');
     txt.select(); document.execCommand('copy');
     playAudioBeep(900, 'sine', 0.15);
-    alert('宠物 JSON 已复制到剪贴板！可以直接在 CCfolia 中粘贴 (Ctrl + V)。');
+    showCopiedFeedback(document.getElementById('btnCopyPet'), '📋 一键复制到剪贴板');
   }
 
 // ================= 本地存储/历史记录 =================
+
+  // 收集角色 Tab 的完整表单数据（供历史记录 / 导出文件共用）
+  function collectCharacterFormData() {
+    return {
+      edit_name: document.getElementById('edit_name')?.value || '',
+      edit_job: document.getElementById('edit_job')?.value || '',
+      edit_response: document.getElementById('edit_response')?.value || '',
+      edit_hp: document.getElementById('edit_hp')?.value || '',
+      edit_stress: document.getElementById('edit_stress')?.value || '',
+      edit_damage: document.getElementById('edit_damage')?.value || '',
+      edit_armor_select: document.getElementById('edit_armor_select')?.value || '',
+      edit_armor: document.getElementById('edit_armor')?.value || '',
+      edit_str: document.getElementById('edit_str')?.value || '',
+      edit_spd: document.getElementById('edit_spd')?.value || '',
+      edit_int: document.getElementById('edit_int')?.value || '',
+      edit_combat: document.getElementById('edit_combat')?.value || '',
+      edit_sanity: document.getElementById('edit_sanity')?.value || '',
+      edit_fear: document.getElementById('edit_fear')?.value || '',
+      edit_body: document.getElementById('edit_body')?.value || '',
+      res_loadout: document.getElementById('res_loadout')?.value || '',
+      res_trinket: document.getElementById('res_trinket')?.value || '',
+      res_patch: document.getElementById('res_patch')?.value || '',
+
+      // 动态技能列表
+      skills: {
+        10: getSkillsByTier(10),
+        15: getSkillsByTier(15),
+        20: getSkillsByTier(20)
+      },
+      // 动态武器列表
+      weapons: getWeaponsList()
+    };
+  }
+
+  // 收集宠物 Tab 的完整表单数据（供历史记录 / 导出文件共用）
+  function collectPetFormData() {
+    const getSkillNames = (tier) => {
+      const container = document.getElementById(`pet_skills_${tier}`);
+      if (!container) return [];
+      return Array.from(container.querySelectorAll('.pet-skill-input'))
+        .map(input => input.value.trim())
+        .filter(v => v);
+    };
+    return {
+      edit_pet_type: document.getElementById('edit_pet_type')?.value || 'organic',
+      edit_pet_name: document.getElementById('edit_pet_name')?.value || '',
+      edit_pet_instinct: document.getElementById('edit_pet_instinct')?.value || '',
+      pet_skills_10: getSkillNames(10),
+      pet_skills_15: getSkillNames(15)
+    };
+  }
+
+  // 恢复角色 Tab 的完整表单数据（历史记录加载 / 文件导入共用）
+  function restoreCharacterFormData(fd) {
+    if (!fd) return;
+
+    // 1. 恢复基础输入框
+    for (let key in fd) {
+      if (key !== 'skills' && key !== 'weapons') {
+        const el = document.getElementById(key);
+        if (el) el.value = fd[key];
+      }
+    }
+
+    // 如果有护甲下拉联动函数，触发它以确保护甲数据同步正确
+    if (typeof onArmorPresetChange === 'function') {
+      onArmorPresetChange();
+    }
+
+    // 2. 恢复动态技能行
+    if (fd.skills) {
+      if (typeof learnedSkills !== 'undefined') learnedSkills.clear();
+      [10, 15, 20].forEach(tier => {
+        const container = document.getElementById(`skills_container_${tier}`);
+        if (container) {
+          if (typeof window.clearSkillContainer === 'function') {
+            window.clearSkillContainer(tier);
+          } else {
+            container.innerHTML = '';
+          }
+        }
+
+        if (fd.skills[tier] && fd.skills[tier].length > 0) {
+          fd.skills[tier].forEach(s => {
+            if (typeof window.addSkillRow === 'function') {
+              window.addSkillRow(tier, s.name, s.attr);
+            }
+          });
+        }
+      });
+    }
+
+    // 3. 恢复动态武器行
+    if (fd.weapons) {
+      const weaponContainer = document.getElementById('weapons_container');
+      if (weaponContainer) {
+        weaponContainer.innerHTML = ''; // 清空现有武器
+        if (fd.weapons.length > 0) {
+          fd.weapons.forEach(w => {
+            if (typeof window.addWeaponRow === 'function') {
+              window.addWeaponRow(w.name, w.attr, w.skill, w.damage, w.note);
+            }
+          });
+        } else {
+          if (typeof window.addWeaponRow === 'function') {
+            window.addWeaponRow(); // 至少留一行空武器
+          }
+        }
+      }
+    }
+
+    if (typeof updateCommandsPreview === 'function') {
+      updateCommandsPreview();
+    }
+  }
+
+  // 恢复宠物 Tab 的完整表单数据（历史记录加载 / 文件导入共用）
+  function restorePetFormData(fd) {
+    if (!fd) return;
+    const typeEl = document.getElementById('edit_pet_type');
+    if (typeEl && fd.edit_pet_type) typeEl.value = fd.edit_pet_type;
+
+    // 只刷新规则说明/角标文案，不重新掷骰本能值
+    if (typeof onPetTypeChange === 'function') onPetTypeChange(false);
+
+    const nameEl = document.getElementById('edit_pet_name');
+    if (nameEl) nameEl.value = fd.edit_pet_name || '';
+    const instinctEl = document.getElementById('edit_pet_instinct');
+    if (instinctEl && fd.edit_pet_instinct !== undefined && fd.edit_pet_instinct !== '') {
+      instinctEl.value = fd.edit_pet_instinct;
+    }
+
+    [10, 15].forEach(tier => {
+      const container = document.getElementById(`pet_skills_${tier}`);
+      if (container) container.innerHTML = '';
+      const names = fd[`pet_skills_${tier}`] || [];
+      names.forEach(name => {
+        if (typeof addPetSkillRow === 'function') addPetSkillRow(tier, name);
+      });
+    });
+  }
 
   function saveToHistory(name, type, jsonObject) {
     try {
       let history = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
       history = history.filter(item => item.name !== name || item.type !== type);
-      
+
       let currentFormData = {};
       if (type === 'character') {
-        currentFormData = {
-          edit_name: document.getElementById('edit_name')?.value || '',
-          edit_job: document.getElementById('edit_job')?.value || '',
-          edit_response: document.getElementById('edit_response')?.value || '',
-          edit_hp: document.getElementById('edit_hp')?.value || '',
-          edit_stress: document.getElementById('edit_stress')?.value || '',
-          edit_damage: document.getElementById('edit_damage')?.value || '',
-          edit_armor_select: document.getElementById('edit_armor_select')?.value || '',
-          edit_armor: document.getElementById('edit_armor')?.value || '',
-          edit_str: document.getElementById('edit_str')?.value || '',
-          edit_spd: document.getElementById('edit_spd')?.value || '',
-          edit_int: document.getElementById('edit_int')?.value || '',
-          edit_combat: document.getElementById('edit_combat')?.value || '',
-          edit_sanity: document.getElementById('edit_sanity')?.value || '',
-          edit_fear: document.getElementById('edit_fear')?.value || '',
-          edit_body: document.getElementById('edit_body')?.value || '',
-          res_loadout: document.getElementById('res_loadout')?.value || '',
-          res_trinket: document.getElementById('res_trinket')?.value || '',
-          res_patch: document.getElementById('res_patch')?.value || '',
-          
-          // 保存动态技能列表
-          skills: {
-            10: getSkillsByTier(10),
-            15: getSkillsByTier(15),
-            20: getSkillsByTier(20)
-          },
-          // 保存动态武器列表
-          weapons: getWeaponsList()
-        };
+        currentFormData = collectCharacterFormData();
       } else if (type === 'pet') {
-        // 如果宠物也有需要保存的表单数据，可以在这里扩展
-        currentFormData = {
-          pet_name: document.getElementById('pet_name')?.value || ''
-          // 根据你宠物面板实际的输入框 id 自行补充
-        };
+        currentFormData = collectPetFormData();
       }
 
       history.unshift({ 
@@ -2332,67 +2467,7 @@ if (history.length > 3) {
         const outputGroupEl = document.getElementById('outputGroup');
         if (outputGroupEl) outputGroupEl.style.display = 'block';
         
-        if (item.formData) {
-          const fd = item.formData;
-          
-          // 1. 恢复基础输入框
-          for (let key in fd) {
-            if (key !== 'skills' && key !== 'weapons') {
-              const el = document.getElementById(key);
-              if (el) el.value = fd[key];
-            }
-          }
-
-          // 如果有护甲下拉联动函数，触发它以确保护甲数据同步正确
-          if (typeof onArmorPresetChange === 'function') {
-            onArmorPresetChange();
-          }
-
-          // 2. 恢复动态技能行
-          if (fd.skills) {
-            [10, 15, 20].forEach(tier => {
-              const container = document.getElementById(`skills_container_${tier}`);
-              if (container) {
-                if (typeof window.clearSkillContainer === 'function') {
-                  window.clearSkillContainer(tier);
-                } else {
-                  container.innerHTML = '';
-                }
-              }
-              
-              if (fd.skills[tier] && fd.skills[tier].length > 0) {
-                fd.skills[tier].forEach(s => {
-                  if (typeof window.addSkillRow === 'function') {
-                    window.addSkillRow(tier, s.name, s.attr);
-                  }
-                });
-              }
-            });
-          }
-
-          // 3. 恢复动态武器行
-          if (fd.weapons) {
-            const weaponContainer = document.getElementById('weapons_container');
-            if (weaponContainer) {
-              weaponContainer.innerHTML = ''; // 清空现有武器
-              if (fd.weapons.length > 0) {
-                fd.weapons.forEach(w => {
-                  if (typeof window.addWeaponRow === 'function') {
-                    window.addWeaponRow(w.name, w.attr, w.skill, w.damage, w.note);
-                  }
-                });
-              } else {
-                if (typeof window.addWeaponRow === 'function') {
-                  window.addWeaponRow(); // 至少留一行空武器
-                }
-              }
-            }
-          }
-        }
-
-        if (typeof updateCommandsPreview === 'function') {
-          updateCommandsPreview();
-        }
+        restoreCharacterFormData(item.formData);
 
       } else {
         if (typeof switchTab === 'function') switchTab('pet');
@@ -2402,10 +2477,263 @@ if (history.length > 3) {
         
         const petOutputGroupEl = document.getElementById('petOutputGroup');
         if (petOutputGroupEl) petOutputGroupEl.style.display = 'block';
+
+        restorePetFormData(item.formData);
       }
     } catch(e) {
       console.error("加载历史记录出错: ", e);
     }
+  }
+
+  // ================= 导出角色卡 / 宠物卡为图片 =================
+
+  function buildCharacterCardHtml(fd) {
+    const skillsHtml = (tier, label, color) => {
+      const list = (fd.skills[tier] || []).map(s => s.name).filter(Boolean);
+      return `
+        <div style="flex:1; min-width:0;">
+          <div style="color:${color}; font-size:13px; font-weight:700; margin-bottom:6px; letter-spacing:1px;">${label}</div>
+          ${list.length ? list.map(n => `<div style="font-size:13px; color:var(--text-main); padding:3px 0; border-bottom:1px dashed var(--border-color);">${n}</div>`).join('') : '<div style="font-size:12px; color:var(--text-muted);">（无）</div>'}
+        </div>`;
+    };
+
+    const weaponsRows = (fd.weapons || []).filter(w => w.name).map(w => `
+      <tr>
+        <td style="padding:6px 8px; border-bottom:1px solid var(--border-color);">${w.name || ''}</td>
+        <td style="padding:6px 8px; border-bottom:1px solid var(--border-color);">${w.attr || ''}</td>
+        <td style="padding:6px 8px; border-bottom:1px solid var(--border-color);">${w.skill || ''}</td>
+        <td style="padding:6px 8px; border-bottom:1px solid var(--border-color);">${w.damage || ''}</td>
+        <td style="padding:6px 8px; border-bottom:1px solid var(--border-color); color:var(--text-muted); font-size:12px;">${w.note || ''}</td>
+      </tr>`).join('');
+
+    const statBox = (label, value) => `
+      <div style="flex:1; background:var(--input-bg); border:1px solid var(--border-color); border-radius:6px; padding:10px; text-align:center;">
+        <div style="font-size:11px; color:var(--text-muted); margin-bottom:4px;">${label}</div>
+        <div style="font-size:18px; font-weight:700; color:#fff; font-family:var(--font-mono);">${value || '—'}</div>
+      </div>`;
+
+    return `
+      <div style="width:820px; padding:32px; background:var(--bg-color); background-image: radial-gradient(circle at 50% 0%, rgba(0,216,214,0.10) 0%, transparent 60%); border:1px solid var(--border-color); box-sizing:border-box; font-family:var(--font-body); color:var(--text-main);">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; border-bottom:2px solid var(--accent-red); padding-bottom:14px; margin-bottom:20px;">
+          <div>
+            <div style="font-family:var(--font-title); font-size:30px; font-weight:800; color:#fff; letter-spacing:1px;">${fd.edit_name || '未命名角色'}</div>
+            <div style="font-size:14px; color:var(--accent-cyan); margin-top:4px;">${fd.edit_job || ''}</div>
+          </div>
+          <div style="font-family:var(--font-title); font-size:12px; color:var(--text-muted); letter-spacing:2px;">MOTHERSHIP RPG</div>
+        </div>
+
+        ${fd.edit_response ? `<div style="font-size:13px; color:var(--text-muted); margin-bottom:20px; line-height:1.6;">${fd.edit_response}</div>` : ''}
+
+        <div style="display:flex; gap:10px; margin-bottom:20px;">
+          ${statBox('生命值 HP', fd.edit_hp)}
+          ${statBox('压力', fd.edit_stress)}
+          ${statBox('损伤', fd.edit_damage)}
+          ${statBox('护甲 AP', fd.edit_armor)}
+        </div>
+
+        <div style="display:flex; gap:10px; margin-bottom:20px;">
+          ${statBox('力量', fd.edit_str)}
+          ${statBox('速度', fd.edit_spd)}
+          ${statBox('智力', fd.edit_int)}
+          ${statBox('战斗', fd.edit_combat)}
+        </div>
+
+        <div style="display:flex; gap:10px; margin-bottom:24px;">
+          ${statBox('理智豁免', fd.edit_sanity)}
+          ${statBox('恐惧豁免', fd.edit_fear)}
+          ${statBox('身体豁免', fd.edit_body)}
+        </div>
+
+        <div style="font-size:15px; font-weight:700; color:#fff; border-left:3px solid var(--accent-cyan); padding-left:8px; margin-bottom:12px;">专业技能</div>
+        <div style="display:flex; gap:20px; margin-bottom:24px;">
+          ${skillsHtml(10, '受训技能 +10%', 'var(--accent-cyan)')}
+          ${skillsHtml(15, '专家技能 +15%', 'var(--accent-orange)')}
+          ${skillsHtml(20, '大师技能 +20%', 'var(--accent-red)')}
+        </div>
+
+        ${weaponsRows ? `
+        <div style="font-size:15px; font-weight:700; color:#fff; border-left:3px solid var(--accent-red); padding-left:8px; margin-bottom:12px;">武器</div>
+        <table style="width:100%; border-collapse:collapse; font-size:13px; margin-bottom:24px;">
+          <thead>
+            <tr style="text-align:left; color:var(--text-muted); font-size:11px;">
+              <th style="padding:4px 8px;">名称</th><th style="padding:4px 8px;">属性</th><th style="padding:4px 8px;">技能加成</th><th style="padding:4px 8px;">伤害骰</th><th style="padding:4px 8px;">备注</th>
+            </tr>
+          </thead>
+          <tbody>${weaponsRows}</tbody>
+        </table>` : ''}
+
+        <div style="font-size:15px; font-weight:700; color:#fff; border-left:3px solid var(--accent-orange); padding-left:8px; margin-bottom:12px;">随身物品</div>
+        <div style="display:flex; gap:10px;">
+          ${statBox('行装', fd.res_loadout)}
+          ${statBox('饰品', fd.res_trinket)}
+          ${statBox('贴章', fd.res_patch)}
+        </div>
+      </div>`;
+  }
+
+  function buildPetCardHtml(fd) {
+    const typeLabel = fd.edit_pet_type === 'synthetic' ? '合成宠物' : '有机宠物';
+    const skillList = (arr, label, color) => `
+      <div style="flex:1;">
+        <div style="color:${color}; font-size:13px; font-weight:700; margin-bottom:6px;">${label}</div>
+        ${(arr && arr.length) ? arr.map(n => `<div style="font-size:13px; padding:3px 0; border-bottom:1px dashed var(--border-color);">${n}</div>`).join('') : '<div style="font-size:12px; color:var(--text-muted);">（无）</div>'}
+      </div>`;
+
+    return `
+      <div style="width:600px; padding:32px; background:var(--bg-color); background-image: radial-gradient(circle at 50% 0%, rgba(255,168,1,0.10) 0%, transparent 60%); border:1px solid var(--border-color); box-sizing:border-box; font-family:var(--font-body); color:var(--text-main);">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; border-bottom:2px solid var(--accent-orange); padding-bottom:14px; margin-bottom:20px;">
+          <div>
+            <div style="font-family:var(--font-title); font-size:28px; font-weight:800; color:#fff;">🐾 ${fd.edit_pet_name || '未命名宠物'}</div>
+            <div style="font-size:13px; color:var(--accent-orange); margin-top:4px;">${typeLabel}</div>
+          </div>
+          <div style="text-align:center; background:var(--input-bg); border:1px solid var(--border-color); border-radius:6px; padding:8px 14px;">
+            <div style="font-size:11px; color:var(--text-muted);">本能</div>
+            <div style="font-size:18px; font-weight:700; color:#fff; font-family:var(--font-mono);">${fd.edit_pet_instinct || '—'}</div>
+          </div>
+        </div>
+        <div style="display:flex; gap:20px;">
+          ${skillList(fd.pet_skills_10, '受训技能 +10%', 'var(--accent-cyan)')}
+          ${skillList(fd.pet_skills_15, '专家技能 +15%', 'var(--accent-orange)')}
+        </div>
+      </div>`;
+  }
+
+  async function renderNodeToPng(innerHtml, filename) {
+    if (typeof html2canvas !== 'function') {
+      alert('图片生成组件未能加载，请检查网络连接后重试。');
+      return;
+    }
+    const wrapper = document.createElement('div');
+    wrapper.style.position = 'fixed';
+    wrapper.style.left = '-9999px';
+    wrapper.style.top = '0';
+    wrapper.innerHTML = innerHtml;
+    document.body.appendChild(wrapper);
+    try {
+      const target = wrapper.firstElementChild;
+      const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-color').trim() || '#06080a';
+      const canvas = await html2canvas(target, { backgroundColor: bgColor, scale: 2, useCORS: true });
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 'image/png');
+    } catch (err) {
+      console.error('生成角色卡图片失败: ', err);
+      alert('生成图片失败，请重试。');
+    } finally {
+      document.body.removeChild(wrapper);
+    }
+  }
+
+  function generateCharacterCardImage() {
+    const fd = collectCharacterFormData();
+    const btn = document.getElementById('btnCardImage');
+    const originalText = btn ? btn.textContent : '';
+    if (btn) btn.textContent = '⏳ 生成中...';
+    renderNodeToPng(buildCharacterCardHtml(fd), `角色卡_${sanitizeFilename(fd.edit_name)}.png`)
+      .finally(() => { if (btn) btn.textContent = originalText; });
+  }
+
+  function generatePetCardImage() {
+    const fd = collectPetFormData();
+    const btn = document.getElementById('btnPetCardImage');
+    const originalText = btn ? btn.textContent : '';
+    if (btn) btn.textContent = '⏳ 生成中...';
+    renderNodeToPng(buildPetCardHtml(fd), `宠物卡_${sanitizeFilename(fd.edit_pet_name)}.png`)
+      .finally(() => { if (btn) btn.textContent = originalText; });
+  }
+
+
+  function downloadJsonFile(filename, dataObj) {
+    const blob = new Blob([JSON.stringify(dataObj, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function sanitizeFilename(name) {
+    return (name || '未命名').replace(/[\\/:*?"<>|]/g, '_').trim() || '未命名';
+  }
+
+  function exportCharacterCard() {
+    const name = document.getElementById('edit_name')?.value || '未命名角色';
+    const payload = {
+      app: 'mothership-card-exporter',
+      type: 'character',
+      exportedAt: new Date().toISOString(),
+      formData: collectCharacterFormData()
+    };
+    downloadJsonFile(`角色档案_${sanitizeFilename(name)}.json`, payload);
+    if (typeof playAudioBeep === 'function') playAudioBeep(900, 'sine', 0.12);
+  }
+
+  function exportPetCard() {
+    const name = document.getElementById('edit_pet_name')?.value || '未命名宠物';
+    const payload = {
+      app: 'mothership-card-exporter',
+      type: 'pet',
+      exportedAt: new Date().toISOString(),
+      formData: collectPetFormData()
+    };
+    downloadJsonFile(`宠物档案_${sanitizeFilename(name)}.json`, payload);
+    if (typeof playAudioBeep === 'function') playAudioBeep(900, 'sine', 0.12);
+  }
+
+  function triggerCharacterImport() { document.getElementById('characterImportInput').click(); }
+  function triggerPetImport() { document.getElementById('petImportInput').click(); }
+
+  function importCharacterCard(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const parsed = JSON.parse(e.target.result);
+        const fd = parsed.formData || parsed; // 兼容直接是 formData 的文件
+        if (typeof switchTab === 'function') switchTab('character');
+        restoreCharacterFormData(fd);
+        if (typeof playAudioBeep === 'function') playAudioBeep(700, 'sine', 0.1);
+      } catch (err) {
+        alert('导入失败：文件内容不是有效的角色档案 JSON。');
+        console.error(err);
+      } finally {
+        event.target.value = '';
+      }
+    };
+    reader.readAsText(file, 'utf-8');
+  }
+
+  function importPetCard(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const parsed = JSON.parse(e.target.result);
+        const fd = parsed.formData || parsed;
+        if (typeof switchTab === 'function') switchTab('pet');
+        restorePetFormData(fd);
+        if (typeof playAudioBeep === 'function') playAudioBeep(700, 'sine', 0.1);
+      } catch (err) {
+        alert('导入失败：文件内容不是有效的宠物档案 JSON。');
+        console.error(err);
+      } finally {
+        event.target.value = '';
+      }
+    };
+    reader.readAsText(file, 'utf-8');
   }
 </script>
 </body>
