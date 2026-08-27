@@ -859,7 +859,7 @@
           <span>护甲值 (AP): </span>
           <input type="number" id="edit_armor" value="0" style="width: 70px; display: inline-block; padding: 4px; margin-left: 5px;" placeholder="0" oninput="updateCommandsPreview()">
         </div>
-        <div class="armor-info-detail" id="armor_detail_txt">未穿戴特殊防护具</div>
+        <div class="armor-info-detail" id="armor_detail_txt">未穿戴防具</div>
       </div>
     </div>
 
@@ -1696,7 +1696,7 @@ function rollTrinketItem() {
       if (armorName !== "") {
         detailTxt.innerText = `自定义防护设备：${armorName}`;
       } else {
-        detailTxt.innerText = "未穿戴特殊防护具";
+        detailTxt.innerText = "未穿戴防具";
       }
     }
     updateCommandsPreview();
