@@ -1158,7 +1158,7 @@
     setTimeout(() => playAudioBeep(1200, 'triangle', 0.08), 50);
   }
 
-// 护甲数据库 (ARMOR_PRESETS)
+// 融合护甲数据库 (ARMOR_PRESETS)
 const ARMOR_PRESETS = {
   "标准乘组制服": { 
     ap: 1, 
@@ -1168,7 +1168,7 @@ const ARMOR_PRESETS = {
   "真空服": { 
     ap: 3, 
     cost: "Cr 10,000", 
-    notes: "旨在用于外太空作业。12小时氧气，速度[-]。包括：短程通信器、头灯以及辐射防护。穿孔会在1d5轮内失压。" 
+    notes: "旨在用于外太空作业。12小时氧气，速度检定劣势[-]。包括：短程通信器、头灯以及辐射防护。穿孔会在 1d5 轮内失压。" 
   },
   "防危服": { 
     ap: 5, 
@@ -1183,7 +1183,7 @@ const ARMOR_PRESETS = {
   "先进作战服": { 
     ap: 10, 
     cost: "Cr 12,000", 
-    notes: "陆战队员部署到外星遭遇战时穿着的重型护甲。1小时氧气，速度[-]。包括：短程通信器、随身摄像机、头灯、HUD、外骨骼织物（力量[+]）、辐射防御。伤害减免：3" 
+    notes: "陆战队员部署到外星遭遇战时穿着的重型护甲。1小时氧气，速度检定劣势[-]。包括：短程通信器、随身摄像机、头灯、HUD、外骨骼织物（力量检定优势[+]）、辐射防御。伤害减免：3" 
   }
 };
 
@@ -1538,24 +1538,23 @@ function rollTrinketItem() {
     "战斗霰弹枪": { attr: "战斗", damage: "4d10", note: "范围:近距；枪击；远距及更远范围1d10伤害" },
     "撬棍": { attr: "力量", damage: "1d5", note: "范围:邻接；钝击[+]；打开卡住的气闸等力量检定赋予[+]" },
     "喷火器": { attr: "战斗", damage: "2d10", note: "范围:近距；火焰&爆炸[+]；身体豁免[-]否则着火(2d10/轮)" },
-    "信号枪": { attr: "战斗", damage: "1d5", note: "范围:远距；火焰&爆炸[-]；高亮信号火光" },
+    "信号枪": { attr: "战斗", damage: "1d5", note: "范围:远距；火焰&爆炸[+]；高亮信号火光" },
     "泡沫枪": { attr: "战斗", damage: "1", note: "范围:近距；钝击；身体豁免失败动弹不得，力量检定[-]才能逃脱" },
     "破片手雷": { attr: "战斗", damage: "3d10", note: "范围:近距；火焰&爆炸；若命中所有邻接敌人遭受伤害" },
-    "通用机枪": { attr: "战斗", damage: "4d10", note: "范围:远距；枪击[+]；双手，沉重，可绕过角落开火" },
+    "通用机枪": { attr: "战斗", damage: "4d10", note: "范围:远距；枪击[+]；双手，沉重，绕过角落开火" },
     "手持焊枪": { attr: "战斗", damage: "1d10", note: "范围:邻接；出血；可以切开气闸门" },
-    "激光切割器": { attr: "战斗", damage: "1d100", note: "范围:远距；出血[+]或惨烈[+]；双手，沉重，每次射击都要间隔一轮。装
-填:1小时(供能)；6小时(太阳能)" },
+    "激光切割器": { attr: "战斗", damage: "1d100", note: "范围:远距；出血[+] 或狰狞[+]；双手，沉重" },
     "射钉枪": { attr: "战斗", damage: "1d5", note: "范围:近距；出血" },
     "脉冲步枪": { attr: "战斗", damage: "3d10", note: "范围:远距；枪击" },
     "转轮手枪": { attr: "战斗", damage: "1d10+1", note: "范围:近距；枪击" },
     "钩索枪": { attr: "战斗", damage: "1d10", note: "范围:近距；1d10伤害+移除时2d10伤害；出血[+]；100米细丝，身体豁免失败被缠住" },
     "手术刀": { attr: "战斗", damage: "1d5", note: "范围:邻接；出血[+]" },
-    "智能步枪": { attr: "战斗", damage: "4d10", note: "范围:极距；枪击[+](AA)；近距内开火战斗检定带有[-]" },
+    "智能步枪": { attr: "战斗", damage: "4d10", note: "范围:远距；枪击[+](AA)；在近距范围内开火，战斗检定带有[-]" },
     "冲锋枪": { attr: "战斗", damage: "2d10", note: "范围:远距；枪击；可以单手开火" },
     "震慑电棒": { attr: "战斗", damage: "1d5", note: "范围:邻接；钝击；身体豁免失败震慑1轮" },
     "镇静手枪": { attr: "战斗", damage: "1d5", note: "范围:近距；钝击；若造成伤害敌人须通过身体豁免，失败失去意识1d10轮" },
     "徒手": { attr: "力量", damage: "力量/10", note: "范围:邻接；钝击" },
-    "共振砍刀": { attr: "战斗", damage: "3d10", note: "范围:邻接；出血+惨烈(AA)；造成损伤时同时根据出血和惨烈投骰" }
+    "共振砍刀": { attr: "战斗", damage: "3d10", note: "范围:邻接；出血+狰狞(AA)；造成损伤时同时根据出血和狰狞列投骰" }
   };
 
   const STORAGE_KEY = 'MOTHERSHIP_CHARACTERS_HISTORY';
@@ -1648,10 +1647,10 @@ function rollTrinketItem() {
       if (reroll) document.getElementById('edit_pet_instinct').value = rollD10(2) + 40;
       badge10.innerText = "1 项技能"; badge15.innerText = "不可选";
       ruleBox.innerHTML = `
-        <strong>【有机宠物】</strong><br>
-        • <strong>属性</strong>：损伤 1(HP 10) | 本能 2d10+40<br>
+        <strong>【有机宠物规则与能力】</strong><br>
+        • <strong>属性</strong>：损伤 1 (HP 10) | 本能 2d10+40<br>
         • <strong>技能</strong>：1 项受训技能 (+10%)<br>
-        • <strong>休息</strong>：休息豁免带有 <strong>[+] 优势</strong><br>
+        • <strong>休息</strong>：休息豁免带有 <strong>[ + ] 优势</strong><br>
         • <strong>负面效果</strong>：只要宠物受到伤害，主人就会造成 <strong>1 压力</strong>；若宠物遇害，主人需进行<strong>惊恐检定</strong>且压力下限 +1。
       `;
     } else {
@@ -1681,7 +1680,7 @@ function rollTrinketItem() {
       if (armorName !== "") {
         detailTxt.innerText = `自定义防护设备：${armorName}`;
       } else {
-        detailTxt.innerText = "未穿戴防具";
+        detailTxt.innerText = "未穿戴特殊防护具";
       }
     }
     updateCommandsPreview();
