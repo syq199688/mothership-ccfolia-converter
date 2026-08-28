@@ -337,7 +337,7 @@
 
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
+    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; align-items: start; }
 
     .stat-header {
       display: flex;
@@ -432,7 +432,8 @@
     }
     .btn-roll-single:hover { background: var(--accent-orange); color: #000; }
     
-    /* 修改随身物品文本框为一致的无痕输入框 */
+    /* 修改随身物品文本框为一致的无痕多行文本框：自动换行、自动增高，
+       配合 grid-4 的默认行拉伸，四列会对齐到最高的那一列，不再参差不齐 */
     .loadout-res-input {
       background: transparent !important;
       border: none !important;
@@ -444,6 +445,12 @@
       font-family: var(--font-body) !important;
       min-height: 20px;
       width: 100% !important;
+      flex: 0 0 auto;
+      resize: none;
+      overflow: hidden;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.5;
     }
     .loadout-res-input:focus {
       outline: none !important;
@@ -515,6 +522,7 @@
       font-size: 12px;
     }
     .skill-tree {
+      position: relative;
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 14px;
@@ -538,6 +546,9 @@
       font-weight: 700;
     }
     .skill-tree-column-header small { color: var(--text-muted); font-family: var(--font-body); font-weight: 400; }
+    .skill-tree-column-header span:first-child.tier-title-10 { color: var(--accent-cyan); }
+    .skill-tree-column-header span:first-child.tier-title-15 { color: var(--accent-orange); }
+    .skill-tree-column-header span:first-child.tier-title-20 { color: var(--accent-red); }
 .skill-node {
       position: relative;
       margin: 8px 0;
@@ -572,16 +583,82 @@
       font-weight: 700; 
       font-size: 13px;
     }
-    .skill-node.job-recommended:not(.learned) {
-      border-color: var(--accent-orange);
-      background: rgba(255, 168, 1, 0.08);
-      box-shadow: 0 0 0 1px rgba(255, 168, 1, 0.35) inset;
+    .skill-node.locked {
+      opacity: 0.5;
+      cursor: not-allowed;
+      border-style: dashed;
+      flex-direction: column;
+      align-items: stretch;
     }
-    .skill-node.job-recommended:not(.learned) .skill-node-name::after {
-      content: " ★自带";
-      color: var(--accent-orange);
+    .skill-node.locked:hover {
+      border-color: var(--border-color);
+      background: rgba(0,0,0,0.2);
+      transform: none;
+    }
+    .skill-node-prereq {
       font-size: 10px;
-      font-weight: 700;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-top: 3px;
+    }
+    .skill-node-prereq b { color: var(--accent-cyan); font-weight: 600; }
+
+    .skill-node-highlight-prereq {
+      border-color: var(--accent-orange) !important;
+      box-shadow: 0 0 0 2px rgba(255, 168, 1, 0.35), 0 0 14px rgba(255, 168, 1, 0.35) !important;
+      z-index: 3;
+    }
+    .skill-node-highlight-prereq::before {
+      content: "前置";
+      position: absolute;
+      top: -8px;
+      left: 10px;
+      background: var(--accent-orange);
+      color: #0d0f12;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 4px;
+      letter-spacing: 1px;
+    }
+    .skill-node-highlight-dependent {
+      border-color: var(--accent-cyan) !important;
+      box-shadow: 0 0 0 2px rgba(0, 216, 214, 0.35), 0 0 14px rgba(0, 216, 214, 0.35) !important;
+      z-index: 3;
+    }
+    .skill-node-highlight-dependent::before {
+      content: "可解锁";
+      position: absolute;
+      top: -8px;
+      left: 10px;
+      background: var(--accent-cyan);
+      color: #0d0f12;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 4px;
+      letter-spacing: 1px;
+    }
+    .skill-node.job-recommended:not(.learned) {
+      border: 1px dashed var(--accent-orange);
+      background: rgba(0,0,0,0.2);
+    }
+    .skill-node.job-recommended:not(.learned)::before {
+      content: "★自带 · 点击选择";
+      position: absolute;
+      top: -8px;
+      left: 10px;
+      background: var(--accent-orange);
+      color: #0d0f12;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 4px;
+      letter-spacing: 1px;
+    }
+    .skill-node.job-recommended:not(.learned):hover {
+      border-color: var(--accent-orange);
+      background: rgba(255, 168, 1, 0.1);
     }
 
     .job-bonus-banner {
@@ -879,7 +956,7 @@
       </div>
       <div>
         <label for="edit_job">职类</label>
-        <input type="text" id="edit_job" list="job-datalist" value="" placeholder="选择预设职类或手动输入自定义职业" oninput="updateJobResponse()" onchange="updateJobResponse()">
+        <input type="text" id="edit_job" list="job-datalist" value="" placeholder="选择预设职类或手动输入" oninput="updateJobResponse()" onchange="updateJobResponse()">
         <datalist id="job-datalist"></datalist>
       </div>
     </div>
@@ -910,7 +987,7 @@
       <div>
         <label for="edit_armor_select">护甲</label>
         <!-- 修改为 input + datalist 模式，支持下拉选择与手动任意填写 -->
-        <input type="text" id="edit_armor_select" list="armor-datalist" placeholder="选择预设或直接手动填写" oninput="onArmorPresetChange()" onchange="onArmorPresetChange()">
+        <input type="text" id="edit_armor_select" list="armor-datalist" placeholder="选择预设或手动填写" oninput="onArmorPresetChange()" onchange="onArmorPresetChange()">
         <datalist id="armor-datalist">
           <!-- 动态生成的护甲预设选项 -->
         </datalist>
@@ -922,7 +999,7 @@
           <span>护甲值 (AP): </span>
           <input type="number" id="edit_armor" value="0" style="width: 70px; display: inline-block; padding: 4px; margin-left: 5px;" placeholder="0" oninput="updateCommandsPreview()">
         </div>
-        <div class="armor-info-detail" id="armor_detail_txt">未穿戴特殊防护具</div>
+        <div class="armor-info-detail" id="armor_detail_txt">未穿戴防具</div>
       </div>
     </div>
 
@@ -1035,39 +1112,40 @@
         <button type="button" class="btn-roll-all" onclick="rollAllLoadouts()">🎲 一键生成全部</button>
       </div>
       <div class="grid-4">
-        <!-- 全部改为一致的无痕输入框，以支持用户手动修改和无缝展示 -->
+        <!-- 全部改为一致的无痕多行文本框，支持自动换行完整显示 + 手动修改；
+             grid 默认按行拉伸每个格子高度一致，textarea flex:1 填满剩余空间，四列不再参差不齐 -->
         <div class="loadout-item">
           <div class="loadout-item-header">
             <span>行装 (1d10)</span>
             <button type="button" class="btn-roll-single" onclick="rollLoadoutItem()">掷骰</button>
           </div>
-          <input type="text" class="loadout-res-input" id="res_loadout" value="点击掷骰生成...">
+          <textarea class="loadout-res-input" id="res_loadout" rows="1">点击掷骰生成...</textarea>
         </div>
         <div class="loadout-item">
           <div class="loadout-item-header">
             <span>饰品 (1d100)</span>
             <button type="button" class="btn-roll-single" onclick="rollTrinketItem()">掷骰</button>
           </div>
-          <input type="text" class="loadout-res-input" id="res_trinket" value="点击掷骰生成...">
+          <textarea class="loadout-res-input" id="res_trinket" rows="1">点击掷骰生成...</textarea>
         </div>
         <div class="loadout-item">
           <div class="loadout-item-header">
             <span>贴章 (1d200)</span>
             <button type="button" class="btn-roll-single" onclick="rollPatchItem()">掷骰</button>
           </div>
-          <input type="text" class="loadout-res-input" id="res_patch" value="点击掷骰生成...">
+          <textarea class="loadout-res-input" id="res_patch" rows="1">点击掷骰生成...</textarea>
         </div>
         <div class="loadout-item">
           <div class="loadout-item-header">
             <span>信用点 (2d10x10)</span>
             <button type="button" class="btn-roll-single" onclick="rollCreditsItem()">掷骰</button>
           </div>
-          <input type="text" class="loadout-res-input" id="res_credits" value="点击掷骰生成...">
+          <textarea class="loadout-res-input" id="res_credits" rows="1">点击掷骰生成...</textarea>
         </div>
       </div>
     </div>
 
-    <h2>专业技能树</h2>
+    <h2>专业技能</h2>
 <div class="job-skill-hint" id="job_skill_hint">
   <div class="job-skill-hint-title">💡 <span id="job_skill_hint_jobname"></span> 自带 & 奖励技能</div>
   <div id="job_skill_hint_body"></div>
@@ -1075,7 +1153,7 @@
 <div class="skill-tree-help">
   <span>👆 点击技能块即可学习或取消</span>
   <span>✓ 亮起表示已掌握该技能</span>
-  <span>★ 橙色边框表示该职业自带技能</span>
+  <span>★ 橙色虚线框=职业自带技能，仅为提示，需点击才会真正选中</span>
 </div>
     <div id="skill_tree" class="skill-tree"></div>
 
@@ -1520,8 +1598,54 @@ const ARMOR_PRESETS = {
   function rollD100() { return Math.floor(Math.random() * 100) + 1; }
   function rollD200() { return Math.floor(Math.random() * 200) + 1; }
 
-  function rollLoadoutItem() {
-    playDiceRollSound();
+  // 随身物品文本框自动撑高：先各自按内容量出真实需要的高度，
+  // 再按当前实际的列数分组（同一行才对齐），只把"同一行"里的格子
+  // 统一对齐到该行最高的那个，行与行之间互不影响，避免参差不齐
+  function autoGrowLoadout(el) {
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+  }
+  function autoGrowAllLoadouts() {
+    const ids = ['res_loadout', 'res_trinket', 'res_patch', 'res_credits'];
+    const textareas = ids.map(id => document.getElementById(id)).filter(Boolean);
+    if (!textareas.length) return;
+
+    // 第一步：每个格子先按自己的实际内容量出真实高度
+    textareas.forEach(autoGrowLoadout);
+
+    // 第二步：根据当前网格实际列数，把 4 个格子按行分组
+    const grid = textareas[0].closest('.grid-4');
+    let colCount = 4;
+    if (grid) {
+      const cols = getComputedStyle(grid).gridTemplateColumns.trim().split(/\s+/).filter(Boolean);
+      if (cols.length) colCount = cols.length;
+    }
+
+    // 第三步：同一行内取最高值，让该行所有格子对齐到这个高度
+    for (let i = 0; i < textareas.length; i += colCount) {
+      const rowItems = textareas.slice(i, i + colCount);
+      const maxH = Math.max(...rowItems.map(el => el.scrollHeight));
+      rowItems.forEach(el => { el.style.height = maxH + 'px'; });
+    }
+  }
+  // 手动编辑时也同步自动增高
+  document.addEventListener('DOMContentLoaded', () => {
+    ['res_loadout', 'res_trinket', 'res_patch', 'res_credits'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', autoGrowAllLoadouts);
+    });
+    autoGrowAllLoadouts();
+  });
+  // 窗口宽度变化（比如切到 2 列布局）会改变每行能容纳的字数，需要重新计算高度
+  let _loadoutResizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(_loadoutResizeTimer);
+    _loadoutResizeTimer = setTimeout(autoGrowAllLoadouts, 150);
+  });
+
+  function rollLoadoutItem(playSound = true) {
+    if (playSound) playDiceRollSound();
     const num = rollD10(1) - 1; // 转换为 0-9 索引，对应表格行
     const inputEl = document.getElementById('res_loadout');
     const jobRaw = (document.getElementById('edit_job')?.value || '').trim();
@@ -1538,31 +1662,42 @@ const ARMOR_PRESETS = {
     } else {
       inputEl.value = `【${num}】请先填写"职类"后再掷骰`;
     }
+    autoGrowAllLoadouts();
   }
 
-function rollTrinketItem() {
-    playDiceRollSound();
+function rollTrinketItem(playSound = true) {
+    if (playSound) playDiceRollSound();
     const val = rollD100();
     // 将 1-100 转换为两位数的字符串，例如 5 变成 "05"，100 保持 "100"
     const key = String(val).padStart(2, '0');
     document.getElementById('res_trinket').value = TRINKET_TABLE[key] || `【${val}】未知饰品`;
+    autoGrowAllLoadouts();
   }
   
-  function rollPatchItem() {
-    playDiceRollSound();
+  function rollPatchItem(playSound = true) {
+    if (playSound) playDiceRollSound();
     const val = rollD200();
     document.getElementById('res_patch').value = PATCH_TABLE[val] || `【${val}】未知贴章`;
+    autoGrowAllLoadouts();
   }
   
-  function rollCreditsItem() {
-    playDiceRollSound();
+  function rollCreditsItem(playSound = true) {
+    if (playSound) playDiceRollSound();
     const d1 = rollD10(1);
     const d2 = rollD10(1);
     const total = (d1 + d2) * 10;
-    document.getElementById('res_credits').value = `${total} 信用点（2D10: ${d1}+${d2}=${d1 + d2} ×10）`;
+    document.getElementById('res_credits').value = `${total} 信用点`;
+    autoGrowAllLoadouts();
   }
 
-  function rollAllLoadouts() { rollLoadoutItem(); rollTrinketItem(); rollPatchItem(); rollCreditsItem(); }
+  function rollAllLoadouts() {
+    playDiceRollSound(); // 一键生成全部：只播放一次骰子音效
+    rollLoadoutItem(false);
+    rollTrinketItem(false);
+    rollPatchItem(false);
+    rollCreditsItem(false);
+    autoGrowAllLoadouts();
+  }
 
   function parseSlashVal(valStr, defaultMax) {
     if (!valStr) return { val: 0, max: defaultMax || 0 };
@@ -1631,7 +1766,7 @@ function rollTrinketItem() {
     "破片手雷": { attr: "战斗", damage: "3d10", note: "范围:近距；火焰&爆炸；若命中所有邻接敌人遭受伤害" },
     "通用机枪": { attr: "战斗", damage: "4d10", note: "范围:远距；枪击[+]；双手，沉重，绕过角落开火" },
     "手持焊枪": { attr: "战斗", damage: "1d10", note: "范围:邻接；出血；可以切开气闸门" },
-    "激光切割器": { attr: "战斗", damage: "1d100", note: "范围:远距；出血[+] 或狰狞[+]；双手，沉重" },
+    "激光切割器": { attr: "战斗", damage: "1d100", note: "范围:远距；出血[+] 或惨烈[+]；双手，沉重" },
     "射钉枪": { attr: "战斗", damage: "1d5", note: "范围:近距；出血" },
     "脉冲步枪": { attr: "战斗", damage: "3d10", note: "范围:远距；枪击" },
     "转轮手枪": { attr: "战斗", damage: "1d10+1", note: "范围:近距；枪击" },
@@ -1642,7 +1777,7 @@ function rollTrinketItem() {
     "震慑电棒": { attr: "战斗", damage: "1d5", note: "范围:邻接；钝击；身体豁免失败震慑1轮" },
     "镇静手枪": { attr: "战斗", damage: "1d5", note: "范围:近距；钝击；若造成伤害敌人须通过身体豁免，失败失去意识1d10轮" },
     "徒手": { attr: "力量", damage: "力量/10", note: "范围:邻接；钝击" },
-    "共振砍刀": { attr: "战斗", damage: "3d10", note: "范围:邻接；出血+狰狞(AA)；造成损伤时同时根据出血和狰狞列投骰" }
+    "共振砍刀": { attr: "战斗", damage: "3d10", note: "范围:邻接；出血+惨烈(AA)；造成损伤时同时根据出血和惨烈列投骰" }
   };
 
   const STORAGE_KEY = 'MOTHERSHIP_CHARACTERS_HISTORY';
@@ -1697,6 +1832,9 @@ function rollTrinketItem() {
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
+    // 职类被清空了，但职业加成横幅/自带技能提示/技能树上的橙色推荐高亮
+    // 都是靠 edit_job 联动出来的，必须重新跑一次才会一起清掉，否则会残留上一个职类的状态
+    updateJobHints();
     
     document.getElementById('edit_stress').value = '2/20';
     document.getElementById('edit_damage').value = '0/2';
@@ -1706,6 +1844,7 @@ function rollTrinketItem() {
     document.getElementById('res_trinket').value = '点击掷骰生成...';
     document.getElementById('res_patch').value = '点击掷骰生成...';
     document.getElementById('res_credits').value = '点击掷骰生成...';
+    autoGrowAllLoadouts();
     
     clearSkillContainers();
     document.getElementById('weapons_container').innerHTML = '';
@@ -1769,7 +1908,7 @@ function rollTrinketItem() {
       if (armorName !== "") {
         detailTxt.innerText = `自定义防护设备：${armorName}`;
       } else {
-        detailTxt.innerText = "未穿戴特殊防护具";
+        detailTxt.innerText = "未穿戴防具";
       }
     }
     updateCommandsPreview();
@@ -2025,7 +2164,7 @@ function renderSkillTree() {
     [10, 15, 20].forEach(tier => {
       const col = document.createElement('div');
       col.className = 'skill-tree-column';
-      col.innerHTML = `<div class="skill-tree-column-header"><span>${SKILL_TIER_NAMES[tier]}</span><span class="skill-badge badge-${tier}">+${tier}%</span></div>`;
+      col.innerHTML = `<div class="skill-tree-column-header"><span class="tier-title-${tier}">${SKILL_TIER_NAMES[tier]}</span><span class="skill-badge badge-${tier}">+${tier}%</span></div>`;
       
       Object.keys(SKILL_DATABASE[tier]).forEach(skillName => {
         const learned = learnedSkills.has(skillName);
@@ -2042,18 +2181,32 @@ function renderSkillTree() {
         if (recommendedSkillTags.includes(skillName)) nodeClasses.push('job-recommended');
         
         node.className = nodeClasses.join(' ');
+        node.dataset.skill = skillName;
+
+        const prereqs = SKILL_PREREQUISITES[skillName] || [];
+        const prereqHint = (!unlocked && !learned && prereqs.length)
+          ? `<div class="skill-node-prereq">🔒 需要先点亮：${prereqs.map(p => `<b>${p}</b>`).join(' 或 ')}</div>`
+          : '';
+
         node.innerHTML = `
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span class="skill-node-name">${skillName}</span>
-            <span style="font-size:11px; opacity:0.6;">(${attr})</span>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; width:100%;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="skill-node-name">${skillName}</span>
+              <span style="font-size:11px; opacity:0.6;">(${attr})</span>
+            </div>
+            ${!unlocked && !learned ? '<span style="font-size:10px; color:var(--text-muted);">🔒</span>' : ''}
           </div>
-          ${!unlocked && !learned ? '<span style="font-size:10px; color:var(--text-muted);">🔒</span>' : ''}
+          ${prereqHint}
         `;
         
 // 点击交互控制（仅切换高亮状态，不触发下方DOM动态添加）
 node.onclick = () => {
           if (!unlocked && !learned) {
             playAudioBeep(300, 'sawtooth', 0.1);
+            // 移动端没有 hover，点击锁定技能时短暂高亮其前置/解锁关系
+            highlightSkillRelations(skillName);
+            clearTimeout(node._hlTimer);
+            node._hlTimer = setTimeout(clearSkillRelationHighlights, 1800);
             return;
           }
           playAudioBeep(760, 'sine', 0.07);
@@ -2069,11 +2222,43 @@ node.onclick = () => {
             }
           }
         };
+
+        // 悬停时高亮：橙框=该技能的前置技能，青框=依赖该技能才能解锁的技能
+        node.addEventListener('mouseenter', () => highlightSkillRelations(skillName));
+        node.addEventListener('mouseleave', () => clearSkillRelationHighlights());
         
         col.appendChild(node);
       });
       tree.appendChild(col);
     });
+}
+
+function getDependentSkills(skillName) {
+  return Object.entries(SKILL_PREREQUISITES)
+    .filter(([, prereqs]) => prereqs.includes(skillName))
+    .map(([name]) => name);
+}
+
+function highlightSkillRelations(skillName) {
+  const tree = document.getElementById('skill_tree');
+  if (!tree) return;
+  const prereqs = SKILL_PREREQUISITES[skillName] || [];
+  const dependents = getDependentSkills(skillName);
+  prereqs.forEach(p => {
+    const n = tree.querySelector(`.skill-node[data-skill="${CSS.escape(p)}"]`);
+    if (n) n.classList.add('skill-node-highlight-prereq');
+  });
+  dependents.forEach(d => {
+    const n = tree.querySelector(`.skill-node[data-skill="${CSS.escape(d)}"]`);
+    if (n) n.classList.add('skill-node-highlight-dependent');
+  });
+}
+
+function clearSkillRelationHighlights() {
+  const tree = document.getElementById('skill_tree');
+  if (!tree) return;
+  tree.querySelectorAll('.skill-node-highlight-prereq, .skill-node-highlight-dependent')
+    .forEach(n => n.classList.remove('skill-node-highlight-prereq', 'skill-node-highlight-dependent'));
 }
 
   function getAllTrainedSkills() {
@@ -2220,6 +2405,7 @@ node.onclick = () => {
           if (val !== '') document.getElementById('res_credits').value = `【导入】${val} 信用点`;
         }
       }
+      autoGrowAllLoadouts();
     } catch(e) {}
 
     for (let r = 0; r < data.length; r++) {
@@ -2429,9 +2615,7 @@ node.onclick = () => {
     // 自带 & 奖励技能提示横幅
     if (skillHint) {
       document.getElementById('job_skill_hint_jobname').textContent = key;
-      let tagsHtml = info.skillTags.map(t => `<span class="tag">${t}</span>`).join('');
-      if (!tagsHtml) tagsHtml = '<span style="opacity:0.7;">（无固定自带技能，见下方说明）</span>';
-      document.getElementById('job_skill_hint_body').innerHTML = `${tagsHtml}<div style="margin-top:4px; opacity:0.85;">${info.skillsText}</div>`;
+      document.getElementById('job_skill_hint_body').innerHTML = info.skillsText;
       skillHint.style.display = 'block';
     }
 
@@ -2764,6 +2948,9 @@ node.onclick = () => {
     }
     if (typeof updateJobHints === 'function') {
       updateJobHints();
+    }
+    if (typeof autoGrowAllLoadouts === 'function') {
+      autoGrowAllLoadouts();
     }
   }
 
@@ -3193,6 +3380,27 @@ if (history.length > 3) {
     };
     reader.readAsText(file, 'utf-8');
   }
+
+  // ==== 让所有 <input list="..."> 下拉（职业/护甲/武器名称/宠物技能等）
+  //      支持"点一下就重新弹出候选列表"，无需先清空文字，仍保留手动输入 ====
+  (function enableReopenableDatalists() {
+    let reopening = false;
+    function reopen(el) {
+      if (reopening) return;
+      if (!el || el.tagName !== 'INPUT' || !el.hasAttribute('list')) return;
+      reopening = true;
+      const val = el.value;
+      el.value = '';
+      requestAnimationFrame(() => {
+        el.value = val;
+        // 保留手动输入：全选文字，用户可直接打字覆盖，也可以从弹出的候选里点选
+        try { el.select(); } catch (e) {}
+        reopening = false;
+      });
+    }
+    document.addEventListener('focusin', (e) => reopen(e.target));
+    document.addEventListener('click', (e) => reopen(e.target));
+  })();
 </script>
 </body>
 </html>
