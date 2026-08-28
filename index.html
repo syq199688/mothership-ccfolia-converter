@@ -572,6 +572,68 @@
       font-weight: 700; 
       font-size: 13px;
     }
+    .skill-node.job-recommended:not(.learned) {
+      border-color: var(--accent-orange);
+      background: rgba(255, 168, 1, 0.08);
+      box-shadow: 0 0 0 1px rgba(255, 168, 1, 0.35) inset;
+    }
+    .skill-node.job-recommended:not(.learned) .skill-node-name::after {
+      content: " ★自带";
+      color: var(--accent-orange);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .job-bonus-banner {
+      display: none;
+      margin-top: 12px;
+      padding: 10px 14px;
+      border: 1px solid rgba(255, 168, 1, 0.4);
+      border-radius: 8px;
+      background: rgba(255, 168, 1, 0.06);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+    .job-bonus-banner-title {
+      font-weight: 700;
+      color: var(--accent-orange);
+      margin-bottom: 4px;
+    }
+    .job-bonus-banner-body span.tag {
+      display: inline-block;
+      background: rgba(255, 168, 1, 0.14);
+      border: 1px solid rgba(255, 168, 1, 0.35);
+      border-radius: 10px;
+      padding: 1px 8px;
+      margin: 2px 4px 2px 0;
+      font-size: 11px;
+      color: var(--accent-orange);
+    }
+    .job-skill-hint {
+      display: none;
+      margin: 10px 0 14px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 168, 1, 0.4);
+      border-radius: 8px;
+      background: rgba(255, 168, 1, 0.06);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+    .job-skill-hint-title {
+      font-weight: 700;
+      color: var(--accent-orange);
+      margin-bottom: 2px;
+    }
+    .job-skill-hint span.tag {
+      display: inline-block;
+      background: rgba(255, 168, 1, 0.14);
+      border: 1px solid rgba(255, 168, 1, 0.35);
+      border-radius: 10px;
+      padding: 1px 8px;
+      margin: 2px 4px 2px 0;
+      font-size: 11px;
+      color: var(--accent-orange);
+    }
 
     .weapon-table-header {
       display: flex;
@@ -817,7 +879,8 @@
       </div>
       <div>
         <label for="edit_job">职类</label>
-        <input type="text" id="edit_job" value="" placeholder="如：科学家 / 自定职业" oninput="updateJobResponse()">
+        <input type="text" id="edit_job" list="job-datalist" value="" placeholder="选择预设职类或手动输入自定义职业" oninput="updateJobResponse()" onchange="updateJobResponse()">
+        <datalist id="job-datalist"></datalist>
       </div>
     </div>
 
@@ -859,7 +922,7 @@
           <span>护甲值 (AP): </span>
           <input type="number" id="edit_armor" value="0" style="width: 70px; display: inline-block; padding: 4px; margin-left: 5px;" placeholder="0" oninput="updateCommandsPreview()">
         </div>
-        <div class="armor-info-detail" id="armor_detail_txt">未穿戴防具</div>
+        <div class="armor-info-detail" id="armor_detail_txt">未穿戴特殊防护具</div>
       </div>
     </div>
 
@@ -918,6 +981,11 @@
         </div>
         <input type="number" id="edit_combat" value="" placeholder="0" oninput="updateCommandsPreview()">
       </div>
+    </div>
+
+    <div class="job-bonus-banner" id="job_bonus_banner">
+      <div class="job-bonus-banner-title">💡 <span id="job_bonus_banner_jobname"></span> 职业加成参考</div>
+      <div class="job-bonus-banner-body" id="job_bonus_banner_body"></div>
     </div>
 
     <!-- 豁免检定 -->
@@ -999,10 +1067,15 @@
       </div>
     </div>
 
-    <h2>专业技能</h2>
+    <h2>专业技能树</h2>
+<div class="job-skill-hint" id="job_skill_hint">
+  <div class="job-skill-hint-title">💡 <span id="job_skill_hint_jobname"></span> 自带 & 奖励技能</div>
+  <div id="job_skill_hint_body"></div>
+</div>
 <div class="skill-tree-help">
   <span>👆 点击技能块即可学习或取消</span>
   <span>✓ 亮起表示已掌握该技能</span>
+  <span>★ 橙色边框表示该职业自带技能</span>
 </div>
     <div id="skill_tree" class="skill-tree"></div>
 
@@ -1041,11 +1114,11 @@
     <div class="form-group" id="outputGroup" style="display: none; margin-top: 25px;">
       <h2>✨角色JSON卡</h2>
       <div style="color: var(--text-muted); font-size: 12px; margin-bottom: 10px;">
-        💡 提示：点击下方按钮复制后，直接在CCfolia房间窗口 <code style="color: var(--accent-orange);">Ctrl + V</code> 粘贴即可生成角色Token。
+        💡 提示：点击下方按钮复制后，直接在CCfolia房间窗口使用 <code style="color: var(--accent-orange);">Ctrl + V</code> 粘贴即可生成角色Token。
       </div>
       <textarea id="outputJson" readonly></textarea>
       <div style="display:flex; gap:10px; margin-top:10px;">
-        <button id="btnCopyJson" onclick="copyToClipboard()" style="flex:1; background-color: var(--accent-green); color: #0d0f12; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">📋 一键复制</button>
+        <button id="btnCopyJson" onclick="copyToClipboard()" style="flex:1; background-color: var(--accent-green); color: #0d0f12; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">📋 一键复制到剪贴板</button>
         <button id="btnCardImage" onclick="generateCharacterCardImage()" style="flex:1; background-color: var(--accent-cyan); color: #0d0f12; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">🖼️ 生成角色卡图片</button>
       </div>
     </div>
@@ -1109,11 +1182,11 @@
     <div class="form-group" id="petOutputGroup" style="display: none; margin-top: 25px;">
       <h2 style="color: var(--accent-orange); border-bottom: 1px solid rgba(255,168,1,0.2); padding-bottom: 8px;">✨ 宠物 JSON 角色卡</h2>
       <div style="color: var(--text-muted); font-size: 12px; margin-bottom: 10px;">
-        💡 提示：点击下方按钮复制后，直接在 CCfolia 房间窗口 <code style="color: var(--accent-orange);">Ctrl + V</code> 粘贴即可生成宠物Token。
+        💡 提示：点击下方按钮复制后，直接在 CCfolia 房间窗口使用 <code style="color: var(--accent-orange);">Ctrl + V</code> 粘贴即可生成宠物Token。
       </div>
       <textarea id="outputPetJson" readonly></textarea>
       <div style="display:flex; gap:10px; margin-top:10px;">
-        <button id="btnCopyPet" onclick="copyPetToClipboard()" style="flex:1; background-color: var(--accent-green); color: #0d0f12; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">📋 一键复制</button>
+        <button id="btnCopyPet" onclick="copyPetToClipboard()" style="flex:1; background-color: var(--accent-green); color: #0d0f12; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">📋 一键复制到剪贴板</button>
         <button id="btnPetCardImage" onclick="generatePetCardImage()" style="flex:1; background-color: var(--accent-orange); color: #0d0f12; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">🖼️ 生成宠物卡图片</button>
       </div>
     </div>
@@ -1696,7 +1769,7 @@ function rollTrinketItem() {
       if (armorName !== "") {
         detailTxt.innerText = `自定义防护设备：${armorName}`;
       } else {
-        detailTxt.innerText = "未穿戴防具";
+        detailTxt.innerText = "未穿戴特殊防护具";
       }
     }
     updateCommandsPreview();
@@ -1732,11 +1805,13 @@ function rollTrinketItem() {
     });
     initArmorSelect();
     initWeaponDatalist();
+    initJobDatalist();
     renderSkillTree();
     addWeaponRow();
     updateCommandsPreview();
     onPetTypeChange();
     renderHistoryUI();
+    updateJobHints();
   });
 
   function initWeaponDatalist() {
@@ -1964,6 +2039,7 @@ function renderSkillTree() {
         let nodeClasses = ['skill-node'];
         if (learned) nodeClasses.push('learned');
         if (!unlocked && !learned) nodeClasses.push('locked'); // 可选：未解锁样式
+        if (recommendedSkillTags.includes(skillName)) nodeClasses.push('job-recommended');
         
         node.className = nodeClasses.join(' ');
         node.innerHTML = `
@@ -2205,6 +2281,174 @@ node.onclick = () => {
     if (addedWeapons.size === 0) addWeaponRow();
   }
 
+  // 四大官方职类的属性/豁免加成与自带技能（数据取自官方角色卡模板/职类表）
+  const JOB_CLASS_INFO = {
+    "陆战队员": {
+      attrBonusText: "战斗 +10，损伤上限 +1",
+      saveHints: { edit_sanity: 0, edit_fear: 20, edit_body: 10 },
+      damageCapBonus: 1,
+      skillsText: "奖励：1 项专家技能或 2 项受训技能。",
+      skillTags: ["军事训练", "运动"]
+    },
+    "仿生人": {
+      attrBonusText: "智力 +20，任一属性 -10，损伤上限 +1",
+      saveHints: { edit_sanity: 0, edit_fear: 60, edit_body: 0 },
+      damageCapBonus: 1,
+      skillsText: "奖励：1 项专家技能或 2 项受训技能。",
+      skillTags: ["语言学", "计算机", "数学"]
+    },
+    "科学家": {
+      attrBonusText: "智力 +10，任一属性 +5",
+      saveHints: { edit_sanity: 30, edit_fear: 0, edit_body: 0 },
+      damageCapBonus: 0,
+      skillsText: "自带：1 项大师技能，以及作为其前置的专家技能和受训技能各一项。奖励：1 项受训技能。",
+      skillTags: []
+    },
+    "技工": {
+      attrBonusText: "所有属性 +5",
+      saveHints: { edit_sanity: 10, edit_fear: 10, edit_body: 10 },
+      damageCapBonus: 0,
+      skillsText: "奖励：1 项受训技能和 1 项专家技能。",
+      skillTags: ["工业装备", "零重力"]
+    },
+
+    // ===== 扩展职业（社区/同人内容，数据来自母舰Discord及Graveyard Orbit等资料） =====
+    "熊": {
+      attrBonusText: "力量 +10，速度 +10，损伤上限 +1",
+      saveHints: { edit_sanity: 20, edit_fear: 10, edit_body: 0 },
+      damageCapBonus: 1,
+      skillsText: "自带：外环门道，另外二选一学习运动或零重力。奖励：1 项受训技能和 1 项专家技能。",
+      skillTags: ["外环门道", "运动", "零重力"]
+    },
+    "混混": {
+      attrBonusText: "战斗 +5，速度 +10，损伤上限 +1",
+      saveHints: { edit_sanity: -5, edit_fear: 10, edit_body: 0 },
+      damageCapBonus: 1,
+      skillsText: "自带：外环门道，零重力。奖励：1 项专家技能或 2 项受训技能。",
+      skillTags: ["外环门道", "零重力"]
+    },
+    "打工人": {
+      attrBonusText: "战斗 +10，速度 +5，智力 +10",
+      saveHints: { edit_sanity: 10, edit_fear: 5, edit_body: 0 },
+      damageCapBonus: 0,
+      skillsText: "自带：计算机，企业门道（受训，效果类似外环门道）。奖励：2 项受训技能和 1 项专家技能。",
+      skillTags: ["计算机", "企业门道"]
+    },
+    "太空野蛮人": {
+      attrBonusText: "力量 +10，战斗 +5，损伤上限 +1",
+      saveHints: { edit_sanity: 10, edit_fear: 10, edit_body: 10 },
+      damageCapBonus: 1,
+      skillsText: "自带：运动，艺术，植物学。奖励：2 项受训技能或 1 项专家技能。",
+      skillTags: ["运动", "艺术", "植物学"]
+    },
+    "虚空神甫": {
+      attrBonusText: "智力 +15，任一属性 +10",
+      saveHints: { edit_sanity: 10, edit_fear: 45, edit_body: 0 },
+      damageCapBonus: 0,
+      skillsText: "自带：神学，艺术。奖励：1 项专家技能或 2 项受训技能。",
+      skillTags: ["神学", "艺术"]
+    },
+    "罪犯": {
+      attrBonusText: "力量 +5 或 速度 +5，战斗 +5",
+      saveHints: { edit_sanity: 0, edit_fear: 0, edit_body: 10 },
+      damageCapBonus: 0,
+      skillsText: "自带：外环门道，另二选一学习计算机或化学。奖励：任选 1 项专家技能或 2 项受训技能。",
+      skillTags: ["外环门道", "计算机", "化学"]
+    },
+    "拓荒者": {
+      attrBonusText: "速度 +10，智力 +5",
+      saveHints: { edit_sanity: 0, edit_fear: 5, edit_body: 5 },
+      damageCapBonus: 0,
+      skillsText: "自带：植物学，荒野生存，战地医疗。奖励：任选 2 项受训技能。",
+      skillTags: ["植物学", "荒野生存", "战地医疗"]
+    },
+    "旧型号机器人": {
+      attrBonusText: "力量 +30，智力 -10，速度 -10，损伤上限 +2",
+      saveHints: { edit_sanity: 0, edit_fear: 60, edit_body: 0 },
+      damageCapBonus: 2,
+      skillsText: "自带：工业装备，临时拼凑，外环门道。奖励：任选 1 项专家技能或 2 项受训技能。",
+      skillTags: ["工业装备", "临时拼凑", "外环门道"]
+    },
+    "退休人员": {
+      attrBonusText: "力量 +10 或 智力 +10 或 战斗 +10，速度 -15",
+      saveHints: { edit_sanity: 0, edit_fear: 30, edit_body: -15 },
+      damageCapBonus: 0,
+      skillsText: "奖励：任选 1 项大师技能及其前置的专家与受训技能，或 2 项专家技能及其各自的前置受训技能。",
+      skillTags: []
+    }
+  };
+  let recommendedSkillTags = [];
+  const BASE_DAMAGE_CAP = 2;
+
+  // 职类下拉菜单：把 JOB_CLASS_INFO 里的预设职业名列出来，支持下拉选择或手动输入自定义职业
+  function initJobDatalist() {
+    const dl = document.getElementById('job-datalist');
+    if (!dl) return;
+    dl.innerHTML = Object.keys(JOB_CLASS_INFO).map(name => `<option value="${name}">`).join('');
+  }
+
+  function getMatchedJobKey(job) {
+    if (!job) return null;
+    return Object.keys(JOB_CLASS_INFO).find(key => job.includes(key)) || null;
+  }
+
+  function updateJobHints() {
+    const job = document.getElementById('edit_job').value.trim();
+    const key = getMatchedJobKey(job);
+    const info = key ? JOB_CLASS_INFO[key] : null;
+
+    const banner = document.getElementById('job_bonus_banner');
+    const skillHint = document.getElementById('job_skill_hint');
+
+    if (!info) {
+      if (banner) banner.style.display = 'none';
+      if (skillHint) skillHint.style.display = 'none';
+      recommendedSkillTags = [];
+      // 未识别到官方四大职类之一时，不强制改动损伤上限，避免覆盖自定义职业的手动设置
+      renderSkillTree();
+      return;
+    }
+
+    // 顶部职业加成汇总横幅
+    if (banner) {
+      document.getElementById('job_bonus_banner_jobname').textContent = key;
+      let bodyHtml = `<div><span class="tag">属性调整</span>${info.attrBonusText}</div>`;
+      const saveParts = Object.entries(info.saveHints)
+        .filter(([elId, val]) => val)
+        .map(([elId, val]) => {
+          const nameMap = { edit_sanity: '理智', edit_fear: '恐惧', edit_body: '身体' };
+          return `${nameMap[elId]}${val > 0 ? '+' + val : val}`;
+        }).join('，');
+      if (saveParts) {
+        bodyHtml += `<div><span class="tag">豁免调整</span>${saveParts}</div>`;
+      }
+      document.getElementById('job_bonus_banner_body').innerHTML = bodyHtml;
+      banner.style.display = 'block';
+    }
+
+    // 自带 & 奖励技能提示横幅
+    if (skillHint) {
+      document.getElementById('job_skill_hint_jobname').textContent = key;
+      let tagsHtml = info.skillTags.map(t => `<span class="tag">${t}</span>`).join('');
+      if (!tagsHtml) tagsHtml = '<span style="opacity:0.7;">（无固定自带技能，见下方说明）</span>';
+      document.getElementById('job_skill_hint_body').innerHTML = `${tagsHtml}<div style="margin-top:4px; opacity:0.85;">${info.skillsText}</div>`;
+      skillHint.style.display = 'block';
+    }
+
+    recommendedSkillTags = info.skillTags || [];
+    applyDamageCapBonus(info.damageCapBonus || 0);
+    renderSkillTree();
+  }
+
+  // 根据职类的"损伤上限"加成，自动调整损伤输入框（如 0/2 -> 0/3），保留当前已受损伤数值不变
+  function applyDamageCapBonus(bonus) {
+    const el = document.getElementById('edit_damage');
+    if (!el) return;
+    const parsed = parseSlashVal(el.value, BASE_DAMAGE_CAP);
+    const newMax = BASE_DAMAGE_CAP + (bonus || 0);
+    el.value = `${parsed.val}/${newMax}`;
+  }
+
   function updateJobResponse() {
     const job = document.getElementById('edit_job').value.trim();
     let response = document.getElementById('edit_response').value;
@@ -2222,6 +2466,7 @@ node.onclick = () => {
     else if (job.includes('旧型号机器人')) response = "当你承受一次损伤时，你的一项属性或豁免也将随之减少1d10点。";
     else if (job.includes('退休人员')) response = "当你惊恐时，必须进行一次身体豁免，失败则心脏病发（陷入昏迷，若在 1d10 回合内未得到治疗则死亡）。";
     if (response) document.getElementById('edit_response').value = response;
+    updateJobHints();
   }
 
   function updateCommandsPreview() {
@@ -2251,8 +2496,6 @@ node.onclick = () => {
         if (sName) {
           if (!hasSkill) { cmds.push(""); cmds.push("--- 专业技能 ---"); hasSkill = true; }
           cmds.push(`1d100<{${sAttr}}+${tier} ${sName}`);
-          cmds.push(`2d100kl1<{${sAttr}}+${tier} ${sName} [+]优势`);
-          cmds.push(`2d100kh1<{${sAttr}}+${tier} ${sName} [-]劣势`);
         }
       });
     });
@@ -2518,6 +2761,9 @@ node.onclick = () => {
 
     if (typeof updateCommandsPreview === 'function') {
       updateCommandsPreview();
+    }
+    if (typeof updateJobHints === 'function') {
+      updateJobHints();
     }
   }
 
