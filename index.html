@@ -403,11 +403,14 @@
       border: none !important;
       color: #fff;
       font-family: var(--font-mono);
-      font-size: 48px;
-      font-weight: 800;
-      padding: 4px 0 12px !important;
+      font-size: 28px;
+      font-weight: 700;
+      padding: 4px 0 10px !important;
       width: 100%;
       line-height: 1.15;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .stat-card-value:focus {
       outline: none;
@@ -448,11 +451,11 @@
     }
 
     /* ==== 生存数据（生命值/压力/损伤/护甲）—— 复用同一套侧边发光条卡片，
-       但没有 ±按钮，纯"标签 + 数值"两行，数值字号略小以适应 "12/15" 这种更长的文本。 */
+       但没有 ±按钮，纯"标签 + 数值"两行。数值字号/字重跟属性 & 豁免检定
+       保持统一，都用 .stat-card-value 的 28px/700，避免两块区域数字忽大忽小。 */
     .stat-card-simple { padding-bottom: 12px; }
     .stat-card-value-text {
-      font-size: 22px !important;
-      padding: 4px 0 2px !important;
+      padding: 4px 0 6px !important;
     }
     .stat-card-label-row {
       display: flex;
