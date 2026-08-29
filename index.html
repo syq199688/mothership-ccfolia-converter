@@ -933,6 +933,65 @@
     }
     .btn-reset:hover { background: var(--accent-red); color: #fff; }
 
+    /* ==== 头像上传 ==== */
+    .avatar-upload-box {
+      position: relative;
+      width: 96px;
+      height: 96px;
+      flex-shrink: 0;
+      border-radius: 10px;
+      border: 1px dashed rgba(0, 216, 214, 0.45);
+      background: rgba(0, 216, 214, 0.05);
+      cursor: pointer;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .avatar-upload-box:hover {
+      border-color: var(--accent-cyan);
+      background: rgba(0, 216, 214, 0.1);
+    }
+    .avatar-upload-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: var(--accent-cyan);
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .avatar-upload-placeholder svg { width: 26px; height: 26px; }
+    .avatar-upload-placeholder span {
+      font-size: 10px;
+      letter-spacing: 1px;
+    }
+    .avatar-preview-img {
+      display: none;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .avatar-remove-btn {
+      display: none;
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.65);
+      color: #fff;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      line-height: 1;
+      cursor: pointer;
+      z-index: 2;
+    }
+    .avatar-remove-btn:hover { background: var(--accent-red); }
+
     button.btn-primary {
       width: 100%;
       background: linear-gradient(135deg, #ff3f34, #d63031);
@@ -1078,18 +1137,31 @@
       </div>
     </div>
     
-    <div class="grid-2" style="margin-top: 15px;">
-      <div>
-        <label for="edit_name">角色名称</label>
-        <div style="display:flex; gap:6px; align-items:center;">
-          <input type="text" id="edit_name" value="" placeholder="请输入角色名称" style="flex:1;">
-          <button type="button" class="btn-roll btn-roll-icon" onclick="rollRandomName()" title="随机生成姓名"><svg class="dice-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4.5" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.7" fill="currentColor"/><circle cx="16" cy="8" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="8" cy="16" r="1.7" fill="currentColor"/><circle cx="16" cy="16" r="1.7" fill="currentColor"/></svg></button>
+    <div style="display:flex; gap:16px; align-items:flex-start; margin-top:15px;">
+      <div class="avatar-upload-box" id="avatarUploadBox" onclick="triggerAvatarInput()" title="点击上传头像">
+        <img id="avatarPreviewImg" class="avatar-preview-img" src="" alt="角色头像">
+        <div class="avatar-upload-placeholder" id="avatarPlaceholder">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7h3l2-2h6l2 2h3a1 1 0 011 1v11a1 1 0 01-1 1H4a1 1 0 01-1-1V8a1 1 0 011-1z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.4" stroke="currentColor" stroke-width="1.6"/></svg>
+          <span>上传头像</span>
         </div>
+        <div class="avatar-remove-btn" id="avatarRemoveBtn" onclick="removeAvatar(event)" title="移除头像">✕</div>
       </div>
-      <div>
-        <label for="edit_job">职类</label>
-        <input type="text" id="edit_job" list="job-datalist" value="" placeholder="选择预设职类或手动输入" oninput="updateJobResponse()" onchange="updateJobResponse()">
-        <datalist id="job-datalist"></datalist>
+      <input type="file" id="avatarFileInput" accept="image/*" style="display:none;" onchange="onAvatarFileSelected(event)">
+      <input type="hidden" id="edit_avatar" value="">
+
+      <div class="grid-2" style="flex:1; margin-top:0;">
+        <div>
+          <label for="edit_name">角色名称</label>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <input type="text" id="edit_name" value="" placeholder="请输入角色名称" style="flex:1;">
+            <button type="button" class="btn-roll btn-roll-icon" onclick="rollRandomName()" title="随机生成姓名"><svg class="dice-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4.5" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.7" fill="currentColor"/><circle cx="16" cy="8" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="8" cy="16" r="1.7" fill="currentColor"/><circle cx="16" cy="16" r="1.7" fill="currentColor"/></svg></button>
+          </div>
+        </div>
+        <div>
+          <label for="edit_job">职类</label>
+          <input type="text" id="edit_job" list="job-datalist" value="" placeholder="选择预设职类或手动输入" oninput="updateJobResponse()" onchange="updateJobResponse()">
+          <datalist id="job-datalist"></datalist>
+        </div>
       </div>
     </div>
 
@@ -1799,6 +1871,79 @@ const ARMOR_PRESETS = {
   // 仿生人/合成人风格编号名（少量出现，增加设定感）
   const RANDOM_NAME_SYNTH_PREFIX = ["MK","NX","AV","ZR","KL","TX"];
 
+  // ==== 头像上传：读取文件 -> 用 canvas 压缩到合理尺寸 -> 存成 base64 塞进隐藏输入框 ====
+  // 存进 #edit_avatar 这个 hidden input 而不是单独的 JS 变量，是为了直接复用
+  // collectCharacterFormData / restoreCharacterFormData 现成的"按 id 读写 value"逻辑，
+  // 保存记录、导出 JSON、历史记录切换都会自动带上头像，不用额外写同步代码。
+  const AVATAR_MAX_SIZE = 320; // 压缩后最长边像素，够角色卡图片用，同时不会把存档文件撑太大
+
+  function triggerAvatarInput() {
+    document.getElementById('avatarFileInput').click();
+  }
+
+  function onAvatarFileSelected(event) {
+    const file = event.target.files && event.target.files[0];
+    event.target.value = ''; // 清空，方便下次选择同一张图也能触发 change
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('请选择图片文件（jpg / png / webp 等）');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > height && width > AVATAR_MAX_SIZE) {
+          height = Math.round(height * AVATAR_MAX_SIZE / width);
+          width = AVATAR_MAX_SIZE;
+        } else if (height >= width && height > AVATAR_MAX_SIZE) {
+          width = Math.round(width * AVATAR_MAX_SIZE / height);
+          height = AVATAR_MAX_SIZE;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        setAvatarValue(canvas.toDataURL('image/jpeg', 0.87));
+      };
+      img.onerror = () => alert('图片读取失败，请换一张试试。');
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function setAvatarValue(dataUrl) {
+    const hidden = document.getElementById('edit_avatar');
+    if (hidden) hidden.value = dataUrl || '';
+    refreshAvatarPreview();
+  }
+
+  // 根据 #edit_avatar 隐藏输入框的当前值，同步头像框的显示状态（图片 / 占位符 / 移除按钮）
+  function refreshAvatarPreview() {
+    const dataUrl = document.getElementById('edit_avatar')?.value || '';
+    const img = document.getElementById('avatarPreviewImg');
+    const placeholder = document.getElementById('avatarPlaceholder');
+    const removeBtn = document.getElementById('avatarRemoveBtn');
+    if (!img || !placeholder || !removeBtn) return;
+    if (dataUrl) {
+      img.src = dataUrl;
+      img.style.display = 'block';
+      placeholder.style.display = 'none';
+      removeBtn.style.display = 'flex';
+    } else {
+      img.src = '';
+      img.style.display = 'none';
+      placeholder.style.display = 'flex';
+      removeBtn.style.display = 'none';
+    }
+  }
+
+  function removeAvatar(event) {
+    event.stopPropagation(); // 防止冒泡触发外层的上传点击
+    setAvatarValue('');
+  }
+
   function rollRandomName() {
     playAudioBeep(760, 'sine', 0.07);
     const nameEl = document.getElementById('edit_name');
@@ -2005,6 +2150,7 @@ function rollTrinketItem(playSound = true) {
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
+    setAvatarValue('');
     // 职类被清空了，但职业加成横幅/自带技能提示/技能树上的橙色推荐高亮
     // 都是靠 edit_job 联动出来的，必须重新跑一次才会一起清掉，否则会残留上一个职类的状态
     updateJobHints();
@@ -2124,6 +2270,7 @@ function rollTrinketItem(playSound = true) {
     onPetTypeChange();
     renderHistoryUI();
     updateJobHints();
+    refreshAvatarPreview();
   });
 
   function initWeaponDatalist() {
@@ -3009,6 +3156,7 @@ function clearSkillRelationHighlights() {
   function collectCharacterFormData() {
     return {
       edit_name: document.getElementById('edit_name')?.value || '',
+      edit_avatar: document.getElementById('edit_avatar')?.value || '',
       edit_job: document.getElementById('edit_job')?.value || '',
       edit_response: document.getElementById('edit_response')?.value || '',
       edit_hp: document.getElementById('edit_hp')?.value || '',
@@ -3072,6 +3220,12 @@ function clearSkillRelationHighlights() {
     // 如果有护甲下拉联动函数，触发它以确保护甲数据同步正确
     if (typeof onArmorPresetChange === 'function') {
       onArmorPresetChange();
+    }
+
+    // 头像存在隐藏输入框 #edit_avatar 里，上面第 1 步已经把值写回去了，
+    // 这里只需要把头像框的显示（图片/占位符）跟这个值同步一下
+    if (typeof refreshAvatarPreview === 'function') {
+      refreshAvatarPreview();
     }
 
     // 2. 恢复动态技能行
@@ -3332,9 +3486,12 @@ if (history.length > 3) {
     return `
       <div style="width:820px; padding:32px; background:var(--bg-color); background-image: radial-gradient(circle at 50% 0%, rgba(0,216,214,0.10) 0%, transparent 60%); border:1px solid var(--border-color); box-sizing:border-box; font-family:var(--font-body); color:var(--text-main);">
         <div style="display:flex; justify-content:space-between; align-items:flex-end; border-bottom:2px solid var(--accent-red); padding-bottom:14px; margin-bottom:20px;">
-          <div>
-            <div style="font-family:var(--font-title); font-size:30px; font-weight:800; color:#fff; letter-spacing:1px;">${fd.edit_name || '未命名角色'}</div>
-            <div style="font-size:14px; color:var(--accent-cyan); margin-top:4px;">${fd.edit_job || ''}</div>
+          <div style="display:flex; align-items:center; gap:16px;">
+            ${fd.edit_avatar ? `<img src="${fd.edit_avatar}" style="width:64px; height:64px; border-radius:10px; object-fit:cover; border:2px solid var(--accent-cyan); flex-shrink:0;">` : ''}
+            <div>
+              <div style="font-family:var(--font-title); font-size:30px; font-weight:800; color:#fff; letter-spacing:1px;">${fd.edit_name || '未命名角色'}</div>
+              <div style="font-size:14px; color:var(--accent-cyan); margin-top:4px;">${fd.edit_job || ''}</div>
+            </div>
           </div>
           <div style="font-family:var(--font-title); font-size:12px; color:var(--text-muted); letter-spacing:2px;">MOTHERSHIP RPG</div>
         </div>
