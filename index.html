@@ -398,6 +398,37 @@
       color: var(--accent-cyan);
       opacity: 0.85;
     }
+    .stat-card-label-hint-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .job-hint-chip {
+      display: none;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--accent-orange);
+      background: rgba(255, 168, 1, 0.14);
+      border: 1px solid rgba(255, 168, 1, 0.4);
+      padding: 0 6px;
+      border-radius: 8px;
+      line-height: 1.5;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, transform 0.1s;
+    }
+    .job-hint-chip:hover {
+      background: var(--accent-orange);
+      color: #14171c;
+    }
+    .job-hint-chip:active { transform: scale(0.92); }
+    .job-hint-chip.job-hint-chip-applied {
+      background: var(--accent-cyan);
+      border-color: var(--accent-cyan);
+      color: #14171c;
+    }
     .stat-card-value {
       background: transparent !important;
       border: none !important;
@@ -1215,7 +1246,7 @@
     <!-- 基础属性 -->
     <div class="grid-4" style="margin-top: 15px;">
       <div class="stat-card">
-        <label class="stat-card-label" for="edit_str">力量</label>
+        <div class="stat-card-label-hint-row"><label class="stat-card-label" for="edit_str">力量</label><span class="job-hint-chip" id="job_hint_edit_str"></span></div>
         <input type="number" class="stat-card-value" id="edit_str" value="" placeholder="0" oninput="updateCommandsPreview()">
         <div class="stat-card-buttons">
           <button type="button" onclick="adjustValue('edit_str', -10)">-10</button>
@@ -1225,7 +1256,7 @@
         </div>
       </div>
       <div class="stat-card">
-        <label class="stat-card-label" for="edit_spd">速度</label>
+        <div class="stat-card-label-hint-row"><label class="stat-card-label" for="edit_spd">速度</label><span class="job-hint-chip" id="job_hint_edit_spd"></span></div>
         <input type="number" class="stat-card-value" id="edit_spd" value="" placeholder="0" oninput="updateCommandsPreview()">
         <div class="stat-card-buttons">
           <button type="button" onclick="adjustValue('edit_spd', -10)">-10</button>
@@ -1235,7 +1266,7 @@
         </div>
       </div>
       <div class="stat-card">
-        <label class="stat-card-label" for="edit_int">智力</label>
+        <div class="stat-card-label-hint-row"><label class="stat-card-label" for="edit_int">智力</label><span class="job-hint-chip" id="job_hint_edit_int"></span></div>
         <input type="number" class="stat-card-value" id="edit_int" value="" placeholder="0" oninput="updateCommandsPreview()">
         <div class="stat-card-buttons">
           <button type="button" onclick="adjustValue('edit_int', -10)">-10</button>
@@ -1245,7 +1276,7 @@
         </div>
       </div>
       <div class="stat-card">
-        <label class="stat-card-label" for="edit_combat">战斗</label>
+        <div class="stat-card-label-hint-row"><label class="stat-card-label" for="edit_combat">战斗</label><span class="job-hint-chip" id="job_hint_edit_combat"></span></div>
         <input type="number" class="stat-card-value" id="edit_combat" value="" placeholder="0" oninput="updateCommandsPreview()">
         <div class="stat-card-buttons">
           <button type="button" onclick="adjustValue('edit_combat', -10)">-10</button>
@@ -1264,7 +1295,7 @@
     <!-- 豁免检定 -->
     <div class="grid-3" style="margin-top: 12px;">
       <div class="stat-card">
-        <label class="stat-card-label" for="edit_sanity">理智豁免</label>
+        <div class="stat-card-label-hint-row"><label class="stat-card-label" for="edit_sanity">理智豁免</label><span class="job-hint-chip" id="job_hint_edit_sanity"></span></div>
         <input type="number" class="stat-card-value" id="edit_sanity" value="" placeholder="0" oninput="updateCommandsPreview()">
         <div class="stat-card-buttons">
           <button type="button" onclick="adjustValue('edit_sanity', -10)">-10</button>
@@ -1274,7 +1305,7 @@
         </div>
       </div>
       <div class="stat-card">
-        <label class="stat-card-label" for="edit_fear">恐惧豁免</label>
+        <div class="stat-card-label-hint-row"><label class="stat-card-label" for="edit_fear">恐惧豁免</label><span class="job-hint-chip" id="job_hint_edit_fear"></span></div>
         <input type="number" class="stat-card-value" id="edit_fear" value="" placeholder="0" oninput="updateCommandsPreview()">
         <div class="stat-card-buttons">
           <button type="button" onclick="adjustValue('edit_fear', -10)">-10</button>
@@ -1284,7 +1315,7 @@
         </div>
       </div>
       <div class="stat-card">
-        <label class="stat-card-label" for="edit_body">身体豁免</label>
+        <div class="stat-card-label-hint-row"><label class="stat-card-label" for="edit_body">身体豁免</label><span class="job-hint-chip" id="job_hint_edit_body"></span></div>
         <input type="number" class="stat-card-value" id="edit_body" value="" placeholder="0" oninput="updateCommandsPreview()">
         <div class="stat-card-buttons">
           <button type="button" onclick="adjustValue('edit_body', -10)">-10</button>
@@ -2791,6 +2822,7 @@ function clearSkillRelationHighlights() {
   const JOB_CLASS_INFO = {
     "陆战队员": {
       attrBonusText: "战斗 +10，损伤上限 +1",
+      attrHints: { edit_combat: "+10" },
       saveHints: { edit_sanity: 0, edit_fear: 20, edit_body: 10 },
       damageCapBonus: 1,
       skillsText: "奖励：1 项专家技能或 2 项受训技能。",
@@ -2798,6 +2830,8 @@ function clearSkillRelationHighlights() {
     },
     "仿生人": {
       attrBonusText: "智力 +20，任一属性 -10，损伤上限 +1",
+      attrHints: { edit_int: "+20" },
+      freeChoiceNote: "另需任选 1 项属性 -10",
       saveHints: { edit_sanity: 0, edit_fear: 60, edit_body: 0 },
       damageCapBonus: 1,
       skillsText: "奖励：1 项专家技能或 2 项受训技能。",
@@ -2805,6 +2839,8 @@ function clearSkillRelationHighlights() {
     },
     "科学家": {
       attrBonusText: "智力 +10，任一属性 +5",
+      attrHints: { edit_int: "+10" },
+      freeChoiceNote: "另需任选 1 项属性 +5",
       saveHints: { edit_sanity: 30, edit_fear: 0, edit_body: 0 },
       damageCapBonus: 0,
       skillsText: "自带：1 项大师技能，以及作为其前置的专家技能和受训技能各一项。奖励：1 项受训技能。",
@@ -2812,6 +2848,7 @@ function clearSkillRelationHighlights() {
     },
     "技工": {
       attrBonusText: "所有属性 +5",
+      attrHints: { edit_str: "+5", edit_spd: "+5", edit_int: "+5", edit_combat: "+5" },
       saveHints: { edit_sanity: 10, edit_fear: 10, edit_body: 10 },
       damageCapBonus: 0,
       skillsText: "奖励：1 项受训技能和 1 项专家技能。",
@@ -2821,6 +2858,7 @@ function clearSkillRelationHighlights() {
     // ===== 扩展职业（社区/同人内容，数据来自母舰Discord及Graveyard Orbit等资料） =====
     "熊": {
       attrBonusText: "力量 +10，速度 +10，损伤上限 +1",
+      attrHints: { edit_str: "+10", edit_spd: "+10" },
       saveHints: { edit_sanity: 20, edit_fear: 10, edit_body: 0 },
       damageCapBonus: 1,
       skillsText: "自带：外环门道，另外二选一学习运动或零重力。奖励：1 项受训技能和 1 项专家技能。",
@@ -2828,6 +2866,7 @@ function clearSkillRelationHighlights() {
     },
     "混混": {
       attrBonusText: "战斗 +5，速度 +10，损伤上限 +1",
+      attrHints: { edit_combat: "+5", edit_spd: "+10" },
       saveHints: { edit_sanity: -5, edit_fear: 10, edit_body: 0 },
       damageCapBonus: 1,
       skillsText: "自带：外环门道，零重力。奖励：1 项专家技能或 2 项受训技能。",
@@ -2835,6 +2874,7 @@ function clearSkillRelationHighlights() {
     },
     "打工人": {
       attrBonusText: "战斗 +10，速度 +5，智力 +10",
+      attrHints: { edit_combat: "+10", edit_spd: "+5", edit_int: "+10" },
       saveHints: { edit_sanity: 10, edit_fear: 5, edit_body: 0 },
       damageCapBonus: 0,
       skillsText: "自带：计算机，企业门道（受训，效果类似外环门道）。奖励：2 项受训技能和 1 项专家技能。",
@@ -2842,6 +2882,7 @@ function clearSkillRelationHighlights() {
     },
     "太空野蛮人": {
       attrBonusText: "力量 +10，战斗 +5，损伤上限 +1",
+      attrHints: { edit_str: "+10", edit_combat: "+5" },
       saveHints: { edit_sanity: 10, edit_fear: 10, edit_body: 10 },
       damageCapBonus: 1,
       skillsText: "自带：运动，艺术，植物学。奖励：2 项受训技能或 1 项专家技能。",
@@ -2849,6 +2890,8 @@ function clearSkillRelationHighlights() {
     },
     "虚空神甫": {
       attrBonusText: "智力 +15，任一属性 +10",
+      attrHints: { edit_int: "+15" },
+      freeChoiceNote: "另需任选 1 项属性 +10",
       saveHints: { edit_sanity: 10, edit_fear: 45, edit_body: 0 },
       damageCapBonus: 0,
       skillsText: "自带：神学，艺术。奖励：1 项专家技能或 2 项受训技能。",
@@ -2856,6 +2899,8 @@ function clearSkillRelationHighlights() {
     },
     "罪犯": {
       attrBonusText: "力量 +5 或 速度 +5，战斗 +5",
+      attrHints: { edit_combat: "+5" },
+      freeChoiceNote: "另需任选：力量 +5 或 速度 +5",
       saveHints: { edit_sanity: 0, edit_fear: 0, edit_body: 10 },
       damageCapBonus: 0,
       skillsText: "自带：外环门道，另二选一学习计算机或化学。奖励：任选 1 项专家技能或 2 项受训技能。",
@@ -2863,6 +2908,7 @@ function clearSkillRelationHighlights() {
     },
     "拓荒者": {
       attrBonusText: "速度 +10，智力 +5",
+      attrHints: { edit_spd: "+10", edit_int: "+5" },
       saveHints: { edit_sanity: 0, edit_fear: 5, edit_body: 5 },
       damageCapBonus: 0,
       skillsText: "自带：植物学，荒野生存，战地医疗。奖励：任选 2 项受训技能。",
@@ -2870,6 +2916,7 @@ function clearSkillRelationHighlights() {
     },
     "旧型号机器人": {
       attrBonusText: "力量 +30，智力 -10，速度 -10，损伤上限 +2",
+      attrHints: { edit_str: "+30", edit_int: "-10", edit_spd: "-10" },
       saveHints: { edit_sanity: 0, edit_fear: 60, edit_body: 0 },
       damageCapBonus: 2,
       skillsText: "自带：工业装备，临时拼凑，外环门道。奖励：任选 1 项专家技能或 2 项受训技能。",
@@ -2877,6 +2924,8 @@ function clearSkillRelationHighlights() {
     },
     "退休人员": {
       attrBonusText: "力量 +10 或 智力 +10 或 战斗 +10，速度 -15",
+      attrHints: { edit_spd: "-15" },
+      freeChoiceNote: "另需任选：力量 +10 或 智力 +10 或 战斗 +10",
       saveHints: { edit_sanity: 0, edit_fear: 30, edit_body: -15 },
       damageCapBonus: 0,
       skillsText: "奖励：任选 1 项大师技能及其前置的专家与受训技能，或 2 项专家技能及其各自的前置受训技能。",
@@ -2898,6 +2947,8 @@ function clearSkillRelationHighlights() {
     return Object.keys(JOB_CLASS_INFO).find(key => job.includes(key)) || null;
   }
 
+  const STAT_HINT_IDS = ['edit_str', 'edit_spd', 'edit_int', 'edit_combat', 'edit_sanity', 'edit_fear', 'edit_body'];
+
   function updateJobHints() {
     const job = document.getElementById('edit_job').value.trim();
     const key = getMatchedJobKey(job);
@@ -2905,6 +2956,12 @@ function clearSkillRelationHighlights() {
 
     const banner = document.getElementById('job_bonus_banner');
     const skillHint = document.getElementById('job_skill_hint');
+
+    // 每次都先清空所有属性/豁免旁边的小标签，避免切换职业后残留上一个职业的提示
+    STAT_HINT_IDS.forEach(elId => {
+      const chip = document.getElementById('job_hint_' + elId);
+      if (chip) { chip.style.display = 'none'; chip.textContent = ''; }
+    });
 
     if (!info) {
       if (banner) banner.style.display = 'none';
@@ -2915,27 +2972,44 @@ function clearSkillRelationHighlights() {
       return;
     }
 
-    // 顶部职业加成汇总横幅
-    if (banner) {
-      document.getElementById('job_bonus_banner_jobname').textContent = key;
-      let bodyHtml = `<div><span class="tag">属性调整</span>${info.attrBonusText}</div>`;
-      const saveParts = Object.entries(info.saveHints)
-        .filter(([elId, val]) => val)
-        .map(([elId, val]) => {
-          const nameMap = { edit_sanity: '理智', edit_fear: '恐惧', edit_body: '身体' };
-          return `${nameMap[elId]}${val > 0 ? '+' + val : val}`;
-        }).join('，');
-      if (saveParts) {
-        bodyHtml += `<div><span class="tag">豁免调整</span>${saveParts}</div>`;
+    // 属性/豁免小标签：能对应到具体某一项的加成，直接显示在那一项标题旁边，
+    // 点一下就能把这个加成数值直接加到对应的属性/豁免上，不用自己心算再手动填。
+    const allHints = Object.assign({}, info.attrHints || {});
+    Object.entries(info.saveHints || {}).forEach(([elId, val]) => {
+      if (val) allHints[elId] = (val > 0 ? '+' + val : String(val));
+    });
+    Object.entries(allHints).forEach(([elId, text]) => {
+      const chip = document.getElementById('job_hint_' + elId);
+      if (chip) {
+        const delta = parseInt(text, 10) || 0;
+        chip.textContent = text;
+        chip.style.display = 'inline-block';
+        chip.title = `点击将这项加成 (${text}) 应用到当前数值上`;
+        chip.onclick = () => applyJobHintToStat(elId, delta, chip);
       }
-      document.getElementById('job_bonus_banner_body').innerHTML = bodyHtml;
-      banner.style.display = 'block';
+    });
+
+    // 顶部横幅：只保留"没法归到具体某一项"的备注（任选属性、二选一之类），
+    // 都能对应到具体格子的加成已经用旁边的小标签显示了，横幅里不重复列。
+    if (banner) {
+      const noteParts = [];
+      if (info.freeChoiceNote) noteParts.push(info.freeChoiceNote);
+      if (info.damageCapBonus) noteParts.push(`损伤上限 +${info.damageCapBonus}（已自动应用到下方"损伤"）`);
+      if (noteParts.length) {
+        document.getElementById('job_bonus_banner_jobname').textContent = key;
+        document.getElementById('job_bonus_banner_body').innerHTML = noteParts.map(t => `<div>${t}</div>`).join('');
+        banner.style.display = 'block';
+      } else {
+        banner.style.display = 'none';
+      }
     }
 
     // 自带 & 奖励技能提示横幅
     if (skillHint) {
       document.getElementById('job_skill_hint_jobname').textContent = key;
-      document.getElementById('job_skill_hint_body').innerHTML = info.skillsText;
+      let tagsHtml = (info.skillTags || []).map(t => `<span class="tag">${t}</span>`).join('');
+      if (!tagsHtml) tagsHtml = '<span style="opacity:0.7;">（无固定自带技能，见下方说明）</span>';
+      document.getElementById('job_skill_hint_body').innerHTML = `${tagsHtml}<div style="margin-top:4px; opacity:0.85;">${info.skillsText}</div>`;
       skillHint.style.display = 'block';
     }
 
@@ -2951,6 +3025,21 @@ function clearSkillRelationHighlights() {
     const parsed = parseSlashVal(el.value, BASE_DAMAGE_CAP);
     const newMax = BASE_DAMAGE_CAP + (bonus || 0);
     el.value = `${parsed.val}/${newMax}`;
+  }
+
+  // 点击属性/豁免标题旁的职业加成小标签，把这项加成直接加到当前数值上
+  function applyJobHintToStat(elementId, delta, chipEl) {
+    if (!delta) return;
+    adjustValue(elementId, delta); // 复用 ±按钮的同一套逻辑（含最小值 0 的限制）
+    if (chipEl) {
+      const original = chipEl.textContent;
+      chipEl.textContent = '✓ 已应用';
+      chipEl.classList.add('job-hint-chip-applied');
+      setTimeout(() => {
+        chipEl.textContent = original;
+        chipEl.classList.remove('job-hint-chip-applied');
+      }, 800);
+    }
   }
 
   function updateJobResponse() {
