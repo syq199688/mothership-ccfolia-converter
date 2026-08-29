@@ -374,6 +374,79 @@
       background: rgba(0, 216, 214, 0.35);
     }
 
+    /* ==== 属性/豁免 —— 侧边发光条卡片 ====
+       左侧一条青色高光竖条 + 淡渐变背景，数值用等宽字体，
+       按钮做成一排小圆角色块贴在卡片底部，风格上更接近游戏道具/技能面板。 */
+    .stat-card {
+      background: linear-gradient(90deg, rgba(0, 216, 214, 0.08), rgba(0, 216, 214, 0.01) 45%);
+      border-left: 3px solid var(--accent-cyan);
+      border-radius: 3px;
+      display: flex;
+      flex-direction: column;
+      padding: 10px 12px 10px;
+      transition: background 0.2s;
+    }
+    .stat-card:focus-within {
+      background: linear-gradient(90deg, rgba(0, 216, 214, 0.15), rgba(0, 216, 214, 0.02) 55%);
+    }
+    .stat-card-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent-cyan);
+      opacity: 0.85;
+    }
+    .stat-card-value {
+      background: transparent !important;
+      border: none !important;
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 48px;
+      font-weight: 800;
+      padding: 4px 0 12px !important;
+      width: 100%;
+      line-height: 1.15;
+    }
+    .stat-card-value:focus {
+      outline: none;
+      border-color: transparent !important;
+      box-shadow: none !important;
+      background: transparent !important;
+    }
+    .stat-card-value::-webkit-outer-spin-button,
+    .stat-card-value::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .stat-card-value[type="number"] { -moz-appearance: textfield; }
+    .stat-card-buttons {
+      display: flex;
+      gap: 6px;
+    }
+    .stat-card-buttons button {
+      flex: 1;
+      background: rgba(0, 216, 214, 0.08);
+      border: none;
+      border-radius: 3px;
+      color: var(--accent-cyan);
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 12px;
+      padding: 6px 0;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      line-height: 1;
+    }
+    .stat-card-buttons button:hover {
+      background: rgba(0, 216, 214, 0.28);
+      color: #fff;
+    }
+    .stat-card-buttons button:active {
+      background: rgba(0, 216, 214, 0.4);
+    }
+
     .loadout-panel {
       background: rgba(0, 216, 214, 0.04);
       border: 1px solid rgba(0, 216, 214, 0.25);
@@ -393,17 +466,63 @@
       color: var(--accent-cyan);
       font-weight: 700;
     }
+    /* ==== 全站统一的"掷骰触发"按钮体系 ====
+       .btn-roll      单次掷骰用：橙色描边，图标+文字或纯图标
+       .btn-roll-icon 纯图标变体（用在标签旁边等空间较小的位置）
+       .btn-roll-all  批量/主操作用：青色实心填充，跟 .btn-roll 同一套形状语言，
+                      但用实心色区分"这是主操作"，不是随便不统一 */
+    .btn-roll {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: transparent;
+      border: 1px solid var(--accent-orange);
+      color: var(--accent-orange);
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      line-height: 1.4;
+      transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+    }
+    .btn-roll:hover {
+      background: var(--accent-orange);
+      color: #000;
+      transform: translateY(-1px);
+    }
+    .btn-roll:active { transform: translateY(0); }
+    .btn-roll-icon {
+      padding: 4px 7px;
+      font-size: 13px;
+      line-height: 1;
+    }
+    /* 贴着 <label> 文字用的迷你变体：高度压到跟标签文字行高差不多，
+       避免把标题行整体撑高、连累下面输入框跟其它列错位对不齐 */
+    .btn-roll-icon-inline {
+      padding: 0 6px;
+      height: 20px;
+      font-size: 10px;
+      line-height: 20px;
+      border-radius: 4px;
+    }
     .btn-roll-all {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
       background: var(--accent-cyan);
       color: #000;
-      border: none;
+      border: 1px solid var(--accent-cyan);
+      font-family: var(--font-body);
       font-size: 11px;
-      font-weight: bold;
-      padding: 4px 10px;
-      border-radius: 4px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 5px;
       cursor: pointer;
+      transition: opacity 0.15s ease, transform 0.15s ease;
     }
-    .btn-roll-all:hover { opacity: 0.85; }
+    .btn-roll-all:hover { opacity: 0.85; transform: translateY(-1px); }
     .loadout-item {
       background: var(--input-bg);
       border: 1px solid var(--border-color);
@@ -421,16 +540,6 @@
       font-weight: bold;
       color: var(--accent-orange);
     }
-    .btn-roll-single {
-      background: transparent;
-      border: 1px solid var(--accent-orange);
-      color: var(--accent-orange);
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 3px;
-      cursor: pointer;
-    }
-    .btn-roll-single:hover { background: var(--accent-orange); color: #000; }
     
     /* 修改随身物品文本框为一致的无痕多行文本框：自动换行、自动增高，
        配合 grid-4 的默认行拉伸，四列会对齐到最高的那一列，不再参差不齐 */
@@ -856,16 +965,21 @@
       font-family: var(--font-mono);
     }
 
+    /* 旧的裸 emoji 骰子图标样式（已统一改用 .btn-roll-icon，此处不再使用） */
+
+    /* ==== 自定义 SVG 骰子图标 ====
+       用 currentColor 继承按钮的文字颜色，这样 hover 变黑/变色时图标会跟着一起变，
+       不再依赖各系统/浏览器自带的 emoji 渲染（大小、清晰度差异很大，这也是显得"小"的原因之一）。
+       通过给不同按钮变体的 .dice-icon 单独设置宽高，来控制每个位置的图标尺寸。 */
     .dice-icon {
-      cursor: pointer;
-      font-size: 1.5rem;
       display: inline-block;
-      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      vertical-align: -3px;
+      flex-shrink: 0;
     }
-    .dice-icon:hover {
-      transform: rotate(180deg) scale(1.25);
-      filter: drop-shadow(0 0 8px var(--accent-orange));
-    }
+    .btn-roll .dice-icon,
+    .btn-roll-all .dice-icon { width: 15px; height: 15px; }
+    .btn-roll-icon .dice-icon { width: 17px; height: 17px; vertical-align: -4px; }
+    .btn-roll-icon-inline .dice-icon { width: 13px; height: 13px; vertical-align: -2.5px; }
 
     .rule-info-card {
       background: rgba(255, 168, 1, 0.05);
@@ -952,7 +1066,10 @@
     <div class="grid-2" style="margin-top: 15px;">
       <div>
         <label for="edit_name">角色名称</label>
-        <input type="text" id="edit_name" value="" placeholder="请输入角色名称">
+        <div style="display:flex; gap:6px; align-items:center;">
+          <input type="text" id="edit_name" value="" placeholder="请输入角色名称" style="flex:1;">
+          <button type="button" class="btn-roll btn-roll-icon" onclick="rollRandomName()" title="随机生成姓名"><svg class="dice-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4.5" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.7" fill="currentColor"/><circle cx="16" cy="8" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="8" cy="16" r="1.7" fill="currentColor"/><circle cx="16" cy="16" r="1.7" fill="currentColor"/></svg></button>
+        </div>
       </div>
       <div>
         <label for="edit_job">职类</label>
@@ -972,7 +1089,7 @@
       <div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
           <label for="edit_hp" style="margin-bottom: 0;">生命值</label>
-          <span title="点我快速掷骰生命值" onclick="quickRollHP()" class="dice-icon" style="font-size: 0.8rem; line-height: 1;">🎲</span>
+          <span title="点我快速掷骰生命值" onclick="quickRollHP()" class="btn-roll btn-roll-icon-inline"><svg class="dice-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4.5" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.7" fill="currentColor"/><circle cx="16" cy="8" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="8" cy="16" r="1.7" fill="currentColor"/><circle cx="16" cy="16" r="1.7" fill="currentColor"/></svg></span>
         </div>
         <input type="text" id="edit_hp" value="" placeholder="如: 10/10">
       </div>
@@ -1005,58 +1122,50 @@
 
     <div class="section-header">
       <h2>属性 & 豁免检定</h2>
-      <span title="点我快速掷骰生成属性" onclick="quickRollStatsAndSaves()" class="dice-icon">🎲</span>
+      <span title="点我快速掷骰生成属性" onclick="quickRollStatsAndSaves()" class="btn-roll btn-roll-icon"><svg class="dice-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4.5" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.7" fill="currentColor"/><circle cx="16" cy="8" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="8" cy="16" r="1.7" fill="currentColor"/><circle cx="16" cy="16" r="1.7" fill="currentColor"/></svg></span>
     </div>
 
     <!-- 基础属性 -->
     <div class="grid-4" style="margin-top: 15px;">
-      <div>
-        <div class="stat-header">
-          <label for="edit_str" style="margin-bottom: 0;">力量</label>
-          <div class="stat-btn-group">
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_str', -10)">-10</button>
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_str', -5)">-5</button>
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_str', 5)">+5</button>
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_str', 10)">+10</button>
-          </div>
+      <div class="stat-card">
+        <label class="stat-card-label" for="edit_str">力量</label>
+        <input type="number" class="stat-card-value" id="edit_str" value="" placeholder="0" oninput="updateCommandsPreview()">
+        <div class="stat-card-buttons">
+          <button type="button" onclick="adjustValue('edit_str', -10)">-10</button>
+          <button type="button" onclick="adjustValue('edit_str', -5)">-5</button>
+          <button type="button" onclick="adjustValue('edit_str', 5)">+5</button>
+          <button type="button" onclick="adjustValue('edit_str', 10)">+10</button>
         </div>
-        <input type="number" id="edit_str" value="" placeholder="0" oninput="updateCommandsPreview()">
       </div>
-      <div>
-        <div class="stat-header">
-          <label for="edit_spd" style="margin-bottom: 0;">速度</label>
-          <div class="stat-btn-group">
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_spd', -10)">-10</button>
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_spd', -5)">-5</button>
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_spd', 5)">+5</button>
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_spd', 10)">+10</button>
-          </div>
+      <div class="stat-card">
+        <label class="stat-card-label" for="edit_spd">速度</label>
+        <input type="number" class="stat-card-value" id="edit_spd" value="" placeholder="0" oninput="updateCommandsPreview()">
+        <div class="stat-card-buttons">
+          <button type="button" onclick="adjustValue('edit_spd', -10)">-10</button>
+          <button type="button" onclick="adjustValue('edit_spd', -5)">-5</button>
+          <button type="button" onclick="adjustValue('edit_spd', 5)">+5</button>
+          <button type="button" onclick="adjustValue('edit_spd', 10)">+10</button>
         </div>
-        <input type="number" id="edit_spd" value="" placeholder="0" oninput="updateCommandsPreview()">
       </div>
-      <div>
-        <div class="stat-header">
-          <label for="edit_int" style="margin-bottom: 0;">智力</label>
-          <div class="stat-btn-group">
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_int', -10)">-10</button>
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_int', -5)">-5</button>
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_int', 5)">+5</button>
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_int', 10)">+10</button>
-          </div>
+      <div class="stat-card">
+        <label class="stat-card-label" for="edit_int">智力</label>
+        <input type="number" class="stat-card-value" id="edit_int" value="" placeholder="0" oninput="updateCommandsPreview()">
+        <div class="stat-card-buttons">
+          <button type="button" onclick="adjustValue('edit_int', -10)">-10</button>
+          <button type="button" onclick="adjustValue('edit_int', -5)">-5</button>
+          <button type="button" onclick="adjustValue('edit_int', 5)">+5</button>
+          <button type="button" onclick="adjustValue('edit_int', 10)">+10</button>
         </div>
-        <input type="number" id="edit_int" value="" placeholder="0" oninput="updateCommandsPreview()">
       </div>
-      <div>
-        <div class="stat-header">
-          <label for="edit_combat" style="margin-bottom: 0;">战斗</label>
-          <div class="stat-btn-group">
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_combat', -10)">-10</button>
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_combat', -5)">-5</button>
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_combat', 5)">+5</button>
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_combat', 10)">+10</button>
-          </div>
+      <div class="stat-card">
+        <label class="stat-card-label" for="edit_combat">战斗</label>
+        <input type="number" class="stat-card-value" id="edit_combat" value="" placeholder="0" oninput="updateCommandsPreview()">
+        <div class="stat-card-buttons">
+          <button type="button" onclick="adjustValue('edit_combat', -10)">-10</button>
+          <button type="button" onclick="adjustValue('edit_combat', -5)">-5</button>
+          <button type="button" onclick="adjustValue('edit_combat', 5)">+5</button>
+          <button type="button" onclick="adjustValue('edit_combat', 10)">+10</button>
         </div>
-        <input type="number" id="edit_combat" value="" placeholder="0" oninput="updateCommandsPreview()">
       </div>
     </div>
 
@@ -1067,41 +1176,35 @@
 
     <!-- 豁免检定 -->
     <div class="grid-3" style="margin-top: 12px;">
-      <div>
-        <div class="stat-header">
-          <label for="edit_sanity" style="margin-bottom: 0;">理智豁免</label>
-          <div class="stat-btn-group">
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_sanity', -10)">-10</button>
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_sanity', -5)">-5</button>
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_sanity', 5)">+5</button>
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_sanity', 10)">+10</button>
-          </div>
+      <div class="stat-card">
+        <label class="stat-card-label" for="edit_sanity">理智豁免</label>
+        <input type="number" class="stat-card-value" id="edit_sanity" value="" placeholder="0" oninput="updateCommandsPreview()">
+        <div class="stat-card-buttons">
+          <button type="button" onclick="adjustValue('edit_sanity', -10)">-10</button>
+          <button type="button" onclick="adjustValue('edit_sanity', -5)">-5</button>
+          <button type="button" onclick="adjustValue('edit_sanity', 5)">+5</button>
+          <button type="button" onclick="adjustValue('edit_sanity', 10)">+10</button>
         </div>
-        <input type="number" id="edit_sanity" value="" placeholder="0" oninput="updateCommandsPreview()">
       </div>
-      <div>
-        <div class="stat-header">
-          <label for="edit_fear" style="margin-bottom: 0;">恐惧豁免</label>
-          <div class="stat-btn-group">
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_fear', -10)">-10</button>
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_fear', -5)">-5</button>
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_fear', 5)">+5</button>
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_fear', 10)">+10</button>
-          </div>
+      <div class="stat-card">
+        <label class="stat-card-label" for="edit_fear">恐惧豁免</label>
+        <input type="number" class="stat-card-value" id="edit_fear" value="" placeholder="0" oninput="updateCommandsPreview()">
+        <div class="stat-card-buttons">
+          <button type="button" onclick="adjustValue('edit_fear', -10)">-10</button>
+          <button type="button" onclick="adjustValue('edit_fear', -5)">-5</button>
+          <button type="button" onclick="adjustValue('edit_fear', 5)">+5</button>
+          <button type="button" onclick="adjustValue('edit_fear', 10)">+10</button>
         </div>
-        <input type="number" id="edit_fear" value="" placeholder="0" oninput="updateCommandsPreview()">
       </div>
-      <div>
-        <div class="stat-header">
-          <label for="edit_body" style="margin-bottom: 0;">身体豁免</label>
-          <div class="stat-btn-group">
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_body', -10)">-10</button>
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_body', -5)">-5</button>
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_body', 5)">+5</button>
-            <button type="button" class="btn-adjust" onclick="adjustValue('edit_body', 10)">+10</button>
-          </div>
+      <div class="stat-card">
+        <label class="stat-card-label" for="edit_body">身体豁免</label>
+        <input type="number" class="stat-card-value" id="edit_body" value="" placeholder="0" oninput="updateCommandsPreview()">
+        <div class="stat-card-buttons">
+          <button type="button" onclick="adjustValue('edit_body', -10)">-10</button>
+          <button type="button" onclick="adjustValue('edit_body', -5)">-5</button>
+          <button type="button" onclick="adjustValue('edit_body', 5)">+5</button>
+          <button type="button" onclick="adjustValue('edit_body', 10)">+10</button>
         </div>
-        <input type="number" id="edit_body" value="" placeholder="0" oninput="updateCommandsPreview()">
       </div>
     </div>
 
@@ -1109,7 +1212,7 @@
     <div class="loadout-panel">
       <div class="loadout-panel-header">
         <span class="loadout-panel-title">🎒 随身物品</span>
-        <button type="button" class="btn-roll-all" onclick="rollAllLoadouts()">🎲 一键生成全部</button>
+        <button type="button" class="btn-roll-all" onclick="rollAllLoadouts()"><svg class="dice-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4.5" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.7" fill="currentColor"/><circle cx="16" cy="8" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="8" cy="16" r="1.7" fill="currentColor"/><circle cx="16" cy="16" r="1.7" fill="currentColor"/></svg> 一键生成全部</button>
       </div>
       <div class="grid-4">
         <!-- 全部改为一致的无痕多行文本框，支持自动换行完整显示 + 手动修改；
@@ -1117,28 +1220,28 @@
         <div class="loadout-item">
           <div class="loadout-item-header">
             <span>行装 (1d10)</span>
-            <button type="button" class="btn-roll-single" onclick="rollLoadoutItem()">掷骰</button>
+            <button type="button" class="btn-roll" onclick="rollLoadoutItem()"><svg class="dice-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4.5" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.7" fill="currentColor"/><circle cx="16" cy="8" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="8" cy="16" r="1.7" fill="currentColor"/><circle cx="16" cy="16" r="1.7" fill="currentColor"/></svg> 掷骰</button>
           </div>
           <textarea class="loadout-res-input" id="res_loadout" rows="1">点击掷骰生成...</textarea>
         </div>
         <div class="loadout-item">
           <div class="loadout-item-header">
             <span>饰品 (1d100)</span>
-            <button type="button" class="btn-roll-single" onclick="rollTrinketItem()">掷骰</button>
+            <button type="button" class="btn-roll" onclick="rollTrinketItem()"><svg class="dice-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4.5" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.7" fill="currentColor"/><circle cx="16" cy="8" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="8" cy="16" r="1.7" fill="currentColor"/><circle cx="16" cy="16" r="1.7" fill="currentColor"/></svg> 掷骰</button>
           </div>
           <textarea class="loadout-res-input" id="res_trinket" rows="1">点击掷骰生成...</textarea>
         </div>
         <div class="loadout-item">
           <div class="loadout-item-header">
             <span>贴章 (1d200)</span>
-            <button type="button" class="btn-roll-single" onclick="rollPatchItem()">掷骰</button>
+            <button type="button" class="btn-roll" onclick="rollPatchItem()"><svg class="dice-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4.5" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.7" fill="currentColor"/><circle cx="16" cy="8" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="8" cy="16" r="1.7" fill="currentColor"/><circle cx="16" cy="16" r="1.7" fill="currentColor"/></svg> 掷骰</button>
           </div>
           <textarea class="loadout-res-input" id="res_patch" rows="1">点击掷骰生成...</textarea>
         </div>
         <div class="loadout-item">
           <div class="loadout-item-header">
             <span>信用点 (2d10x10)</span>
-            <button type="button" class="btn-roll-single" onclick="rollCreditsItem()">掷骰</button>
+            <button type="button" class="btn-roll" onclick="rollCreditsItem()"><svg class="dice-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4.5" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.7" fill="currentColor"/><circle cx="16" cy="8" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="8" cy="16" r="1.7" fill="currentColor"/><circle cx="16" cy="16" r="1.7" fill="currentColor"/></svg> 掷骰</button>
           </div>
           <textarea class="loadout-res-input" id="res_credits" rows="1">点击掷骰生成...</textarea>
         </div>
@@ -1643,6 +1746,42 @@ const ARMOR_PRESETS = {
     clearTimeout(_loadoutResizeTimer);
     _loadoutResizeTimer = setTimeout(autoGrowAllLoadouts, 150);
   });
+
+  // 随机姓名生成：用"名"+"姓"两个词条库随机组合，而不是存一整份完整人名列表，
+  // 40 个名 x 46 个姓 = 1840+ 种组合，数据量很小。偶尔（约1/8概率）生成仿生人风格的编号名，符合《母舰》的多元设定。
+  const RANDOM_NAME_FIRST = [
+    "艾拉","诺亚","米娅","卡尔","索菲","雷恩","薇拉","杰克","琳达","奥托",
+    "玛雅","维克","阿黛尔","布莱克","塔莎","科尔","伊莎","德鲁","诺瓦","昆汀",
+    "萨拉","雨果","菲比","莱昂","伊芙","马库斯","奥莉薇","塞斯","琼","瑞恩",
+    "娜塔莎","戴克","米拉","法比安","克拉拉","乔纳","佩妮","埃兹拉","薇薇安","科迪"
+  ];
+  const RANDOM_NAME_LAST = [
+    "沃斯","莱克","科尔宾","哈迪","布伦","斯通","维尔","诺顿","雷诺","卡什",
+    "多兰","格雷","埃姆斯","哈珀","克罗夫","本内特","索恩","维克斯","兰道","科塔",
+    "巴雷特","杜兰","霍克斯","奥马利","内森","布莱克伍德","维加","塞恩","科克","雷德",
+    "莫罗","法伦","昆西","黑尔","斯特恩","布莱斯","科文","雷斯","塔克","阿什比",
+    "诺克斯","维兰","哈罗德","埃利斯","陈","金"
+  ];
+  // 仿生人/合成人风格编号名（少量出现，增加设定感）
+  const RANDOM_NAME_SYNTH_PREFIX = ["MK","NX","AV","ZR","KL","TX"];
+
+  function rollRandomName() {
+    playAudioBeep(760, 'sine', 0.07);
+    const nameEl = document.getElementById('edit_name');
+    if (!nameEl) return;
+    let generated;
+    if (Math.random() < 0.125) {
+      // 约 1/8 概率生成仿生人编号风格的名字
+      const prefix = RANDOM_NAME_SYNTH_PREFIX[Math.floor(Math.random() * RANDOM_NAME_SYNTH_PREFIX.length)];
+      const num = Math.floor(Math.random() * 900) + 100;
+      generated = `${prefix}-${num}`;
+    } else {
+      const first = RANDOM_NAME_FIRST[Math.floor(Math.random() * RANDOM_NAME_FIRST.length)];
+      const last = RANDOM_NAME_LAST[Math.floor(Math.random() * RANDOM_NAME_LAST.length)];
+      generated = `${first}·${last}`;
+    }
+    nameEl.value = generated;
+  }
 
   function rollLoadoutItem(playSound = true) {
     if (playSound) playDiceRollSound();
