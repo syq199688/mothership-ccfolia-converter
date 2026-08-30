@@ -1143,6 +1143,79 @@
     .team-member-item .btn-team-move { color: var(--accent-cyan); }
     .team-member-item .btn-team-move:hover { background: var(--accent-cyan); color: #0d0f12; border-color: var(--accent-cyan); }
 
+    /* ==== 团队成员行 —— 重新设计，跟属性/豁免那套侧边发光条卡片风格统一 ====
+       原来直接借用了技能行的裸样式（一个输入框+几个小按钮飘在那），
+       现在给每一行加座位编号徽章 + 卡片底色，并把移动/删除做成统一的圆形图标按钮。 */
+    .team-member-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(90deg, rgba(0, 216, 214, 0.07), rgba(0, 216, 214, 0.01) 50%);
+      border-left: 3px solid var(--accent-cyan);
+      border-radius: 4px;
+      padding: 6px 10px 6px 8px;
+      margin-bottom: 8px;
+    }
+    .team-member-seat {
+      flex-shrink: 0;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: rgba(0, 216, 214, 0.15);
+      border: 1px solid var(--accent-cyan);
+      color: var(--accent-cyan);
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .team-member-item .team-member-name {
+      flex: 1;
+      min-width: 0;
+      background: transparent !important;
+      border: none !important;
+      border-bottom: 1px solid var(--border-color) !important;
+      border-radius: 0 !important;
+      padding: 7px 2px !important;
+    }
+    .team-member-item .team-member-name:focus {
+      border-bottom-color: var(--accent-cyan) !important;
+      box-shadow: none !important;
+      background: transparent !important;
+    }
+    .team-member-actions {
+      display: flex;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .team-member-actions button {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 1px solid var(--border-color);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      transition: all 0.15s;
+    }
+    .team-member-actions .btn-team-move:hover {
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      background: rgba(0, 216, 214, 0.12);
+    }
+    .team-member-actions .btn-team-remove:hover {
+      border-color: var(--accent-red);
+      color: var(--accent-red);
+      background: rgba(255, 63, 52, 0.12);
+    }
+
     .team-empty-hint {
       color: var(--text-muted);
       font-size: 12px;
@@ -1708,6 +1781,8 @@
     <button class="btn-primary btn-team-primary" onclick="generateTeamRelations()">🎲 为所有成员掷骰生成关系</button>
 
     <div id="team_relations_output"></div>
+
+    <button id="btnTeamCardImage" onclick="generateTeamCardImage()" style="width:100%; margin-top:14px; background-color: var(--accent-green); color: #05130c; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">🖼️ 生成团队关系图片</button>
   </div>
 
 </div>
@@ -3817,7 +3892,7 @@ if (history.length > 3) {
 
   // ================= 导出角色卡 / 宠物卡为图片 =================
 
-  function buildCharacterCardHtml(fd) {
+  function buildCharacterCardHtml(fd, petFd) {
     const skillsHtml = (tier, label, color) => {
       const list = (fd.skills[tier] || []).map(s => s.name).filter(Boolean);
       return `
@@ -3841,6 +3916,32 @@ if (history.length > 3) {
         <div style="font-size:11px; color:var(--text-muted); margin-bottom:4px;">${label}</div>
         <div style="font-size:18px; font-weight:700; color:#fff; font-family:var(--font-mono);">${value || '—'}</div>
       </div>`;
+
+    // 只有宠物填了名字才认为"有养宠物"，一起并入角色卡图片；否则这部分不渲染，不留空白
+    const hasPet = petFd && (petFd.edit_pet_name || '').trim();
+    const petSkillList = (arr, label, color) => `
+      <div style="flex:1; min-width:0;">
+        <div style="color:${color}; font-size:12px; font-weight:700; margin-bottom:6px;">${label}</div>
+        ${(arr && arr.length) ? arr.map(n => `<div style="font-size:12px; padding:2px 0; border-bottom:1px dashed var(--border-color);">${n}</div>`).join('') : '<div style="font-size:11px; color:var(--text-muted);">（无）</div>'}
+      </div>`;
+    const petSectionHtml = hasPet ? `
+        <div style="font-size:15px; font-weight:700; color:#fff; border-left:3px solid var(--accent-orange); padding-left:8px; margin-bottom:12px; margin-top:24px;">🐾 随行宠物</div>
+        <div style="border:1px solid var(--border-color); border-radius:8px; padding:16px; background:rgba(255,168,1,0.04);">
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:14px;">
+            <div>
+              <div style="font-family:var(--font-title); font-size:20px; font-weight:800; color:#fff;">${petFd.edit_pet_name || '未命名宠物'}</div>
+              <div style="font-size:12px; color:var(--accent-orange); margin-top:2px;">${petFd.edit_pet_type === 'synthetic' ? '合成宠物' : '有机宠物'}</div>
+            </div>
+            <div style="text-align:center; background:var(--input-bg); border:1px solid var(--border-color); border-radius:6px; padding:6px 12px;">
+              <div style="font-size:10px; color:var(--text-muted);">本能</div>
+              <div style="font-size:16px; font-weight:700; color:#fff; font-family:var(--font-mono);">${petFd.edit_pet_instinct || '—'}</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:20px;">
+            ${petSkillList(petFd.pet_skills_10, '受训技能 +10%', 'var(--accent-cyan)')}
+            ${petSkillList(petFd.pet_skills_15, '专家技能 +15%', 'var(--accent-orange)')}
+          </div>
+        </div>` : '';
 
     return `
       <div style="width:820px; padding:32px; background:var(--bg-color); background-image: radial-gradient(circle at 50% 0%, rgba(0,216,214,0.10) 0%, transparent 60%); border:1px solid var(--border-color); box-sizing:border-box; font-family:var(--font-body); color:var(--text-main);">
@@ -3902,6 +4003,7 @@ if (history.length > 3) {
           ${statBox('贴章', fd.res_patch)}
           ${statBox('信用点', fd.res_credits)}
         </div>
+        ${petSectionHtml}
       </div>`;
   }
 
@@ -3968,10 +4070,11 @@ if (history.length > 3) {
 
   function generateCharacterCardImage() {
     const fd = collectCharacterFormData();
+    const petFd = (typeof collectPetFormData === 'function') ? collectPetFormData() : null;
     const btn = document.getElementById('btnCardImage');
     const originalText = btn ? btn.textContent : '';
     if (btn) btn.textContent = '⏳ 生成中...';
-    renderNodeToPng(buildCharacterCardHtml(fd), `角色卡_${sanitizeFilename(fd.edit_name)}.png`)
+    renderNodeToPng(buildCharacterCardHtml(fd, petFd), `角色卡_${sanitizeFilename(fd.edit_name)}.png`)
       .finally(() => { if (btn) btn.textContent = originalText; });
   }
 
@@ -3981,6 +4084,51 @@ if (history.length > 3) {
     const originalText = btn ? btn.textContent : '';
     if (btn) btn.textContent = '⏳ 生成中...';
     renderNodeToPng(buildPetCardHtml(fd), `宠物卡_${sanitizeFilename(fd.edit_pet_name)}.png`)
+      .finally(() => { if (btn) btn.textContent = originalText; });
+  }
+
+  // ==== 团队关系图片 ====
+  function buildTeamCardHtml(teamFd, circleSvgHtml) {
+    const relations = teamFd.relations || [];
+
+    const sideBlock = (side, color, arrow, entry) => `
+      <div style="border-left:3px solid ${color}; background:rgba(0,0,0,0.15); border-radius:6px; padding:10px 12px; margin-top:${side === 'right' ? '0' : '10px'};">
+        <div style="font-size:12px; color:${color}; font-weight:700; margin-bottom:4px;">${arrow} ${side === 'right' ? '右侧' : '左侧'}邻居：${entry.targetName} · <span style="font-family:var(--font-mono); color:var(--text-main); font-weight:400;">1d20=${entry.roll}</span></div>
+        <div style="font-size:13px; color:var(--text-main); margin-bottom:6px; line-height:1.5;">${entry.question || ''}</div>
+        <div style="font-size:12px; color:var(--text-main); background:rgba(255,255,255,0.03); border-radius:4px; padding:6px 8px; white-space:pre-wrap;">${(entry.answer || '').trim() || '（未记录）'}</div>
+      </div>`;
+
+    const cardsHtml = relations.map(entry => `
+      <div style="background:var(--card-bg); border:1px solid var(--border-color); border-radius:8px; padding:16px; margin-bottom:14px;">
+        <div style="font-family:var(--font-title); font-weight:700; font-size:16px; color:var(--accent-green); border-bottom:1px solid var(--border-color); padding-bottom:8px; margin-bottom:12px;">👤 ${entry.name}</div>
+        ${sideBlock('right', 'var(--accent-cyan)', '➡', entry.right)}
+        ${sideBlock('left', 'var(--accent-orange)', '⬅', entry.left)}
+      </div>`).join('');
+
+    return `
+      <div style="width:820px; padding:32px; background:var(--bg-color); background-image: radial-gradient(circle at 50% 0%, rgba(5,196,107,0.10) 0%, transparent 60%); border:1px solid var(--border-color); box-sizing:border-box; font-family:var(--font-body); color:var(--text-main);">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; border-bottom:2px solid var(--accent-green); padding-bottom:14px; margin-bottom:20px;">
+          <div style="font-family:var(--font-title); font-size:28px; font-weight:800; color:#fff; letter-spacing:1px;">🤝 团队关系</div>
+          <div style="font-family:var(--font-title); font-size:12px; color:var(--text-muted); letter-spacing:2px;">MOTHERSHIP RPG · 乘组档案</div>
+        </div>
+        ${circleSvgHtml ? `<div style="max-width:340px; margin:0 auto 26px;">${circleSvgHtml}</div>` : ''}
+        ${cardsHtml || '<div style="color:var(--text-muted); font-size:13px; text-align:center; padding:20px;">暂无关系数据</div>'}
+      </div>`;
+  }
+
+  function generateTeamCardImage() {
+    const teamFd = collectTeamFormData();
+    if (!teamFd.relations || teamFd.relations.length === 0) {
+      alert('还没有生成团队关系，请先点击"🎲 为所有成员掷骰生成关系"。');
+      return;
+    }
+    // 直接复用当前圆桌视图 SVG 的实时渲染结果（含座位位置、初始字母），不用重新算一遍布局
+    const svgEl = document.getElementById('team_circle_svg');
+    const circleSvgHtml = (svgEl && svgEl.innerHTML.trim()) ? svgEl.outerHTML : '';
+    const btn = document.getElementById('btnTeamCardImage');
+    const originalText = btn ? btn.textContent : '';
+    if (btn) btn.textContent = '⏳ 生成中...';
+    renderNodeToPng(buildTeamCardHtml(teamFd, circleSvgHtml), `团队关系_${new Date().toISOString().slice(0,10)}.png`)
       .finally(() => { if (btn) btn.textContent = originalText; });
   }
 
@@ -4153,15 +4301,26 @@ if (history.length > 3) {
   function addTeamMemberRow(name = '') {
     const container = document.getElementById('team_members_list');
     const row = document.createElement('div');
-    row.className = 'skill-item team-member-item';
+    row.className = 'team-member-item';
     row.innerHTML = `
+      <div class="team-member-seat">1</div>
       <input type="text" class="team-member-name" value="${name}" placeholder="成员姓名 / 角色名" oninput="onTeamMembersChanged();">
-      <button type="button" class="btn-team-move" onclick="moveTeamMember(this, -1);" title="上移（逆时针）">↑</button>
-      <button type="button" class="btn-team-move" onclick="moveTeamMember(this, 1);" title="下移（顺时针）">↓</button>
-      <button type="button" onclick="this.closest('.team-member-item').remove(); activeTeamMemberIndex = null; onTeamMembersChanged();" title="删除">✕</button>
+      <div class="team-member-actions">
+        <button type="button" class="btn-team-move" onclick="moveTeamMember(this, -1);" title="上移（逆时针）">↑</button>
+        <button type="button" class="btn-team-move" onclick="moveTeamMember(this, 1);" title="下移（顺时针）">↓</button>
+        <button type="button" class="btn-team-remove" onclick="this.closest('.team-member-item').remove(); activeTeamMemberIndex = null; onTeamMembersChanged();" title="删除">✕</button>
+      </div>
     `;
     container.appendChild(row);
     onTeamMembersChanged();
+  }
+
+  // 按当前 DOM 顺序（= 围坐顺序）重新给每一行的座位徽章编号
+  function renumberTeamSeats() {
+    document.querySelectorAll('#team_members_list .team-member-item').forEach((row, i) => {
+      const seat = row.querySelector('.team-member-seat');
+      if (seat) seat.textContent = i + 1;
+    });
   }
 
   function moveTeamMember(btn, direction) {
@@ -4190,10 +4349,25 @@ if (history.length > 3) {
       .filter(v => v);
   }
 
-  // 成员名单发生变化（增/删/排序/改名）时统一调用：刷新空态提示、圆桌视图、并写入本地存储
+  // 检查已生成的关系数据是否还能对应上当前的成员名单（人数、顺序、名字是否完全一致）
+  function teamRelationsInSyncWithMembers() {
+    const names = getTeamMemberNames();
+    if (names.length !== teamRelationsData.length) return false;
+    return names.every((n, i) => n === teamRelationsData[i].name);
+  }
+
+  // 成员名单发生变化（增/删/排序/改名）时统一调用：刷新空态提示、座位编号、圆桌视图、并写入本地存储
   function onTeamMembersChanged() {
     updateTeamEmptyHint();
+    renumberTeamSeats();
     renderTeamCircle();
+    // 成员的人数/顺序/名字只要变了，左右邻居关系就都不再成立（已生成的问题、掷骰结果全部作废），
+    // 与其继续显示对不上号的旧关系卡片，不如直接清空并提示重新生成，避免张冠李戴。
+    if (teamRelationsData.length && !teamRelationsInSyncWithMembers()) {
+      teamRelationsData = [];
+      activeTeamMemberIndex = null;
+      renderTeamRelations();
+    }
     saveTeamToLocalStorage();
   }
 
@@ -4338,7 +4512,10 @@ if (history.length > 3) {
     const output = document.getElementById('team_relations_output');
     if (!output) return;
     if (teamRelationsData.length === 0) {
-      output.innerHTML = '';
+      const memberCount = getTeamMemberNames().length;
+      output.innerHTML = memberCount >= 2
+        ? `<div class="team-empty-hint" style="margin-top:14px;">⚠️ 名单已变化或还未生成 —— 点击上方"🎲 为所有成员掷骰生成关系"生成/重新生成。</div>`
+        : '';
       return;
     }
     output.innerHTML = teamRelationsData.map((entry, i) => `
