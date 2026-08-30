@@ -270,6 +270,13 @@
       box-shadow: 0 -4px 10px rgba(255, 168, 1, 0.15);
     }
 
+    .tab-btn.active.tab-team {
+      color: var(--accent-green);
+      border-color: var(--accent-green);
+      border-top: 2px solid var(--accent-green);
+      box-shadow: 0 -4px 10px rgba(5, 196, 107, 0.15);
+    }
+
     .drop-zone {
       border: 2px dashed var(--accent-red);
       border-radius: 10px;
@@ -900,6 +907,7 @@
     .weapon-table-header .col-attr { flex: 1; }
     .weapon-table-header .col-skill { flex: 1.4; }
     .weapon-table-header .col-damage { flex: 1; }
+    .weapon-table-header .col-ammo { flex: 0.8; }
     .weapon-table-header .col-note { flex: 2; }
     .weapon-table-header .col-action { flex: 0 0 32px; }
 
@@ -913,6 +921,7 @@
     .weapon-item .weapon-attr { flex: 1; }
     .weapon-item .weapon-skill { flex: 1.4; }
     .weapon-item .weapon-damage { flex: 1; font-family: var(--font-mono); }
+    .weapon-item .weapon-ammo { flex: 0.8; font-family: var(--font-mono); }
     .weapon-item .weapon-note { flex: 2; }
 
     button { font-family: var(--font-body); transition: all 0.2s; }
@@ -1056,6 +1065,16 @@
       box-shadow: 0 6px 20px rgba(255, 168, 1, 0.5);
     }
 
+    button.btn-team-primary {
+      background: linear-gradient(135deg, #05c46b, #04a85e);
+      box-shadow: 0 4px 15px rgba(5, 196, 107, 0.3);
+      color: #05130c;
+    }
+    button.btn-team-primary:hover {
+      background: linear-gradient(135deg, #2ee08b, #05c46b);
+      box-shadow: 0 6px 20px rgba(5, 196, 107, 0.5);
+    }
+
     textarea {
       height: 180px;
       font-family: var(--font-mono);
@@ -1115,6 +1134,166 @@
       color: var(--text-main);
     }
 
+    .rule-info-card.rule-info-team {
+      background: rgba(5, 196, 107, 0.05);
+      border-color: var(--accent-green);
+    }
+
+    .team-member-item .team-member-name { flex: 1; }
+    .team-member-item .btn-team-move { color: var(--accent-cyan); }
+    .team-member-item .btn-team-move:hover { background: var(--accent-cyan); color: #0d0f12; border-color: var(--accent-cyan); }
+
+    .team-empty-hint {
+      color: var(--text-muted);
+      font-size: 12px;
+      text-align: center;
+      padding: 10px;
+      border: 1px dashed var(--border-color);
+      border-radius: 8px;
+    }
+
+    .team-relation-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 14px;
+    }
+    .team-relation-card header {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 15px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--accent-green);
+    }
+    .team-relation-side {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 10px;
+      background: rgba(0,0,0,0.15);
+    }
+    .team-relation-side.side-right { border-left: 3px solid var(--accent-cyan); }
+    .team-relation-side.side-left { border-left: 3px solid var(--accent-orange); }
+    .team-relation-side-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .team-relation-side-head .side-tag-right { color: var(--accent-cyan); font-weight: 700; }
+    .team-relation-side-head .side-tag-left { color: var(--accent-orange); font-weight: 700; }
+    .team-relation-roll {
+      font-family: var(--font-mono);
+      color: var(--text-main);
+    }
+    .team-relation-question {
+      font-size: 13px;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+    .team-relation-answer {
+      height: 60px;
+      font-size: 12px;
+      margin-top: 0;
+    }
+    .btn-team-reroll {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .btn-team-reroll:hover { border-color: var(--accent-green); color: var(--accent-green); }
+
+    /* ===== 圆桌视图 ===== */
+    .team-circle-wrap {
+      max-width: 380px;
+      margin: 18px auto 8px;
+    }
+    .team-circle-hint {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+    .team-circle-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      overflow: visible;
+    }
+    .team-circle-legend {
+      display: flex;
+      justify-content: center;
+      gap: 22px;
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .team-circle-legend .legend-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 5px;
+      vertical-align: -1px;
+    }
+    .team-circle-legend .dot-right { background: var(--accent-cyan); }
+    .team-circle-legend .dot-left { background: var(--accent-orange); }
+
+    .team-node-group { cursor: pointer; }
+    .team-node-circle {
+      fill: var(--card-bg);
+      stroke: var(--border-color);
+      stroke-width: 2;
+      transition: all 0.2s;
+    }
+    .team-node-group:hover .team-node-circle { stroke: var(--accent-cyan); }
+    .team-node-group.active .team-node-circle {
+      fill: rgba(5, 196, 107, 0.18);
+      stroke: var(--accent-green);
+      stroke-width: 3;
+    }
+    .team-node-initial {
+      font-family: var(--font-title);
+      font-size: 20px;
+      font-weight: 800;
+      fill: var(--text-main);
+      text-anchor: middle;
+      dominant-baseline: central;
+      pointer-events: none;
+      user-select: none;
+    }
+    .team-node-group.active .team-node-initial { fill: var(--accent-green); }
+    .team-node-text {
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      fill: var(--text-main);
+      text-anchor: middle;
+      pointer-events: none;
+      user-select: none;
+    }
+    .team-node-group.active .team-node-text { fill: var(--accent-green); }
+    .team-edge {
+      stroke: var(--border-color);
+      stroke-width: 1.5;
+    }
+
+    .team-relation-card.flash {
+      box-shadow: 0 0 0 2px var(--accent-green), 0 0 20px rgba(5, 196, 107, 0.4);
+    }
+    .team-relation-card header { cursor: pointer; }
+
     @media (max-width: 768px) {
       body { padding: 10px; margin: 10px auto; }
       .card { padding: 20px; }
@@ -1149,6 +1328,7 @@
   <div class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('character')">👤 角色档案</button>
     <button class="tab-btn tab-pet" onclick="switchTab('pet')">🐾 宠物档案</button>
+    <button class="tab-btn tab-team" onclick="switchTab('team')">🤝 团队关系</button>
   </div>
 
   <!-- ================= Tab 1: 主角色档案 ================= -->
@@ -1397,6 +1577,7 @@
         <div class="col-attr">属性</div>
         <div class="col-skill">技能加成</div>
         <div class="col-damage">伤害骰</div>
+        <div class="col-ammo">弹药</div>
         <div class="col-note">备注说明</div>
         <div class="col-action"></div>
       </div>
@@ -1491,6 +1672,42 @@
         <button id="btnPetCardImage" onclick="generatePetCardImage()" style="flex:1; background-color: var(--accent-orange); color: #0d0f12; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">🖼️ 生成宠物卡图片</button>
       </div>
     </div>
+  </div>
+
+  <!-- ================= Tab 3: 团队关系 ================= -->
+  <div class="tab-content" id="tab-team">
+    <div class="section-header">
+      <h2>🤝 团队关系</h2>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn-reset" onclick="exportTeamCard()" style="border-color: var(--accent-cyan); color: var(--accent-cyan);">📤 导出档案</button>
+        <button class="btn-reset" onclick="triggerTeamImport()" style="border-color: var(--accent-cyan); color: var(--accent-cyan);">📥 导入档案</button>
+        <input type="file" id="teamImportInput" accept=".json" style="display:none;" onchange="importTeamCard(event)">
+        <button class="btn-reset" onclick="resetTeamForm()">🧹 清空重置</button>
+      </div>
+    </div>
+
+    <div class="rule-info-card rule-info-team">
+      💡 <strong>玩法说明</strong>：按围坐顺序（例如实际桌上从左到右的座位）依次添加团队成员。点击"生成"后，每位成员都会为自己<strong style="color:var(--accent-cyan);">右侧</strong>的乘员掷一次 1d20（对应右侧关系表），再为自己<strong style="color:var(--accent-orange);">左侧</strong>的乘员掷一次 1d20（对应左侧关系表）。问题由每位玩家自己回答，但建议大家互相商量、分享结果，也可以把讨论出的答案直接记在下方文本框里。
+    </div>
+
+    <h2 style="margin-top:20px;">👥 团队成员（按围坐顺序添加）</h2>
+
+    <div class="team-circle-wrap" id="team_circle_wrap" style="display:none;">
+      <div class="team-circle-hint">🪑 圆桌视图 · 点击任意成员，查看TA与左右邻居的关系</div>
+      <svg id="team_circle_svg" class="team-circle-svg" viewBox="0 0 400 400"></svg>
+      <div class="team-circle-legend">
+        <span><span class="legend-dot dot-right"></span>右侧邻居</span>
+        <span><span class="legend-dot dot-left"></span>左侧邻居</span>
+      </div>
+    </div>
+
+    <div id="team_members_list"></div>
+    <div id="team_members_empty_hint" class="team-empty-hint">暂无成员，点击下方按钮添加</div>
+    <button class="btn-add-skill" onclick="addTeamMemberRow();">➕ 添加团队成员</button>
+
+    <button class="btn-primary btn-team-primary" onclick="generateTeamRelations()">🎲 为所有成员掷骰生成关系</button>
+
+    <div id="team_relations_output"></div>
   </div>
 
 </div>
@@ -2107,28 +2324,30 @@ function rollTrinketItem(playSound = true) {
   const SKILL_TIER_NAMES = {10:'受训技能',15:'专家技能',20:'大师技能'};
   let learnedSkills = new Set();
 
+  // 各武器的固定弹容量（弹匣/弹夹上限），选择武器时会自动带入"弹药"栏，格式为 "当前/上限"；
+  // 近战或无弹药限制的武器（N/A）留空，不会自动填入任何内容
   let WEAPON_PRESETS = {
-    "跳帮斧": { attr: "战斗", damage: "2d10", note: "范围:邻接；惨烈 [+]" },
-    "战斗霰弹枪": { attr: "战斗", damage: "4d10", note: "范围:近距；枪击；远距及更远范围1d10伤害" },
-    "撬棍": { attr: "力量", damage: "1d5", note: "范围:邻接；钝击[+]；打开卡住的气闸等力量检定赋予[+]" },
-    "喷火器": { attr: "战斗", damage: "2d10", note: "范围:近距；火焰&爆炸[+]；身体豁免[-]否则着火(2d10/轮)" },
-    "信号枪": { attr: "战斗", damage: "1d5", note: "范围:远距；火焰&爆炸[+]；高亮信号火光" },
-    "泡沫枪": { attr: "战斗", damage: "1", note: "范围:近距；钝击；身体豁免失败动弹不得，力量检定[-]才能逃脱" },
-    "破片手雷": { attr: "战斗", damage: "3d10", note: "范围:近距；火焰&爆炸；若命中所有邻接敌人遭受伤害" },
-    "通用机枪": { attr: "战斗", damage: "4d10", note: "范围:远距；枪击[+]；双手，沉重，绕过角落开火" },
-    "手持焊枪": { attr: "战斗", damage: "1d10", note: "范围:邻接；出血；可以切开气闸门" },
-    "激光切割器": { attr: "战斗", damage: "1d100", note: "范围:远距；出血[+] 或惨烈[+]；双手，沉重" },
-    "射钉枪": { attr: "战斗", damage: "1d5", note: "范围:近距；出血" },
-    "脉冲步枪": { attr: "战斗", damage: "3d10", note: "范围:远距；枪击" },
-    "转轮手枪": { attr: "战斗", damage: "1d10+1", note: "范围:近距；枪击" },
-    "钩索枪": { attr: "战斗", damage: "1d10", note: "范围:近距；1d10伤害+移除时2d10伤害；出血[+]；100米细丝，身体豁免失败被缠住" },
-    "手术刀": { attr: "战斗", damage: "1d5", note: "范围:邻接；出血[+]" },
-    "智能步枪": { attr: "战斗", damage: "4d10", note: "范围:远距；枪击[+](AA)；在近距范围内开火，战斗检定带有[-]" },
-    "冲锋枪": { attr: "战斗", damage: "2d10", note: "范围:远距；枪击；可以单手开火" },
-    "震慑电棒": { attr: "战斗", damage: "1d5", note: "范围:邻接；钝击；身体豁免失败震慑1轮" },
-    "镇静手枪": { attr: "战斗", damage: "1d5", note: "范围:近距；钝击；若造成伤害敌人须通过身体豁免，失败失去意识1d10轮" },
-    "徒手": { attr: "力量", damage: "力量/10", note: "范围:邻接；钝击" },
-    "共振砍刀": { attr: "战斗", damage: "3d10", note: "范围:邻接；出血+惨烈(AA)；造成损伤时同时根据出血和惨烈列投骰" }
+    "跳帮斧": { attr: "战斗", damage: "2d10", note: "范围:邻接", ammo: "" },
+    "战斗霰弹枪": { attr: "战斗", damage: "4d10", note: "范围:近距；远距及更远范围1d10伤害", ammo: "4/4" },
+    "撬棍": { attr: "力量", damage: "1d5", note: "范围:邻接；打开卡住的气闸等力量检定赋予[+]", ammo: "" },
+    "喷火器": { attr: "战斗", damage: "2d10", note: "范围:近距；身体豁免[-]否则着火(2d10/轮)", ammo: "4/4" },
+    "信号枪": { attr: "战斗", damage: "1d5", note: "范围:远距；高亮信号火光", ammo: "2/2" },
+    "泡沫枪": { attr: "战斗", damage: "1", note: "范围:近距；身体豁免失败动弹不得，力量检定[-]才能逃脱", ammo: "3/3" },
+    "破片手雷": { attr: "战斗", damage: "3d10", note: "范围:近距；若命中所有邻接敌人遭受伤害", ammo: "" },
+    "通用机枪": { attr: "战斗", damage: "4d10", note: "范围:远距；双手，沉重", ammo: "5/5" },
+    "手持焊枪": { attr: "战斗", damage: "1d10", note: "范围:邻接", ammo: "" },
+    "激光切割器": { attr: "战斗", damage: "1d100", note: "范围:远距；双手，沉重，射击要间隔一轮", ammo: "6/6" },
+    "射钉枪": { attr: "战斗", damage: "1d5", note: "范围:近距", ammo: "32/32" },
+    "脉冲步枪": { attr: "战斗", damage: "3d10", note: "范围:远距", ammo: "5/5" },
+    "转轮手枪": { attr: "战斗", damage: "1d10+1", note: "范围:近距", ammo: "6/6" },
+    "钩索枪": { attr: "战斗", damage: "1d10", note: "范围:近距；1d10伤害+移除时2d10伤害；身体豁免失败被缠住", ammo: "1/1" },
+    "手术刀": { attr: "战斗", damage: "1d5", note: "范围:邻接", ammo: "" },
+    "智能步枪": { attr: "战斗", damage: "4d10", note: "范围:远距；(AA)；近距内战斗检定带有[-]", ammo: "3/3" },
+    "冲锋枪": { attr: "战斗", damage: "2d10", note: "范围:远距；单手开火", ammo: "4/4" },
+    "震慑电棒": { attr: "战斗", damage: "1d5", note: "范围:邻接；身体豁免失败震慑1轮", ammo: "" },
+    "镇静手枪": { attr: "战斗", damage: "1d5", note: "范围:近距；造成伤害敌人须通过身体豁免，失败失去意识1d10轮", ammo: "6/6" },
+    "徒手": { attr: "力量", damage: "力量/10", note: "范围:邻接", ammo: "" },
+    "共振砍刀": { attr: "战斗", damage: "3d10", note: "范围:邻接；出血+惨烈(AA)", ammo: "" }
   };
 
   const STORAGE_KEY = 'MOTHERSHIP_CHARACTERS_HISTORY';
@@ -2146,13 +2365,10 @@ function rollTrinketItem(playSound = true) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-    if (tabName === 'character') {
-      document.querySelectorAll('.tab-btn')[0].classList.add('active');
-      document.getElementById('tab-character').classList.add('active');
-    } else {
-      document.querySelectorAll('.tab-btn')[1].classList.add('active');
-      document.getElementById('tab-pet').classList.add('active');
-    }
+    const tabIndex = { character: 0, pet: 1, team: 2 };
+    const idx = tabIndex[tabName] ?? 0;
+    document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+    document.getElementById(`tab-${tabName}`).classList.add('active');
   }
 
   function quickRollHP() {
@@ -2362,7 +2578,7 @@ function rollTrinketItem(playSound = true) {
     const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, defval: '' });
     if (rows.length < 2) return;
 
-    let nameCol = -1, damageCol = -1, rangeCol = -1, typeCol = -1, noteCol = -1;
+    let nameCol = -1, damageCol = -1, rangeCol = -1, typeCol = -1, noteCol = -1, ammoCol = -1;
     const headerRow = rows[0].map(cell => String(cell).trim().toLowerCase());
 
     headerRow.forEach((colName, index) => {
@@ -2371,6 +2587,7 @@ function rollTrinketItem(playSound = true) {
       else if (colName === '范围' || colName.includes('距离') || colName.includes('射程')) rangeCol = index;
       else if (colName === '损伤' || colName.includes('属性')) typeCol = index;
       else if (colName === '特殊' || colName.includes('备注') || colName.includes('说明') || colName.includes('效果')) noteCol = index;
+      else if (colName.includes('弹容量') || colName.includes('弹药') || colName.includes('装弹量')) ammoCol = index;
     });
 
     for (let i = 1; i < rows.length; i++) {
@@ -2385,16 +2602,28 @@ function rollTrinketItem(playSound = true) {
       const wType = typeCol !== -1 ? String(row[typeCol]).trim() : '';
       const wNoteRaw = noteCol !== -1 ? String(row[noteCol]).trim() : '';
 
+      // 弹容量：N/A、—、空 等一律视为"没有弹药限制"，留空不导入；
+      // 是数字的话统一转换成 "上限/上限"（当前=满弹）格式，跟角色卡里弹药栏的格式保持一致
+      let wAmmo = '';
+      if (ammoCol !== -1) {
+        const ammoRaw = String(row[ammoCol]).trim();
+        if (/^\d+$/.test(ammoRaw)) {
+          wAmmo = `${ammoRaw}/${ammoRaw}`;
+        } else if (ammoRaw.includes('/')) {
+          wAmmo = ammoRaw; // 表格里本来就是 "当前/上限" 格式，直接沿用
+        }
+        // N/A、—、空字符串等情况 wAmmo 保持 ''，不导入
+      }
+
       if (wName && wName !== '—' && wName.length > 1) {
         let attrNorm = '战斗';
         if (wType.includes('钝击') || wName.includes('撬棍') || wName.includes('斧') || wName.includes('锤') || wName.includes('徒手')) attrNorm = '力量';
 
         let combinedNote = [];
         if (wRange && wRange !== '—' && wRange !== 'NaN') combinedNote.push(`范围:${wRange}`);
-        if (wType && wType !== '—' && wType !== 'NaN') combinedNote.push(wType);
         if (wNoteRaw && wNoteRaw !== '—' && wNoteRaw !== 'NaN' && wNoteRaw !== '——') combinedNote.push(wNoteRaw);
 
-        WEAPON_PRESETS[wName] = { attr: attrNorm, damage: wDmg, note: combinedNote.join('；') };
+        WEAPON_PRESETS[wName] = { attr: attrNorm, damage: wDmg, note: combinedNote.join('；'), ammo: wAmmo };
       }
     }
     initWeaponDatalist();
@@ -2646,7 +2875,7 @@ function clearSkillRelationHighlights() {
     });
   }
 
-  function addWeaponRow(selectedWeapon = '', attr = '战斗', skillChoice = '', damage = '', note = '') {
+  function addWeaponRow(selectedWeapon = '', attr = '战斗', skillChoice = '', damage = '', note = '', ammo = '') {
     const container = document.getElementById('weapons_container');
     const row = document.createElement('div');
     row.className = 'weapon-item';
@@ -2671,6 +2900,7 @@ function clearSkillRelationHighlights() {
         ${skillOptionsHtml}
       </select>
       <input type="text" class="weapon-damage" value="${damage}" placeholder="如: 2d10" oninput="updateCommandsPreview()">
+      <input type="text" class="weapon-ammo" value="${ammo}" placeholder="如: 12/12" title="剩余弹药/弹匣容量，近战武器留空即可" oninput="updateCommandsPreview()">
       <input type="text" class="weapon-note" value="${note}" placeholder="备注/效果" oninput="updateCommandsPreview()">
       <button onclick="this.parentElement.remove(); updateCommandsPreview();">✕</button>
     `;
@@ -2684,6 +2914,7 @@ function clearSkillRelationHighlights() {
     const row = inputEl.closest('.weapon-item');
     const attrSel = row.querySelector('.weapon-attr');
     const damageInput = row.querySelector('.weapon-damage');
+    const ammoInput = row.querySelector('.weapon-ammo');
     const noteInput = row.querySelector('.weapon-note');
 
     if (WEAPON_PRESETS[weaponName]) {
@@ -2691,6 +2922,8 @@ function clearSkillRelationHighlights() {
       attrSel.value = data.attr;
       damageInput.value = data.damage;
       noteInput.value = data.note;
+      // 固定弹容量：预设里写了多少就带出多少（近战武器是空字符串，不会填任何东西）
+      if (ammoInput) ammoInput.value = data.ammo || '';
     }
     updateCommandsPreview();
   }
@@ -2761,6 +2994,23 @@ function clearSkillRelationHighlights() {
       autoGrowAllLoadouts();
     } catch(e) {}
 
+    // 先扫一遍整张表，找角色档案里"自带的武器小表格"的表头行（含"武器"和"弹容量"字样），
+    // 记下"弹容量"这一列具体是第几列，之后读角色实际装备的武器时可以直接从这一列取值——
+    // 这样比套用武器预设库里的默认满弹上限更准（万一角色卡里这把枪已经打过几发，数字会不一样）
+    let charSheetAmmoCol = -1;
+    for (let r = 0; r < data.length; r++) {
+      const row = data[r];
+      if (!row) continue;
+      const hasWeaponHeader = row.some(cell => String(cell || '').trim() === '武器');
+      if (hasWeaponHeader) {
+        row.forEach((cell, idx) => {
+          const c = String(cell || '').trim();
+          if (c.includes('弹容量') || c.includes('弹药') || c.includes('装弹量')) charSheetAmmoCol = idx;
+        });
+        if (charSheetAmmoCol !== -1) break;
+      }
+    }
+
     for (let r = 0; r < data.length; r++) {
       const row = data[r];
       if (!row) continue;
@@ -2809,7 +3059,20 @@ function clearSkillRelationHighlights() {
           if (cellVal.includes(wName) && wName.length > 1 && !addedWeapons.has(wName)) {
             addedWeapons.add(wName);
             const wData = WEAPON_PRESETS[wName];
-            addWeaponRow(wName, wData.attr, '', wData.damage, wData.note);
+
+            // 优先读角色自己这一行里的弹容量数值，读不到再退回预设库里的默认满弹上限
+            let wAmmo = wData.ammo || '';
+            if (charSheetAmmoCol !== -1 && charSheetAmmoCol < row.length) {
+              const ammoRaw = String(row[charSheetAmmoCol] || '').trim();
+              if (/^\d+$/.test(ammoRaw)) {
+                wAmmo = `${ammoRaw}/${ammoRaw}`;
+              } else if (ammoRaw.includes('/')) {
+                wAmmo = ammoRaw;
+              }
+              // "N/A"、"—"、空 等情况保留上面已经算好的 wData.ammo 兜底值
+            }
+
+            addWeaponRow(wName, wData.attr, '', wData.damage, wData.note, wAmmo);
           }
         });
       }
@@ -3103,6 +3366,7 @@ function clearSkillRelationHighlights() {
         const wAttr = row.querySelector('.weapon-attr').value;
         const wSkillVal = row.querySelector('.weapon-skill').value;
         const wDamage = row.querySelector('.weapon-damage').value.trim();
+        const wAmmo = row.querySelector('.weapon-ammo').value.trim();
         const wNote = row.querySelector('.weapon-note').value.trim();
 
         if (wName) {
@@ -3113,8 +3377,11 @@ function clearSkillRelationHighlights() {
           else if (wSkillVal.includes("(+20)")) bonusStr = "+20";
 
           const formula = `{${wAttr}}${bonusStr}`;
-          const noteSuffix = wNote ? `（${wNote}）` : "";
-          cmds.push(`1d100<${formula} ${wName} 攻击${noteSuffix}`);
+          const ammoSuffix = wAmmo ? `[弹药:${wAmmo}]` : "";
+          // 攻击那一行只保留武器名+弹药，保证在 CCFolia 里是一条短按钮；
+          // 备注单独放下一行做参考文字，不影响掷骰，但不会把按钮撑得老长
+          cmds.push(`1d100<${formula} ${wName} 攻击${ammoSuffix}`);
+          if (wNote) cmds.push(`　└ ${wName}备注：${wNote}`);
           if (wDamage) cmds.push(`${wDamage} ${wName} 伤害`);
         }
       });
@@ -3350,7 +3617,7 @@ function clearSkillRelationHighlights() {
         if (fd.weapons.length > 0) {
           fd.weapons.forEach(w => {
             if (typeof window.addWeaponRow === 'function') {
-              window.addWeaponRow(w.name, w.attr, w.skill, w.damage, w.note);
+              window.addWeaponRow(w.name, w.attr, w.skill, w.damage, w.note, w.ammo);
             }
           });
         } else {
@@ -3458,6 +3725,7 @@ if (history.length > 3) {
         attr: row.querySelector('.weapon-attr')?.value || '',
         skill: row.querySelector('.weapon-skill')?.value || '',
         damage: row.querySelector('.weapon-damage')?.value || '',
+        ammo: row.querySelector('.weapon-ammo')?.value || '',
         note: row.querySelector('.weapon-note')?.value || ''
       });
     });
@@ -3822,6 +4090,362 @@ if (history.length > 3) {
     document.addEventListener('focusin', (e) => reopen(e.target));
     document.addEventListener('click', (e) => reopen(e.target));
   })();
+
+  // ================= 团队关系 Tab =================
+
+  const TEAM_STORAGE_KEY = 'mothership_team_relations_v1';
+
+  // 右侧关系表 (1d20) —— 为自己右侧乘员的角色掷骰
+  const TEAM_RIGHT_TABLE = {
+    1: "这位乘员让你想起了一位老朋友。为什么？",
+    2: "这位乘员总是帮助你。在什么事情上？",
+    3: "这位乘员教过你一些东西。是什么？",
+    4: "这位乘员有一些让你羡慕的本事。是什么？",
+    5: "这位乘员总能逗笑你。是怎么做到的？",
+    6: "这位乘员借过你一些信用点。用来做什么？",
+    7: "这位乘员送过你一件礼物。是什么？",
+    8: "如果你妈妈见过这位乘员，肯定会非常赏识对方。为什么？",
+    9: "这位乘员救过你的命。是怎么救的？",
+    10: "这位乘员给你带来了希望。是怎么带来的？",
+    11: "这位乘员为你保守过一个极其丢人的秘密。是什么秘密？",
+    12: "这位乘员很懂你的口味。对方曾偷偷帮你带过什么违禁零食/饮料？",
+    13: "这位乘员赞同你的某个怪想法。那是关于什么的？",
+    14: "这位乘员帮你收拾过残局。大概发生了什么？",
+    15: "这位乘员有个习惯让你觉得很亲切。那是什么习惯？",
+    16: "你们曾一起干过一件极蠢的事，并约定绝不告诉第三人。那是件什么事？",
+    17: "这位乘员对你非常信任。体现在哪件事上？",
+    18: "这位乘员和你拥有一个共同的业余爱好。是什么？",
+    19: "你们之间有一种不需言说的默契：只要眼神对上，就知道该一起去整蛊谁。是谁？",
+    20: "这位乘员身上有一点很值得你学习。是什么？"
+  };
+
+  // 左侧关系表 (1d20) —— 为自己左侧乘员的角色掷骰
+  const TEAM_LEFT_TABLE = {
+    1: "这位乘员让你想起了一个宿敌。为什么？",
+    2: "这位乘员对你经常做的某件事感到厌烦。是什么事？",
+    3: "这位乘员让你感到有一点害怕。对方是怎么做到的？",
+    4: "这位乘员对你身上的气味有意见。是哪种味道？",
+    5: "这位乘员羞辱过你。是怎么羞辱的？",
+    6: "这位乘员抱怨过你。对方对你有什么不满？",
+    7: "这位乘员欠你一个解释。关于什么？",
+    8: "你身上的一道伤疤是这位乘员造成的。是哪一道？",
+    9: "这位乘员对你是个威胁。为什么你这么认为？",
+    10: "这位乘员对整个乘组是个威胁。为什么？",
+    11: "这位乘员撞见过你的尴尬一幕。当时你在干什么？",
+    12: "这位乘员动过（或偷吃过）你的私人财物。是什么东西？",
+    13: "这位乘员的某个小动作总是让你很抓狂。那是什么？",
+    14: "这位乘员的行事风格和你完全相反。这导致了什么问题？",
+    15: "这位乘员曾给你取过一个极其离谱的外号。那个外号叫什么？",
+    16: "这位乘员放过你的鸽子。因为什么事？",
+    17: "这位乘员曾对你的专业能力提出过质疑。为什么？",
+    18: "只要这位乘员在场，你就感到浑身不自在。为什么？",
+    19: "你们曾因为争夺最后一个布丁（或某种微不足道的小东西）差点在走廊决斗。后来谁赢了？",
+    20: "你们之间曾因为误会冷战过一段时间。是因为什么？"
+  };
+
+  // 当前生成的关系数据：[{ name, right:{targetName, roll, question, answer}, left:{targetName, roll, question, answer} }, ...]
+  let teamRelationsData = [];
+  // 当前圆桌视图中被选中（点亮左右关系箭头）的成员下标
+  let activeTeamMemberIndex = null;
+
+  function rollD20() { return Math.floor(Math.random() * 20) + 1; }
+
+  function addTeamMemberRow(name = '') {
+    const container = document.getElementById('team_members_list');
+    const row = document.createElement('div');
+    row.className = 'skill-item team-member-item';
+    row.innerHTML = `
+      <input type="text" class="team-member-name" value="${name}" placeholder="成员姓名 / 角色名" oninput="onTeamMembersChanged();">
+      <button type="button" class="btn-team-move" onclick="moveTeamMember(this, -1);" title="上移（逆时针）">↑</button>
+      <button type="button" class="btn-team-move" onclick="moveTeamMember(this, 1);" title="下移（顺时针）">↓</button>
+      <button type="button" onclick="this.closest('.team-member-item').remove(); activeTeamMemberIndex = null; onTeamMembersChanged();" title="删除">✕</button>
+    `;
+    container.appendChild(row);
+    onTeamMembersChanged();
+  }
+
+  function moveTeamMember(btn, direction) {
+    const row = btn.closest('.team-member-item');
+    if (!row) return;
+    if (direction < 0 && row.previousElementSibling) {
+      row.parentElement.insertBefore(row, row.previousElementSibling);
+    } else if (direction > 0 && row.nextElementSibling) {
+      row.parentElement.insertBefore(row.nextElementSibling, row);
+    }
+    playAudioBeep(500, 'sine', 0.06);
+    activeTeamMemberIndex = null;
+    onTeamMembersChanged();
+  }
+
+  function updateTeamEmptyHint() {
+    const container = document.getElementById('team_members_list');
+    const hint = document.getElementById('team_members_empty_hint');
+    if (!container || !hint) return;
+    hint.style.display = container.children.length === 0 ? 'block' : 'none';
+  }
+
+  function getTeamMemberNames() {
+    return Array.from(document.querySelectorAll('#team_members_list .team-member-name'))
+      .map(input => input.value.trim())
+      .filter(v => v);
+  }
+
+  // 成员名单发生变化（增/删/排序/改名）时统一调用：刷新空态提示、圆桌视图、并写入本地存储
+  function onTeamMembersChanged() {
+    updateTeamEmptyHint();
+    renderTeamCircle();
+    saveTeamToLocalStorage();
+  }
+
+  // 渲染"圆桌视图"：把当前成员按加入顺序沿圆周排布（顺时针 = 右侧邻居方向），
+  // 点击某位成员时用箭头高亮TA的左右邻居关系，并联动滚动到下方对应的关系卡片
+  function renderTeamCircle() {
+    const wrap = document.getElementById('team_circle_wrap');
+    const svg = document.getElementById('team_circle_svg');
+    if (!wrap || !svg) return;
+
+    const names = getTeamMemberNames();
+    const n = names.length;
+
+    if (n < 2) {
+      wrap.style.display = 'none';
+      svg.innerHTML = '';
+      return;
+    }
+    wrap.style.display = 'block';
+
+    const size = 400, cx = size / 2, cy = size / 2, r = 140, nodeR = 22;
+    const positions = names.map((_, i) => {
+      const angle = (-90 + i * (360 / n)) * Math.PI / 180;
+      return { x: cx + r * Math.sin(angle), y: cy - r * Math.cos(angle) };
+    });
+
+    const defs = `
+      <defs>
+        <marker id="team-arrow-cyan" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent-cyan);"></path>
+        </marker>
+        <marker id="team-arrow-orange" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent-orange);"></path>
+        </marker>
+      </defs>
+    `;
+
+    // 基础圆环连线：表示座位相邻关系（不带方向）
+    let baseEdges = '';
+    for (let i = 0; i < n; i++) {
+      const a = positions[i], b = positions[(i + 1) % n];
+      baseEdges += `<line class="team-edge" x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}"></line>`;
+    }
+
+    // 选中成员时，额外画出指向左右邻居的方向箭头
+    let activeEdges = '';
+    if (activeTeamMemberIndex !== null && activeTeamMemberIndex < n) {
+      const k = activeTeamMemberIndex;
+      const rightIdx = (k + 1) % n, leftIdx = (k - 1 + n) % n;
+      activeEdges += buildTeamDirectedArrow(positions[k], positions[rightIdx], nodeR, 'var(--accent-cyan)', 'team-arrow-cyan');
+      if (leftIdx !== rightIdx) {
+        activeEdges += buildTeamDirectedArrow(positions[k], positions[leftIdx], nodeR, 'var(--accent-orange)', 'team-arrow-orange');
+      }
+    }
+
+    let nodes = '';
+    names.forEach((name, i) => {
+      const p = positions[i];
+      const isActive = activeTeamMemberIndex === i;
+      const shortName = name.length > 6 ? name.slice(0, 5) + '…' : name;
+      nodes += `
+        <g class="team-node-group ${isActive ? 'active' : ''}" onclick="selectTeamMember(${i});">
+          <title>${name}</title>
+          <circle class="team-node-circle" cx="${p.x}" cy="${p.y}" r="${nodeR}"></circle>
+          <text class="team-node-initial" x="${p.x}" y="${p.y}">${name.slice(0, 1) || '?'}</text>
+          <text class="team-node-text" x="${p.x}" y="${p.y + nodeR + 16}">${shortName}</text>
+        </g>
+      `;
+    });
+
+    svg.innerHTML = defs + baseEdges + activeEdges + nodes;
+  }
+
+  // 计算一条从 from 指向 to、但两端都留出节点半径空隙的带箭头连线
+  function buildTeamDirectedArrow(from, to, nodeR, color, markerId) {
+    const dx = to.x - from.x, dy = to.y - from.y;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    const ux = dx / dist, uy = dy / dist;
+    const startOffset = nodeR + 4;
+    const endOffset = nodeR + 10;
+    const x1 = from.x + ux * startOffset, y1 = from.y + uy * startOffset;
+    const x2 = to.x - ux * endOffset, y2 = to.y - uy * endOffset;
+    return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" style="stroke:${color}; stroke-width:3;" marker-end="url(#${markerId})"></line>`;
+  }
+
+  // 点击圆桌视图中的某位成员：高亮TA的左右邻居箭头，并滚动到对应的关系卡片
+  function selectTeamMember(index) {
+    activeTeamMemberIndex = (activeTeamMemberIndex === index) ? null : index;
+    renderTeamCircle();
+    if (activeTeamMemberIndex !== null) {
+      const card = document.getElementById(`team-relation-card-${activeTeamMemberIndex}`);
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.classList.add('flash');
+        setTimeout(() => card.classList.remove('flash'), 1200);
+      }
+    }
+  }
+
+  function generateTeamRelations() {
+    const names = getTeamMemberNames();
+    if (names.length < 2) {
+      alert('请至少添加 2 位团队成员，才能生成左右邻居关系。');
+      return;
+    }
+    playDiceRollSound();
+    const n = names.length;
+    teamRelationsData = names.map((name, i) => {
+      const rightTarget = names[(i + 1) % n];
+      const leftTarget = names[(i - 1 + n) % n];
+      const rightRoll = rollD20();
+      const leftRoll = rollD20();
+      return {
+        name,
+        right: { targetName: rightTarget, roll: rightRoll, question: TEAM_RIGHT_TABLE[rightRoll], answer: '' },
+        left: { targetName: leftTarget, roll: leftRoll, question: TEAM_LEFT_TABLE[leftRoll], answer: '' }
+      };
+    });
+    renderTeamRelations();
+    saveTeamToLocalStorage();
+  }
+
+  function rerollTeamSide(memberIndex, side) {
+    const entry = teamRelationsData[memberIndex];
+    if (!entry) return;
+    playDiceRollSound();
+    const roll = rollD20();
+    entry[side].roll = roll;
+    entry[side].question = side === 'right' ? TEAM_RIGHT_TABLE[roll] : TEAM_LEFT_TABLE[roll];
+    renderTeamRelations();
+    saveTeamToLocalStorage();
+  }
+
+  function updateTeamAnswer(memberIndex, side, value) {
+    const entry = teamRelationsData[memberIndex];
+    if (!entry) return;
+    entry[side].answer = value;
+    saveTeamToLocalStorage();
+  }
+
+  function renderTeamRelations() {
+    const output = document.getElementById('team_relations_output');
+    if (!output) return;
+    if (teamRelationsData.length === 0) {
+      output.innerHTML = '';
+      return;
+    }
+    output.innerHTML = teamRelationsData.map((entry, i) => `
+      <div class="team-relation-card" id="team-relation-card-${i}">
+        <header onclick="selectTeamMember(${i});">👤 ${entry.name}</header>
+
+        <div class="team-relation-side side-right">
+          <div class="team-relation-side-head">
+            <span><span class="side-tag-right">➡ 右侧邻居：${entry.right.targetName}</span> · <span class="team-relation-roll">1d20 = ${entry.right.roll}</span></span>
+            <button type="button" class="btn-team-reroll" onclick="rerollTeamSide(${i}, 'right');">🎲 重骰</button>
+          </div>
+          <div class="team-relation-question">${entry.right.question}</div>
+          <textarea class="team-relation-answer" placeholder="记录讨论出的答案…" oninput="updateTeamAnswer(${i}, 'right', this.value);">${entry.right.answer || ''}</textarea>
+        </div>
+
+        <div class="team-relation-side side-left">
+          <div class="team-relation-side-head">
+            <span><span class="side-tag-left">⬅ 左侧邻居：${entry.left.targetName}</span> · <span class="team-relation-roll">1d20 = ${entry.left.roll}</span></span>
+            <button type="button" class="btn-team-reroll" onclick="rerollTeamSide(${i}, 'left');">🎲 重骰</button>
+          </div>
+          <div class="team-relation-question">${entry.left.question}</div>
+          <textarea class="team-relation-answer" placeholder="记录讨论出的答案…" oninput="updateTeamAnswer(${i}, 'left', this.value);">${entry.left.answer || ''}</textarea>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function resetTeamForm() {
+    playAudioBeep(400, 'sawtooth', 0.15);
+    document.getElementById('team_members_list').innerHTML = '';
+    teamRelationsData = [];
+    activeTeamMemberIndex = null;
+    renderTeamRelations();
+    onTeamMembersChanged();
+  }
+
+  // 收集团队 Tab 的完整数据（供本地存储 / 导出文件共用）
+  function collectTeamFormData() {
+    return {
+      members: getTeamMemberNames(),
+      relations: teamRelationsData
+    };
+  }
+
+  // 恢复团队 Tab 的完整数据（本地存储加载 / 文件导入共用）
+  function restoreTeamFormData(fd) {
+    if (!fd) return;
+    document.getElementById('team_members_list').innerHTML = '';
+    activeTeamMemberIndex = null;
+    (fd.members || []).forEach(name => addTeamMemberRow(name));
+    onTeamMembersChanged();
+    teamRelationsData = fd.relations || [];
+    renderTeamRelations();
+  }
+
+  function saveTeamToLocalStorage() {
+    try {
+      localStorage.setItem(TEAM_STORAGE_KEY, JSON.stringify(collectTeamFormData()));
+    } catch (e) {}
+  }
+
+  function loadTeamFromLocalStorage() {
+    try {
+      const raw = localStorage.getItem(TEAM_STORAGE_KEY);
+      if (!raw) { updateTeamEmptyHint(); return; }
+      restoreTeamFormData(JSON.parse(raw));
+    } catch (e) { updateTeamEmptyHint(); }
+  }
+
+  function exportTeamCard() {
+    const payload = {
+      app: 'mothership-card-exporter',
+      type: 'team',
+      exportedAt: new Date().toISOString(),
+      formData: collectTeamFormData()
+    };
+    downloadJsonFile(`团队关系_${new Date().toISOString().slice(0,10)}.json`, payload);
+    if (typeof playAudioBeep === 'function') playAudioBeep(900, 'sine', 0.12);
+  }
+
+  function triggerTeamImport() { document.getElementById('teamImportInput').click(); }
+
+  function importTeamCard(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const parsed = JSON.parse(e.target.result);
+        const fd = parsed.formData || parsed;
+        if (typeof switchTab === 'function') switchTab('team');
+        restoreTeamFormData(fd);
+        saveTeamToLocalStorage();
+        if (typeof playAudioBeep === 'function') playAudioBeep(700, 'sine', 0.1);
+      } catch (err) {
+        alert('导入失败：文件内容不是有效的团队关系 JSON。');
+        console.error(err);
+      } finally {
+        event.target.value = '';
+      }
+    };
+    reader.readAsText(file, 'utf-8');
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadTeamFromLocalStorage();
+  });
 </script>
 </body>
 </html>
