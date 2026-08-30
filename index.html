@@ -903,12 +903,11 @@
       font-weight: 600;
     }
     .weapon-table-header div { flex: 1; }
-    .weapon-table-header .col-name { flex: 1.8; }
-    .weapon-table-header .col-attr { flex: 1; }
-    .weapon-table-header .col-skill { flex: 1.4; }
+    .weapon-table-header .col-name { flex: 2; }
+    .weapon-table-header .col-skill { flex: 1.5; }
     .weapon-table-header .col-damage { flex: 1; }
     .weapon-table-header .col-ammo { flex: 0.8; }
-    .weapon-table-header .col-note { flex: 2; }
+    .weapon-table-header .col-note { flex: 2.2; }
     .weapon-table-header .col-action { flex: 0 0 32px; }
 
     .weapon-item {
@@ -917,12 +916,11 @@
       margin-bottom: 8px;
       align-items: center;
     }
-    .weapon-item .weapon-name-input { flex: 1.8; }
-    .weapon-item .weapon-attr { flex: 1; }
-    .weapon-item .weapon-skill { flex: 1.4; }
+    .weapon-item .weapon-name-input { flex: 2; }
+    .weapon-item .weapon-skill { flex: 1.5; }
     .weapon-item .weapon-damage { flex: 1; font-family: var(--font-mono); }
     .weapon-item .weapon-ammo { flex: 0.8; font-family: var(--font-mono); }
-    .weapon-item .weapon-note { flex: 2; }
+    .weapon-item .weapon-note { flex: 2.2; }
 
     button { font-family: var(--font-body); transition: all 0.2s; }
 
@@ -1647,7 +1645,6 @@
       
       <div class="weapon-table-header">
         <div class="col-name">武器名称</div>
-        <div class="col-attr">属性</div>
         <div class="col-skill">技能加成</div>
         <div class="col-damage">伤害骰</div>
         <div class="col-ammo">弹药</div>
@@ -2404,7 +2401,7 @@ function rollTrinketItem(playSound = true) {
   let WEAPON_PRESETS = {
     "跳帮斧": { attr: "战斗", damage: "2d10", note: "范围:邻接", ammo: "" },
     "战斗霰弹枪": { attr: "战斗", damage: "4d10", note: "范围:近距；远距及更远范围1d10伤害", ammo: "4/4" },
-    "撬棍": { attr: "力量", damage: "1d5", note: "范围:邻接；打开卡住的气闸等力量检定赋予[+]", ammo: "" },
+    "撬棍": { attr: "战斗", damage: "1d5", note: "范围:邻接；打开卡住的气闸等力量检定赋予[+]", ammo: "" },
     "喷火器": { attr: "战斗", damage: "2d10", note: "范围:近距；身体豁免[-]否则着火(2d10/轮)", ammo: "4/4" },
     "信号枪": { attr: "战斗", damage: "1d5", note: "范围:远距；高亮信号火光", ammo: "2/2" },
     "泡沫枪": { attr: "战斗", damage: "1", note: "范围:近距；身体豁免失败动弹不得，力量检定[-]才能逃脱", ammo: "3/3" },
@@ -2421,7 +2418,7 @@ function rollTrinketItem(playSound = true) {
     "冲锋枪": { attr: "战斗", damage: "2d10", note: "范围:远距；单手开火", ammo: "4/4" },
     "震慑电棒": { attr: "战斗", damage: "1d5", note: "范围:邻接；身体豁免失败震慑1轮", ammo: "" },
     "镇静手枪": { attr: "战斗", damage: "1d5", note: "范围:近距；造成伤害敌人须通过身体豁免，失败失去意识1d10轮", ammo: "6/6" },
-    "徒手": { attr: "力量", damage: "力量/10", note: "范围:邻接", ammo: "" },
+    "徒手": { attr: "战斗", damage: "力量/10", note: "范围:邻接", ammo: "" },
     "共振砍刀": { attr: "战斗", damage: "3d10", note: "范围:邻接；出血+惨烈(AA)", ammo: "" }
   };
 
@@ -2674,7 +2671,6 @@ function rollTrinketItem(playSound = true) {
       wDmg = wDmg.replace(/\s*伤害$/i, '').replace('—', '').trim();
 
       const wRange = rangeCol !== -1 ? String(row[rangeCol]).trim() : '';
-      const wType = typeCol !== -1 ? String(row[typeCol]).trim() : '';
       const wNoteRaw = noteCol !== -1 ? String(row[noteCol]).trim() : '';
 
       // 弹容量：N/A、—、空 等一律视为"没有弹药限制"，留空不导入；
@@ -2691,8 +2687,8 @@ function rollTrinketItem(playSound = true) {
       }
 
       if (wName && wName !== '—' && wName.length > 1) {
-        let attrNorm = '战斗';
-        if (wType.includes('钝击') || wName.includes('撬棍') || wName.includes('斧') || wName.includes('锤') || wName.includes('徒手')) attrNorm = '力量';
+        // 武器攻击检定统一使用"战斗"属性（母舰规则里没有按武器类型区分属性这回事）
+        const attrNorm = '战斗';
 
         let combinedNote = [];
         if (wRange && wRange !== '—' && wRange !== 'NaN') combinedNote.push(`范围:${wRange}`);
@@ -2965,12 +2961,7 @@ function clearSkillRelationHighlights() {
 
     row.innerHTML = `
       <input type="text" class="weapon-name-input" list="weapons-datalist" value="${selectedWeapon}" placeholder="武器名称" onchange="onWeaponPresetChange(this)" oninput="updateCommandsPreview()">
-      <select class="weapon-attr" onchange="updateCommandsPreview()">
-        <option value="战斗" ${attr==='战斗'?'selected':''}>战斗</option>
-        <option value="力量" ${attr==='力量'?'selected':''}>力量</option>
-        <option value="速度" ${attr==='速度'?'selected':''}>速度</option>
-        <option value="智力" ${attr==='智力'?'selected':''}>智力</option>
-      </select>
+      <input type="hidden" class="weapon-attr" value="战斗">
       <select class="weapon-skill" onchange="updateCommandsPreview()">
         ${skillOptionsHtml}
       </select>
@@ -2987,14 +2978,13 @@ function clearSkillRelationHighlights() {
   function onWeaponPresetChange(inputEl) {
     const weaponName = inputEl.value.trim();
     const row = inputEl.closest('.weapon-item');
-    const attrSel = row.querySelector('.weapon-attr');
     const damageInput = row.querySelector('.weapon-damage');
     const ammoInput = row.querySelector('.weapon-ammo');
     const noteInput = row.querySelector('.weapon-note');
 
     if (WEAPON_PRESETS[weaponName]) {
       const data = WEAPON_PRESETS[weaponName];
-      attrSel.value = data.attr;
+      // 属性已固定为"战斗"（母舰规则里武器攻击检定统一用战斗属性），不再跟着预设切换
       damageInput.value = data.damage;
       noteInput.value = data.note;
       // 固定弹容量：预设里写了多少就带出多少（近战武器是空字符串，不会填任何东西）
@@ -3905,7 +3895,6 @@ if (history.length > 3) {
     const weaponsRows = (fd.weapons || []).filter(w => w.name).map(w => `
       <tr>
         <td style="padding:6px 8px; border-bottom:1px solid var(--border-color);">${w.name || ''}</td>
-        <td style="padding:6px 8px; border-bottom:1px solid var(--border-color);">${w.attr || ''}</td>
         <td style="padding:6px 8px; border-bottom:1px solid var(--border-color);">${w.skill || ''}</td>
         <td style="padding:6px 8px; border-bottom:1px solid var(--border-color);">${w.damage || ''}</td>
         <td style="padding:6px 8px; border-bottom:1px solid var(--border-color); color:var(--text-muted); font-size:12px;">${w.note || ''}</td>
@@ -3990,7 +3979,7 @@ if (history.length > 3) {
         <table style="width:100%; border-collapse:collapse; font-size:13px; margin-bottom:24px;">
           <thead>
             <tr style="text-align:left; color:var(--text-muted); font-size:11px;">
-              <th style="padding:4px 8px;">名称</th><th style="padding:4px 8px;">属性</th><th style="padding:4px 8px;">技能加成</th><th style="padding:4px 8px;">伤害骰</th><th style="padding:4px 8px;">备注</th>
+              <th style="padding:4px 8px;">名称</th><th style="padding:4px 8px;">技能加成</th><th style="padding:4px 8px;">伤害骰</th><th style="padding:4px 8px;">备注</th>
             </tr>
           </thead>
           <tbody>${weaponsRows}</tbody>
