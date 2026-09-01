@@ -3324,7 +3324,7 @@ function clearSkillRelationHighlights() {
     if (banner) {
       const noteParts = [];
       if (info.freeChoiceNote) noteParts.push(info.freeChoiceNote);
-      if (info.damageCapBonus) noteParts.push(`损伤上限 +${info.damageCapBonus}（已自动应用到下方"损伤"）`);
+      if (info.damageCapBonus) noteParts.push(`损伤上限 +${info.damageCapBonus}（已自动应用到上方"损伤"）`);
       if (noteParts.length) {
         document.getElementById('job_bonus_banner_jobname').textContent = key;
         document.getElementById('job_bonus_banner_body').innerHTML = noteParts.map(t => `<div>${t}</div>`).join('');
