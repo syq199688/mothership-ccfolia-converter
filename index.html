@@ -1479,7 +1479,7 @@
           <label for="edit_name">角色名称</label>
           <div style="display:flex; gap:6px; align-items:center;">
             <input type="text" id="edit_name" value="" placeholder="请输入角色名称" style="flex:1;">
-            <button type="button" class="btn-roll btn-roll-icon" onclick="rollRandomName()" title="随机生成姓名"><svg class="dice-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4.5" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.7" fill="currentColor"/><circle cx="16" cy="8" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="8" cy="16" r="1.7" fill="currentColor"/><circle cx="16" cy="16" r="1.7" fill="currentColor"/></svg></button>
+            <button type="button" class="btn-roll btn-roll-icon" onclick="rollRandomName()" title="随机生成姓名"><span class="dice-icon-slot"></span></button>
           </div>
         </div>
         <div>
@@ -1501,7 +1501,7 @@
       <div class="stat-card stat-card-simple">
         <div class="stat-card-label-row">
           <label class="stat-card-label" for="edit_hp">生命值</label>
-          <span title="点我快速掷骰生命值" onclick="quickRollHP()" class="btn-roll btn-roll-icon-inline"><svg class="dice-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4.5" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.7" fill="currentColor"/><circle cx="16" cy="8" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="8" cy="16" r="1.7" fill="currentColor"/><circle cx="16" cy="16" r="1.7" fill="currentColor"/></svg></span>
+          <span title="点我快速掷骰生命值" onclick="quickRollHP()" class="btn-roll btn-roll-icon-inline"><span class="dice-icon-slot"></span></span>
         </div>
         <input type="text" class="stat-card-value stat-card-value-text" id="edit_hp" value="" placeholder="如: 10/10">
       </div>
@@ -1534,7 +1534,7 @@
 
     <div class="section-header">
       <h2>属性 & 豁免检定</h2>
-      <span title="点我快速掷骰生成属性" onclick="quickRollStatsAndSaves()" class="btn-roll btn-roll-icon"><svg class="dice-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4.5" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.7" fill="currentColor"/><circle cx="16" cy="8" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="8" cy="16" r="1.7" fill="currentColor"/><circle cx="16" cy="16" r="1.7" fill="currentColor"/></svg></span>
+      <span title="点我快速掷骰生成属性" onclick="quickRollStatsAndSaves()" class="btn-roll btn-roll-icon"><span class="dice-icon-slot"></span></span>
     </div>
 
     <!-- 基础属性 -->
@@ -1624,7 +1624,7 @@
     <div class="loadout-panel">
       <div class="loadout-panel-header">
         <span class="loadout-panel-title">🎒 随身物品</span>
-        <button type="button" class="btn-roll-all" onclick="rollAllLoadouts()"><svg class="dice-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4.5" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.7" fill="currentColor"/><circle cx="16" cy="8" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="8" cy="16" r="1.7" fill="currentColor"/><circle cx="16" cy="16" r="1.7" fill="currentColor"/></svg> 一键生成全部</button>
+        <button type="button" class="btn-roll-all" onclick="rollAllLoadouts()"><span class="dice-icon-slot"></span> 一键生成全部</button>
       </div>
       <div class="grid-4">
         <!-- 全部改为一致的无痕多行文本框，支持自动换行完整显示 + 手动修改；
@@ -1632,28 +1632,28 @@
         <div class="loadout-item">
           <div class="loadout-item-header">
             <span>行装 (1d10)</span>
-            <button type="button" class="btn-roll" onclick="rollLoadoutItem()"><svg class="dice-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4.5" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.7" fill="currentColor"/><circle cx="16" cy="8" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="8" cy="16" r="1.7" fill="currentColor"/><circle cx="16" cy="16" r="1.7" fill="currentColor"/></svg> 掷骰</button>
+            <button type="button" class="btn-roll" onclick="rollLoadoutItem()"><span class="dice-icon-slot"></span> 掷骰</button>
           </div>
           <textarea class="loadout-res-input" id="res_loadout" rows="1">点击掷骰生成...</textarea>
         </div>
         <div class="loadout-item">
           <div class="loadout-item-header">
             <span>饰品 (1d100)</span>
-            <button type="button" class="btn-roll" onclick="rollTrinketItem()"><svg class="dice-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4.5" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.7" fill="currentColor"/><circle cx="16" cy="8" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="8" cy="16" r="1.7" fill="currentColor"/><circle cx="16" cy="16" r="1.7" fill="currentColor"/></svg> 掷骰</button>
+            <button type="button" class="btn-roll" onclick="rollTrinketItem()"><span class="dice-icon-slot"></span> 掷骰</button>
           </div>
           <textarea class="loadout-res-input" id="res_trinket" rows="1">点击掷骰生成...</textarea>
         </div>
         <div class="loadout-item">
           <div class="loadout-item-header">
             <span>贴章 (1d200)</span>
-            <button type="button" class="btn-roll" onclick="rollPatchItem()"><svg class="dice-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4.5" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.7" fill="currentColor"/><circle cx="16" cy="8" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="8" cy="16" r="1.7" fill="currentColor"/><circle cx="16" cy="16" r="1.7" fill="currentColor"/></svg> 掷骰</button>
+            <button type="button" class="btn-roll" onclick="rollPatchItem()"><span class="dice-icon-slot"></span> 掷骰</button>
           </div>
           <textarea class="loadout-res-input" id="res_patch" rows="1">点击掷骰生成...</textarea>
         </div>
         <div class="loadout-item">
           <div class="loadout-item-header">
             <span>信用点 (2d10x10)</span>
-            <button type="button" class="btn-roll" onclick="rollCreditsItem()"><svg class="dice-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4.5" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.7" fill="currentColor"/><circle cx="16" cy="8" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="8" cy="16" r="1.7" fill="currentColor"/><circle cx="16" cy="16" r="1.7" fill="currentColor"/></svg> 掷骰</button>
+            <button type="button" class="btn-roll" onclick="rollCreditsItem()"><span class="dice-icon-slot"></span> 掷骰</button>
           </div>
           <textarea class="loadout-res-input" id="res_credits" rows="1">点击掷骰生成...</textarea>
         </div>
@@ -1847,6 +1847,11 @@
 <datalist id="weapons-datalist"></datalist>
 
 <script>
+  // 骰子图标 SVG（经典 5 点骰面），页面里所有"掷骰"按钮共用同一份定义，
+  // 静态 HTML 里只留一个 <span class="dice-icon-slot"></span> 占位，靠下面 DOMContentLoaded 统一注入，
+  // 避免同一段 ~470 字符的 SVG 标记在源码里重复贴 8 次（以前改一次图标要手动改 8 个地方）。
+  const DICE_ICON_SVG = '<svg class="dice-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4.5" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.7" fill="currentColor"/><circle cx="16" cy="8" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="8" cy="16" r="1.7" fill="currentColor"/><circle cx="16" cy="16" r="1.7" fill="currentColor"/></svg>';
+
   // 音效模拟
   function playAudioBeep(freq = 600, type = 'sine', duration = 0.1) {
     try {
@@ -2619,6 +2624,7 @@ function rollTrinketItem(playSound = true) {
   function triggerFileInput() { document.getElementById('fileInput').click(); }
 
   document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll('.dice-icon-slot').forEach(el => { el.outerHTML = DICE_ICON_SVG; });
     ['edit_str', 'edit_spd', 'edit_int', 'edit_combat', 'edit_sanity', 'edit_fear', 'edit_body'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener('input', updateCommandsPreview);
@@ -3941,16 +3947,27 @@ if (history.length > 3) {
 
   // ================= 导出角色卡 / 宠物卡为图片 =================
 
-  function buildCharacterCardHtml(fd, petFd) {
-    const skillsHtml = (tier, label, color) => {
-      const list = (fd.skills[tier] || []).map(s => s.name).filter(Boolean);
-      return `
-        <div style="flex:1; min-width:0;">
-          <div style="color:${color}; font-size:13px; font-weight:700; margin-bottom:6px; letter-spacing:1px;">${label}</div>
-          ${list.length ? list.map(n => `<div style="font-size:13px; color:var(--text-main); padding:3px 0; border-bottom:1px dashed var(--border-color);">${n}</div>`).join('') : '<div style="font-size:12px; color:var(--text-muted);">（无）</div>'}
-        </div>`;
-    };
+  // 卡片图片里"标签 + 数值"的小方框（生命值/压力/护甲/本能这些都在用，抽成公共函数，
+  // 以前角色卡、宠物卡、团队关系图里各自都手写了一份几乎一样的样式，改一处东西要改三遍）
+  function cardStatBox(label, value) {
+    return `
+      <div style="flex:1; background:var(--input-bg); border:1px solid var(--border-color); border-radius:6px; padding:10px; text-align:center;">
+        <div style="font-size:11px; color:var(--text-muted); margin-bottom:4px;">${label}</div>
+        <div style="font-size:18px; font-weight:700; color:#fff; font-family:var(--font-mono);">${value || '—'}</div>
+      </div>`;
+  }
 
+  // 卡片图片里"彩色标题 + 一列虚线分隔的名字"（技能列表、宠物技能列表都长这样，同理抽公共函数）
+  function cardSkillColumn(label, color, items) {
+    const list = (items || []).filter(Boolean);
+    return `
+      <div style="flex:1; min-width:0;">
+        <div style="color:${color}; font-size:13px; font-weight:700; margin-bottom:6px; letter-spacing:1px;">${label}</div>
+        ${list.length ? list.map(n => `<div style="font-size:13px; color:var(--text-main); padding:3px 0; border-bottom:1px dashed var(--border-color);">${n}</div>`).join('') : '<div style="font-size:12px; color:var(--text-muted);">（无）</div>'}
+      </div>`;
+  }
+
+  function buildCharacterCardHtml(fd, petFd) {
     const weaponsRows = (fd.weapons || []).filter(w => w.name).map(w => `
       <tr>
         <td style="padding:6px 8px; border-bottom:1px solid var(--border-color);">${w.name || ''}</td>
@@ -3959,19 +3976,8 @@ if (history.length > 3) {
         <td style="padding:6px 8px; border-bottom:1px solid var(--border-color); color:var(--text-muted); font-size:12px;">${w.note || ''}</td>
       </tr>`).join('');
 
-    const statBox = (label, value) => `
-      <div style="flex:1; background:var(--input-bg); border:1px solid var(--border-color); border-radius:6px; padding:10px; text-align:center;">
-        <div style="font-size:11px; color:var(--text-muted); margin-bottom:4px;">${label}</div>
-        <div style="font-size:18px; font-weight:700; color:#fff; font-family:var(--font-mono);">${value || '—'}</div>
-      </div>`;
-
     // 只有宠物填了名字才认为"有养宠物"，一起并入角色卡图片；否则这部分不渲染，不留空白
     const hasPet = petFd && (petFd.edit_pet_name || '').trim();
-    const petSkillList = (arr, label, color) => `
-      <div style="flex:1; min-width:0;">
-        <div style="color:${color}; font-size:12px; font-weight:700; margin-bottom:6px;">${label}</div>
-        ${(arr && arr.length) ? arr.map(n => `<div style="font-size:12px; padding:2px 0; border-bottom:1px dashed var(--border-color);">${n}</div>`).join('') : '<div style="font-size:11px; color:var(--text-muted);">（无）</div>'}
-      </div>`;
     const petSectionHtml = hasPet ? `
         <div style="font-size:15px; font-weight:700; color:#fff; border-left:3px solid var(--accent-orange); padding-left:8px; margin-bottom:12px; margin-top:24px;">🐾 随行宠物</div>
         <div style="border:1px solid var(--border-color); border-radius:8px; padding:16px; background:rgba(255,168,1,0.04);">
@@ -3980,14 +3986,11 @@ if (history.length > 3) {
               <div style="font-family:var(--font-title); font-size:20px; font-weight:800; color:#fff;">${petFd.edit_pet_name || '未命名宠物'}</div>
               <div style="font-size:12px; color:var(--accent-orange); margin-top:2px;">${petFd.edit_pet_type === 'synthetic' ? '合成宠物' : '有机宠物'}</div>
             </div>
-            <div style="text-align:center; background:var(--input-bg); border:1px solid var(--border-color); border-radius:6px; padding:6px 12px;">
-              <div style="font-size:10px; color:var(--text-muted);">本能</div>
-              <div style="font-size:16px; font-weight:700; color:#fff; font-family:var(--font-mono);">${petFd.edit_pet_instinct || '—'}</div>
-            </div>
+            <div style="width:120px;">${cardStatBox('本能', petFd.edit_pet_instinct)}</div>
           </div>
           <div style="display:flex; gap:20px;">
-            ${petSkillList(petFd.pet_skills_10, '受训技能 +10%', 'var(--accent-cyan)')}
-            ${petSkillList(petFd.pet_skills_15, '专家技能 +15%', 'var(--accent-orange)')}
+            ${cardSkillColumn('受训技能 +10%', 'var(--accent-cyan)', petFd.pet_skills_10)}
+            ${cardSkillColumn('专家技能 +15%', 'var(--accent-orange)', petFd.pet_skills_15)}
           </div>
         </div>` : '';
 
@@ -4007,30 +4010,30 @@ if (history.length > 3) {
         ${fd.edit_response ? `<div style="font-size:13px; color:var(--text-muted); margin-bottom:20px; line-height:1.6;">${fd.edit_response}</div>` : ''}
 
         <div style="display:flex; gap:10px; margin-bottom:20px;">
-          ${statBox('生命值 HP', fd.edit_hp)}
-          ${statBox('压力', fd.edit_stress)}
-          ${statBox('损伤', fd.edit_damage)}
-          ${statBox('护甲 AP', fd.edit_armor)}
+          ${cardStatBox('生命值 HP', fd.edit_hp)}
+          ${cardStatBox('压力', fd.edit_stress)}
+          ${cardStatBox('损伤', fd.edit_damage)}
+          ${cardStatBox('护甲 AP', fd.edit_armor)}
         </div>
 
         <div style="display:flex; gap:10px; margin-bottom:20px;">
-          ${statBox('力量', fd.edit_str)}
-          ${statBox('速度', fd.edit_spd)}
-          ${statBox('智力', fd.edit_int)}
-          ${statBox('战斗', fd.edit_combat)}
+          ${cardStatBox('力量', fd.edit_str)}
+          ${cardStatBox('速度', fd.edit_spd)}
+          ${cardStatBox('智力', fd.edit_int)}
+          ${cardStatBox('战斗', fd.edit_combat)}
         </div>
 
         <div style="display:flex; gap:10px; margin-bottom:24px;">
-          ${statBox('理智豁免', fd.edit_sanity)}
-          ${statBox('恐惧豁免', fd.edit_fear)}
-          ${statBox('身体豁免', fd.edit_body)}
+          ${cardStatBox('理智豁免', fd.edit_sanity)}
+          ${cardStatBox('恐惧豁免', fd.edit_fear)}
+          ${cardStatBox('身体豁免', fd.edit_body)}
         </div>
 
         <div style="font-size:15px; font-weight:700; color:#fff; border-left:3px solid var(--accent-cyan); padding-left:8px; margin-bottom:12px;">专业技能</div>
         <div style="display:flex; gap:20px; margin-bottom:24px;">
-          ${skillsHtml(10, '受训技能 +10%', 'var(--accent-cyan)')}
-          ${skillsHtml(15, '专家技能 +15%', 'var(--accent-orange)')}
-          ${skillsHtml(20, '大师技能 +20%', 'var(--accent-red)')}
+          ${cardSkillColumn('受训技能 +10%', 'var(--accent-cyan)', (fd.skills[10] || []).map(s => s.name))}
+          ${cardSkillColumn('专家技能 +15%', 'var(--accent-orange)', (fd.skills[15] || []).map(s => s.name))}
+          ${cardSkillColumn('大师技能 +20%', 'var(--accent-red)', (fd.skills[20] || []).map(s => s.name))}
         </div>
 
         ${weaponsRows ? `
@@ -4046,10 +4049,10 @@ if (history.length > 3) {
 
         <div style="font-size:15px; font-weight:700; color:#fff; border-left:3px solid var(--accent-orange); padding-left:8px; margin-bottom:12px;">随身物品</div>
         <div style="display:flex; gap:10px;">
-          ${statBox('行装', fd.res_loadout)}
-          ${statBox('饰品', fd.res_trinket)}
-          ${statBox('贴章', fd.res_patch)}
-          ${statBox('信用点', fd.res_credits)}
+          ${cardStatBox('行装', fd.res_loadout)}
+          ${cardStatBox('饰品', fd.res_trinket)}
+          ${cardStatBox('贴章', fd.res_patch)}
+          ${cardStatBox('信用点', fd.res_credits)}
         </div>
         ${petSectionHtml}
       </div>`;
@@ -4057,11 +4060,6 @@ if (history.length > 3) {
 
   function buildPetCardHtml(fd) {
     const typeLabel = fd.edit_pet_type === 'synthetic' ? '合成宠物' : '有机宠物';
-    const skillList = (arr, label, color) => `
-      <div style="flex:1;">
-        <div style="color:${color}; font-size:13px; font-weight:700; margin-bottom:6px;">${label}</div>
-        ${(arr && arr.length) ? arr.map(n => `<div style="font-size:13px; padding:3px 0; border-bottom:1px dashed var(--border-color);">${n}</div>`).join('') : '<div style="font-size:12px; color:var(--text-muted);">（无）</div>'}
-      </div>`;
 
     return `
       <div style="width:600px; padding:32px; background:var(--bg-color); background-image: radial-gradient(circle at 50% 0%, rgba(255,168,1,0.10) 0%, transparent 60%); border:1px solid var(--border-color); box-sizing:border-box; font-family:var(--font-body); color:var(--text-main);">
@@ -4070,14 +4068,11 @@ if (history.length > 3) {
             <div style="font-family:var(--font-title); font-size:28px; font-weight:800; color:#fff;">🐾 ${fd.edit_pet_name || '未命名宠物'}</div>
             <div style="font-size:13px; color:var(--accent-orange); margin-top:4px;">${typeLabel}</div>
           </div>
-          <div style="text-align:center; background:var(--input-bg); border:1px solid var(--border-color); border-radius:6px; padding:8px 14px;">
-            <div style="font-size:11px; color:var(--text-muted);">本能</div>
-            <div style="font-size:18px; font-weight:700; color:#fff; font-family:var(--font-mono);">${fd.edit_pet_instinct || '—'}</div>
-          </div>
+          <div style="width:120px;">${cardStatBox('本能', fd.edit_pet_instinct)}</div>
         </div>
         <div style="display:flex; gap:20px;">
-          ${skillList(fd.pet_skills_10, '受训技能 +10%', 'var(--accent-cyan)')}
-          ${skillList(fd.pet_skills_15, '专家技能 +15%', 'var(--accent-orange)')}
+          ${cardSkillColumn('受训技能 +10%', 'var(--accent-cyan)', fd.pet_skills_10)}
+          ${cardSkillColumn('专家技能 +15%', 'var(--accent-orange)', fd.pet_skills_15)}
         </div>
       </div>`;
   }
