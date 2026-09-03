@@ -424,17 +424,23 @@
       line-height: 1.5;
       white-space: nowrap;
       cursor: pointer;
-      transition: background 0.15s, color 0.15s, transform 0.1s;
+      transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.1s;
     }
     .job-hint-chip:hover {
       background: var(--accent-orange);
       color: #14171c;
     }
     .job-hint-chip:active { transform: scale(0.92); }
+    /* 已应用状态：不再是一闪而过的反馈，而是持续显示到再次点击取消为止 */
     .job-hint-chip.job-hint-chip-applied {
       background: var(--accent-cyan);
       border-color: var(--accent-cyan);
       color: #14171c;
+    }
+    .job-hint-chip.job-hint-chip-applied:hover {
+      background: var(--accent-red);
+      border-color: var(--accent-red);
+      color: #fff;
     }
     .stat-card-value {
       background: transparent !important;
@@ -3288,9 +3294,15 @@ function clearSkillRelationHighlights() {
     const skillHint = document.getElementById('job_skill_hint');
 
     // 每次都先清空所有属性/豁免旁边的小标签，避免切换职业后残留上一个职业的提示
+    // （连同"已应用"的状态一起重置——毕竟职业都换了，之前那个加成还是不是已应用状态，含义已经变了）
     STAT_HINT_IDS.forEach(elId => {
       const chip = document.getElementById('job_hint_' + elId);
-      if (chip) { chip.style.display = 'none'; chip.textContent = ''; }
+      if (chip) {
+        chip.style.display = 'none';
+        chip.textContent = '';
+        chip.dataset.applied = 'false';
+        chip.classList.remove('job-hint-chip-applied');
+      }
     });
 
     if (!info) {
@@ -3313,6 +3325,9 @@ function clearSkillRelationHighlights() {
       if (chip) {
         const delta = parseInt(text, 10) || 0;
         chip.textContent = text;
+        chip.dataset.deltaText = text;
+        chip.dataset.applied = 'false';
+        chip.classList.remove('job-hint-chip-applied');
         chip.style.display = 'inline-block';
         chip.title = `点击将这项加成 (${text}) 应用到当前数值上`;
         chip.onclick = () => applyJobHintToStat(elId, delta, chip);
@@ -3357,18 +3372,27 @@ function clearSkillRelationHighlights() {
     el.value = `${parsed.val}/${newMax}`;
   }
 
-  // 点击属性/豁免标题旁的职业加成小标签，把这项加成直接加到当前数值上
+  // 点击属性/豁免标题旁的职业加成小标签：应用/撤销来回切换（而不是点一下就闪一下）
+  // 已应用状态会一直保持青色高亮，直到再点一次撤销为止，方便一眼看出"这个我到底点没点过"
   function applyJobHintToStat(elementId, delta, chipEl) {
-    if (!delta) return;
-    adjustValue(elementId, delta); // 复用 ±按钮的同一套逻辑（含最小值 0 的限制）
-    if (chipEl) {
-      const original = chipEl.textContent;
-      chipEl.textContent = '✓ 已应用';
+    if (!delta || !chipEl) return;
+    const alreadyApplied = chipEl.dataset.applied === 'true';
+    const originalText = chipEl.dataset.deltaText || chipEl.textContent;
+
+    if (alreadyApplied) {
+      // 撤销：把之前加上去的数值减回来
+      adjustValue(elementId, -delta);
+      chipEl.dataset.applied = 'false';
+      chipEl.classList.remove('job-hint-chip-applied');
+      chipEl.textContent = originalText;
+      chipEl.title = `点击将这项加成 (${originalText}) 应用到当前数值上`;
+    } else {
+      // 应用：复用 ±按钮的同一套逻辑（含最小值 0 的限制）
+      adjustValue(elementId, delta);
+      chipEl.dataset.applied = 'true';
       chipEl.classList.add('job-hint-chip-applied');
-      setTimeout(() => {
-        chipEl.textContent = original;
-        chipEl.classList.remove('job-hint-chip-applied');
-      }, 800);
+      chipEl.textContent = '✓ ' + originalText;
+      chipEl.title = '已应用到数值上，点击可撤销';
     }
   }
 
