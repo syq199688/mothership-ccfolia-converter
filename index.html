@@ -1371,6 +1371,40 @@
     }
     .team-relation-card header { cursor: pointer; }
 
+    /* ==== 返回顶部悬浮按钮 ==== */
+    #backToTopBtn {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      border: 1px solid var(--accent-cyan);
+      color: var(--accent-cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: opacity 0.2s, transform 0.2s, background 0.15s, color 0.15s, box-shadow 0.15s;
+      z-index: 999;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+    }
+    #backToTopBtn.visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    #backToTopBtn:hover {
+      background: var(--accent-cyan);
+      color: #0d0f12;
+      box-shadow: 0 0 14px rgba(0, 216, 214, 0.5);
+    }
+    #backToTopBtn svg { width: 20px; height: 20px; }
+
     @media (max-width: 768px) {
       body { padding: 10px; margin: 10px auto; }
       .card { padding: 20px; }
@@ -1381,6 +1415,7 @@
       .weapon-item { flex-direction: column; align-items: stretch; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px; }
       .weapon-item button { width: 100%; margin-top: 4px; }
       .armor-info-box { grid-column: span 2; }
+      #backToTopBtn { right: 14px; bottom: 14px; width: 42px; height: 42px; }
     }
   </style>
 </head>
@@ -3191,7 +3226,7 @@ function clearSkillRelationHighlights() {
       skillTags: ["工业装备", "零重力"]
     },
 
-    // ===== 扩展职业（社区/同人内容，数据来自母舰Discord及Graveyard Orbit等资料） =====
+    // ===== 扩展职业（社区/同人内容） =====
     "熊": {
       attrBonusText: "力量 +10，速度 +10，损伤上限 +1",
       attrHints: { edit_str: "+10", edit_spd: "+10" },
@@ -3214,7 +3249,7 @@ function clearSkillRelationHighlights() {
       saveHints: { edit_sanity: 10, edit_fear: 5, edit_body: 0 },
       damageCapBonus: 0,
       skillsText: "自带：计算机，企业门道（受训，效果类似外环门道）。奖励：2 项受训技能和 1 项专家技能。",
-      skillTags: ["计算机", "企业门道"]
+      skillTags: ["计算机", "外环门道"]
     },
     "太空野蛮人": {
       attrBonusText: "力量 +10，战斗 +5，损伤上限 +1",
@@ -4636,6 +4671,25 @@ if (history.length > 3) {
   document.addEventListener('DOMContentLoaded', () => {
     loadTeamFromLocalStorage();
   });
+
+  // ==== 返回顶部按钮：滚动超过一屏高度才出现，点击平滑滚回顶部 ====
+  // 用 DOMContentLoaded 包起来，避免按钮的 HTML 元素还没解析到就去 getElementById 拿到 null
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('backToTopBtn');
+    if (!btn) return;
+    const toggleVisible = () => {
+      btn.classList.toggle('visible', window.scrollY > 500);
+    };
+    window.addEventListener('scroll', toggleVisible, { passive: true });
+    toggleVisible();
+    btn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
 </script>
+  <button id="backToTopBtn" title="返回顶部" aria-label="返回顶部">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 19V5M12 5L5 12M12 5l7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+
 </body>
 </html>
