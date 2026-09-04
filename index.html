@@ -1495,6 +1495,11 @@
       <input type="text" id="edit_response" value="" placeholder="请输入创伤反应和简短角色描述">
     </div>
 
+    <div class="form-group">
+      <label for="edit_backstory">背景故事 / 角色笔记</label>
+      <textarea id="edit_backstory" placeholder="角色的过往经历、目标、人际关系、秘密等。此栏只会出现在导出的角色卡图片里，不会进入 CCFolia 指令文本。" style="width:100%; min-height:110px; resize:vertical; background:var(--input-bg); border:1px solid var(--border-color); border-radius:6px; padding:10px 14px; color:var(--text-main); font-family:var(--font-body); font-size:13px; line-height:1.6;"></textarea>
+    </div>
+
     <h2>生存数据</h2>
 
     <div class="grid-4" style="margin-top: 15px;">
@@ -2512,7 +2517,7 @@ function rollTrinketItem(playSound = true) {
 
   function resetForm() {
     playAudioBeep(400, 'sawtooth', 0.15);
-    ['edit_name', 'edit_job', 'edit_response', 'edit_hp', 'edit_armor',
+    ['edit_name', 'edit_job', 'edit_response', 'edit_backstory', 'edit_hp', 'edit_armor',
      'edit_str', 'edit_spd', 'edit_int', 'edit_combat', 'edit_sanity', 'edit_fear', 'edit_body'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = '';
@@ -3647,6 +3652,7 @@ function clearSkillRelationHighlights() {
       edit_avatar: document.getElementById('edit_avatar')?.value || '',
       edit_job: document.getElementById('edit_job')?.value || '',
       edit_response: document.getElementById('edit_response')?.value || '',
+      edit_backstory: document.getElementById('edit_backstory')?.value || '',
       edit_hp: document.getElementById('edit_hp')?.value || '',
       edit_stress: document.getElementById('edit_stress')?.value || '',
       edit_damage: document.getElementById('edit_damage')?.value || '',
@@ -3967,6 +3973,16 @@ if (history.length > 3) {
       </div>`;
   }
 
+  // 简单转义一下，避免背景故事里如果打了 <、>、& 这些符号，
+  // 直接塞进 innerHTML 渲染成图片的时候把排版搞乱
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
   function buildCharacterCardHtml(fd, petFd) {
     const weaponsRows = (fd.weapons || []).filter(w => w.name).map(w => `
       <tr>
@@ -4054,6 +4070,11 @@ if (history.length > 3) {
           ${cardStatBox('贴章', fd.res_patch)}
           ${cardStatBox('信用点', fd.res_credits)}
         </div>
+
+        ${fd.edit_backstory ? `
+        <div style="font-size:15px; font-weight:700; color:#fff; border-left:3px solid var(--accent-cyan); padding-left:8px; margin:24px 0 12px;">背景故事 / 角色笔记</div>
+        <div style="font-size:13px; color:var(--text-main); line-height:1.8; white-space:pre-wrap; background:rgba(255,255,255,0.03); border:1px solid var(--border-color); border-radius:8px; padding:14px;">${escapeHtml(fd.edit_backstory)}</div>` : ''}
+
         ${petSectionHtml}
       </div>`;
   }
