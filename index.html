@@ -1491,8 +1491,8 @@
     </div>
 
     <div class="form-group">
-      <label for="edit_response">Memo</label>
-      <input type="text" id="edit_response" value="" placeholder="请输入创伤反应和简短角色描述">
+      <label for="edit_response">创伤反应</label>
+      <input type="text" id="edit_response" value="" placeholder="请输入创伤反应">
     </div>
 
     <div class="form-group">
@@ -2067,6 +2067,30 @@ const ARMOR_PRESETS = {
       "7": "舒适的毛衣与灯芯绒裤 (护甲值 1)、猎枪 (远距，2d10 伤害) (6发子弹)、双筒望远镜、背包",
       "8": "高尔夫毛衣与长裤 (护甲值 1)、高尔夫球杆 (属性同撬棍)、医疗扫描仪、一瓶威士忌、傲慢自大的特权感",
       "9": "企业正装 (护甲值 1)、企业 VIP 卡 (退休)、个人定位器、数额惊人但死活不肯花的信用点",
+    },
+    "异变者": {
+      "0": "脏兮兮的西装（护甲 1），撬棍，绑架研讨会传单",
+      "1": "奇怪的纹身，背心，折叠刀（1d5 伤害），兴奋药",
+      "2": "全身黑皮衣，震慑电棒，红外目镜",
+      "3": "帆布背包，呼吸器，伞绳，个人定位器",
+      "4": "夹克（护甲 2），兜帽，指虎（1d5 伤害），香烟",
+      "5": "背心，亮色短裤，带血的缠手带，急救套件",
+      "6": "防尘风衣（护甲 2），过长的指甲（1d10 伤害），生物扫描仪",
+      "7": "防危服，钩索枪，远程通讯器，星系图",
+      "8": "佣兵装备（护甲 7），拳刃（2d10 伤害），墨镜",
+      "9": "先进作战服，跳帮斧，糖",
+    },
+    "银河清理工": {
+      "0": "水管工扳手（1d5 伤害），脖套，标准乘组制服（护甲 1）",
+      "1": "手持焊枪，开瓶器，荧光棒（x5），标准乘组制服（护甲 1）",
+      "2": "重型软管，呼吸器，滤水器，连体工作服（护甲 0）",
+      "3": "污水枪（命中需过身体豁免，失败则恶心呕吐），废料罐，防护服（护甲 3）",
+      "4": "信号枪（x3），盖革计数器，防护服（护甲 3），氧气罐",
+      "5": "各种工具，抹布，T恤（印有：“总得有人干这种烂差事！”）",
+      "6": "钩索枪，防水管道补丁，真空服（护甲 3），磁力靴",
+      "7": "强力皮搋子（近战，1d5 伤害），样本采集套件，防护服（护甲 1）",
+      "8": "消毒喷雾，消毒湿巾，除臭剂，真空服（护甲 3）",
+      "9": "生锈的左轮手枪（1d10 伤害），兴奋剂（x3），雪茄（x2），真空服（护甲 3）",
     },
   };
 
@@ -3312,6 +3336,22 @@ function clearSkillRelationHighlights() {
       damageCapBonus: 0,
       skillsText: "奖励：任选 1 项大师技能及其前置的专家与受训技能，或 2 项专家技能及其各自的前置受训技能。",
       skillTags: []
+    },
+    "异变者": {
+      attrBonusText: "战斗 +10，力量 +10，损伤上限 +1",
+      attrHints: { edit_combat: "+10", edit_str: "+10" },
+      saveHints: { edit_sanity: 0, edit_fear: 0, edit_body: 20 },
+      damageCapBonus: 1,
+      skillsText: "自带：动物学，近身搏斗，运动。",
+      skillTags: ["动物学", "近身搏斗", "运动"]
+    },
+    "银河清理工": {
+      attrBonusText: "力量 +10，速度 +10",
+      attrHints: { edit_str: "+10", edit_spd: "+10" },
+      saveHints: { edit_sanity: 0, edit_fear: 0, edit_body: 30 },
+      damageCapBonus: 0,
+      skillsText: "自带：工业装备，临时拼凑，化学，机械修理。",
+      skillTags: ["工业装备", "临时拼凑", "化学", "机械修理"]
     }
   };
   let recommendedSkillTags = [];
@@ -3458,6 +3498,8 @@ function clearSkillRelationHighlights() {
     else if (job.includes('拓荒者')) response = "每场游戏限一次，当你惊恐时，你可以选择改为承受2点压力。";
     else if (job.includes('旧型号机器人')) response = "当你承受一次损伤时，你的一项属性或豁免也将随之减少1d10点。";
     else if (job.includes('退休人员')) response = "当你惊恐时，必须进行一次身体豁免，失败则心脏病发（陷入昏迷，若在 1d10 回合内未得到治疗则死亡）。";
+    else if (job.includes('异变者')) response = "每当你通过一次身体豁免，附近所有友方玩家增加1点压力。";
+    else if (job.includes('银河清理工')) response = "附近友方玩家进行身体豁免时具有劣势。";
     if (response) document.getElementById('edit_response').value = response;
     updateJobHints();
   }
