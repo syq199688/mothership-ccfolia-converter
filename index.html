@@ -998,7 +998,8 @@
       color: var(--accent-orange);
       margin-bottom: 2px;
     }
-    .job-skill-hint span.tag {
+    .job-skill-hint span.tag,
+    .job-skill-hint button.tag {
       display: inline-block;
       background: rgba(255, 168, 1, 0.14);
       border: 1px solid rgba(255, 168, 1, 0.35);
@@ -1007,6 +1008,27 @@
       margin: 2px 4px 2px 0;
       font-size: 11px;
       color: var(--accent-orange);
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: background .15s, border-color .15s, color .15s;
+    }
+    .job-skill-hint button.tag:hover {
+      background: rgba(255, 168, 1, 0.28);
+      border-color: var(--accent-orange);
+    }
+    .job-skill-hint button.tag.tag-learned {
+      background: var(--accent-orange);
+      color: #0d0f12;
+      font-weight: 600;
+    }
+    .job-skill-hint button.tag.tag-locked {
+      opacity: 0.55;
+      border-style: dashed;
+    }
+    .job-skill-hint button.tag.tag-bonus {
+      background: var(--accent-cyan);
+      border-color: var(--accent-cyan);
+      color: #0d0f12;
     }
 
     /* 武器表：终端读数风卡片，每把武器一张卡，四角描边像瞄准取景框 */
@@ -1379,6 +1401,61 @@
     }
 
     /* 旧的裸 emoji 骰子图标样式（已统一改用 .btn-roll-icon，此处不再使用） */
+
+    /* ==== 悬浮提示条：用于"一键生成"之后需要提醒玩家手动处理的事项（比如还没选技能） ==== */
+    .app-toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-12px);
+      z-index: 1200;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      max-width: min(92vw, 460px);
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: #2a2008;
+      border: 1px solid var(--accent-orange);
+      color: var(--accent-orange);
+      font-family: var(--font-body);
+      font-size: 13px;
+      line-height: 1.5;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s, transform .25s;
+    }
+    .app-toast.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+    .app-toast .toast-icon { flex-shrink: 0; font-size: 16px; }
+    .app-toast .toast-text { flex: 1; }
+    .app-toast .toast-action {
+      flex-shrink: 0;
+      background: transparent;
+      border: 1px solid var(--accent-orange);
+      color: var(--accent-orange);
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .app-toast .toast-action:hover { background: var(--accent-orange); color: #0d0f12; }
+    .app-toast .toast-close {
+      flex-shrink: 0;
+      background: transparent;
+      border: none;
+      color: var(--accent-orange);
+      opacity: .7;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 0 2px;
+    }
+    .app-toast .toast-close:hover { opacity: 1; }
 
     /* ==== 自定义 SVG 骰子图标 ====
        用 currentColor 继承按钮的文字颜色，这样 hover 变黑/变色时图标会跟着一起变，
@@ -2839,6 +2916,15 @@ const ARMOR_PRESETS = {
     setTimeout(() => {
       __suppressBeep = false;
       playDiceRollSound();
+
+      // 技能没法帮玩家自动选（哪几个技能全靠玩家自己判断角色概念），漏选很容易忘，
+      // 生成完成后检查一下专业技能栏是不是还空着，空的话弹提示提醒手动去选
+      if (typeof getAllTrainedSkills === 'function' && getAllTrainedSkills().length === 0) {
+        showToast('角色已经生成好啦，但技能没法帮你自动选，记得去「专业技能」栏位手动挑几个～', {
+          actionLabel: '带我去选',
+          onAction: () => quickNavJump('sec-skills')
+        });
+      }
     }, 80);
   }
 
@@ -3291,7 +3377,7 @@ const ARMOR_PRESETS = {
     const container = document.getElementById(`skills_container_${bonusTier}`);
     if (!container) return;
     if (container.querySelector(`[data-skill-name="${CSS.escape(skillName)}"]`)) {
-      renderSkillTree(); updateCommandsPreview(); updateSkillDropdownsInWeapons(); return;
+      renderSkillTree(); updateCommandsPreview(); updateSkillDropdownsInWeapons(); renderJobSkillHintTags(); return;
     }
     const row = document.createElement('div');
     row.className = 'skill-item';
@@ -3310,6 +3396,7 @@ const ARMOR_PRESETS = {
     renderSkillTree();
     updateCommandsPreview();
     updateSkillDropdownsInWeapons();
+    renderJobSkillHintTags();
   }
 
   function removeLearnedSkill(skillName) {
@@ -3333,7 +3420,7 @@ const ARMOR_PRESETS = {
       });
     });
     playAudioBeep(420, 'sawtooth', .08);
-    renderSkillTree(); updateCommandsPreview(); updateSkillDropdownsInWeapons();
+    renderSkillTree(); updateCommandsPreview(); updateSkillDropdownsInWeapons(); renderJobSkillHintTags();
   }
 
   function getSkillTier(skillName) {
@@ -3344,6 +3431,78 @@ const ARMOR_PRESETS = {
   function isSkillUnlocked(skillName) {
     const prereqs = SKILL_PREREQUISITES[skillName] || [];
     return prereqs.length === 0 || prereqs.some(p => learnedSkills.has(p));
+  }
+
+  // 检查某个技能是否因为"二选一"而被挡住：同组里有别的技能已经学了，就返回那个技能名；没冲突返回 null
+  function getEitherOrConflict(skillName) {
+    const group = currentEitherOrGroups.find(g => g.includes(skillName));
+    if (!group) return null;
+    return group.find(n => n !== skillName && learnedSkills.has(n)) || null;
+  }
+
+  // 职业提示横幅里的技能标签：点一下直接在技能树里选中/取消，不用自己再去树里找。
+  // 除了职业自带/推荐的那几个（橙色），玩家自己额外选的"奖励技能"学会之后也会自动出现在这一排（青色），
+  // 方便一眼看出自己已经选了哪些技能，不用点标签才能知道。
+  function renderJobSkillHintTags() {
+    const box = document.getElementById('job_skill_hint_tags');
+    if (!box) return;
+    const bonusSkills = Array.from(learnedSkills).filter(name => !recommendedSkillTags.includes(name));
+    if (!recommendedSkillTags.length && !bonusSkills.length) {
+      box.innerHTML = '<span style="opacity:0.7;">（无固定自带技能，见下方说明）</span>';
+      return;
+    }
+    const renderTag = (name, isBonus) => {
+      const learned = learnedSkills.has(name);
+      const unlocked = isSkillUnlocked(name);
+      const conflict = !isBonus ? getEitherOrConflict(name) : null;
+      let cls = 'tag';
+      if (learned) cls += ' tag-learned';
+      if (learned && isBonus) cls += ' tag-bonus';
+      if (!learned && (!unlocked || conflict)) cls += ' tag-locked';
+      let title;
+      if (learned) {
+        title = isBonus ? '你选的奖励技能，点击取消' : '已学会，点击取消';
+      } else if (conflict) {
+        title = `和「${conflict}」二选一，已经学了「${conflict}」就不能再选这项；想换的话先取消「${conflict}」`;
+      } else if (unlocked) {
+        title = '点击直接学会这项技能';
+      } else {
+        title = '缺前置技能，点击查看需要先点亮什么';
+      }
+      return `<button type="button" class="${cls}" title="${title}" onclick="quickToggleJobSkill('${name.replace(/'/g, "\\'")}')">${learned ? '✓ ' : ''}${name}</button>`;
+    };
+    let html = recommendedSkillTags.map(name => renderTag(name, false)).join('');
+    html += bonusSkills.map(name => renderTag(name, true)).join('');
+    box.innerHTML = html;
+  }
+
+  let _jobChipHlTimer = null;
+  function quickToggleJobSkill(name) {
+    const tier = getSkillTier(name);
+    if (!tier) return;
+    if (learnedSkills.has(name)) {
+      removeLearnedSkill(name);
+      renderJobSkillHintTags();
+      return;
+    }
+    const conflict = getEitherOrConflict(name);
+    if (conflict) {
+      playAudioBeep(300, 'sawtooth', 0.1);
+      showToast(`「${name}」和「${conflict}」是二选一，已经学了「${conflict}」，不能同时学这项。想换的话先去技能树取消「${conflict}」。`);
+      renderJobSkillHintTags();
+      return;
+    }
+    if (isSkillUnlocked(name)) {
+      playAudioBeep(760, 'sine', 0.07);
+      addSkillRow(tier, name, SKILL_DATABASE[tier][name]);
+    } else {
+      playAudioBeep(300, 'sawtooth', 0.1);
+      quickNavJump('sec-skills');
+      highlightSkillRelations(name);
+      clearTimeout(_jobChipHlTimer);
+      _jobChipHlTimer = setTimeout(clearSkillRelationHighlights, 1800);
+    }
+    renderJobSkillHintTags();
   }
 
 function renderSkillTree() {
@@ -3362,21 +3521,25 @@ function renderSkillTree() {
         
         // 检查前置技能是否已全部满足
         const unlocked = isSkillUnlocked(skillName);
+        const conflict = !learned ? getEitherOrConflict(skillName) : null;
         
         const node = document.createElement('div');
         // 根据是否解锁和是否已学习给予对应的 CSS 样式类
         let nodeClasses = ['skill-node'];
         if (learned) nodeClasses.push('learned');
-        if (!unlocked && !learned) nodeClasses.push('locked'); // 可选：未解锁样式
+        if (!learned && (!unlocked || conflict)) nodeClasses.push('locked'); // 前置未满足 或 二选一被占用，都算锁定
         if (recommendedSkillTags.includes(skillName)) nodeClasses.push('job-recommended');
         
         node.className = nodeClasses.join(' ');
         node.dataset.skill = skillName;
 
         const prereqs = SKILL_PREREQUISITES[skillName] || [];
-        const prereqHint = (!unlocked && !learned && prereqs.length)
-          ? `<div class="skill-node-prereq">🔒 需要先点亮：${prereqs.map(p => `<b>${p}</b>`).join(' 或 ')}</div>`
-          : '';
+        let prereqHint = '';
+        if (!learned && conflict) {
+          prereqHint = `<div class="skill-node-prereq">🚫 二选一，已学「${conflict}」</div>`;
+        } else if (!learned && !unlocked && prereqs.length) {
+          prereqHint = `<div class="skill-node-prereq">🔒 需要先点亮：${prereqs.map(p => `<b>${p}</b>`).join(' 或 ')}</div>`;
+        }
 
         node.innerHTML = `
           <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; width:100%;">
@@ -3384,34 +3547,14 @@ function renderSkillTree() {
               <span class="skill-node-name">${skillName}</span>
               <span style="font-size:11px; opacity:0.6;">(${attr})</span>
             </div>
-            ${!unlocked && !learned ? '<span style="font-size:10px; color:var(--text-muted);">🔒</span>' : ''}
+            ${!learned && conflict ? '<span style="font-size:10px; color:var(--text-muted);">🚫</span>' : (!learned && !unlocked ? '<span style="font-size:10px; color:var(--text-muted);">🔒</span>' : '')}
           </div>
           ${prereqHint}
         `;
         
-// 点击交互控制（仅切换高亮状态，不触发下方DOM动态添加）
-node.onclick = () => {
-          if (!unlocked && !learned) {
-            playAudioBeep(300, 'sawtooth', 0.1);
-            // 移动端没有 hover，点击锁定技能时短暂高亮其前置/解锁关系
-            highlightSkillRelations(skillName);
-            clearTimeout(node._hlTimer);
-            node._hlTimer = setTimeout(clearSkillRelationHighlights, 1800);
-            return;
-          }
-          playAudioBeep(760, 'sine', 0.07);
-          
-          if (learned) {
-            // 如果已经学习，点击则取消（会自动处理前置依赖并移除底层条目）
-            removeLearnedSkill(skillName);
-          } else {
-            // 如果未学习，点击则调用 addSkillRow 生成底层技能条
-            const tier = getSkillTier(skillName);
-            if (tier) {
-              addSkillRow(tier, skillName, SKILL_DATABASE[tier][skillName]);
-            }
-          }
-        };
+// 点击交互统一交给 quickToggleJobSkill：学会/取消/前置校验/二选一互斥都在那一处处理，
+// 这样不管是在这棵树里点，还是点上面职业提示条里的 chip，行为和限制都完全一致
+node.onclick = () => quickToggleJobSkill(skillName);
 
         // 悬停时高亮：橙框=该技能的前置技能，青框=依赖该技能才能解锁的技能
         node.addEventListener('mouseenter', () => highlightSkillRelations(skillName));
@@ -3792,7 +3935,8 @@ function clearSkillRelationHighlights() {
       saveHints: { edit_sanity: 20, edit_fear: 10, edit_body: 0 },
       damageCapBonus: 1,
       skillsText: "自带：外环门道，另外二选一学习运动或零重力。奖励：1 项受训技能和 1 项专家技能。",
-      skillTags: ["外环门道", "运动", "零重力"]
+      skillTags: ["外环门道", "运动", "零重力"],
+      eitherOrGroups: [["运动", "零重力"]]
     },
     "混混": {
       attrBonusText: "战斗 +5，速度 +10，损伤上限 +1",
@@ -3834,7 +3978,8 @@ function clearSkillRelationHighlights() {
       saveHints: { edit_sanity: 0, edit_fear: 0, edit_body: 10 },
       damageCapBonus: 0,
       skillsText: "自带：外环门道，另二选一学习计算机或化学。奖励：任选 1 项专家技能或 2 项受训技能。",
-      skillTags: ["外环门道", "计算机", "化学"]
+      skillTags: ["外环门道", "计算机", "化学"],
+      eitherOrGroups: [["计算机", "化学"]]
     },
     "拓荒者": {
       attrBonusText: "速度 +10，智力 +5",
@@ -3879,6 +4024,7 @@ function clearSkillRelationHighlights() {
     }
   };
   let recommendedSkillTags = [];
+  let currentEitherOrGroups = []; // 当前职业里"二选一"的技能组，比如熊的[运动,零重力]，选了一个另一个就不能再选
   const BASE_DAMAGE_CAP = 2;
 
   // 职类下拉菜单：把 JOB_CLASS_INFO 里的预设职业名列出来，支持下拉选择或手动输入自定义职业
@@ -3919,6 +4065,7 @@ function clearSkillRelationHighlights() {
       if (banner) banner.style.display = 'none';
       if (skillHint) skillHint.style.display = 'none';
       recommendedSkillTags = [];
+      currentEitherOrGroups = [];
       // 未识别到官方四大职类之一时，不强制改动损伤上限，避免覆盖自定义职业的手动设置
       renderSkillTree();
       return;
@@ -3959,16 +4106,20 @@ function clearSkillRelationHighlights() {
       }
     }
 
-    // 自带 & 奖励技能提示横幅
+    // 自带 & 奖励技能提示横幅：标签直接做成"一键学会"按钮（点了就在下面技能树里选中），
+    // 不再是纯展示的重复文字；已学会的标签会高亮，暂时点不了（缺前置）的会显示为锁定态
+    recommendedSkillTags = info.skillTags || [];
+    currentEitherOrGroups = info.eitherOrGroups || [];
     if (skillHint) {
       document.getElementById('job_skill_hint_jobname').textContent = key;
-      let tagsHtml = (info.skillTags || []).map(t => `<span class="tag">${t}</span>`).join('');
-      if (!tagsHtml) tagsHtml = '<span style="opacity:0.7;">（无固定自带技能，见下方说明）</span>';
-      document.getElementById('job_skill_hint_body').innerHTML = `${tagsHtml}<div style="margin-top:4px; opacity:0.85;">${info.skillsText}</div>`;
+      document.getElementById('job_skill_hint_body').innerHTML = `
+        <div id="job_skill_hint_tags"></div>
+        <div style="margin-top:4px; opacity:0.85;">${info.skillsText}</div>
+      `;
+      renderJobSkillHintTags();
       skillHint.style.display = 'block';
     }
 
-    recommendedSkillTags = info.skillTags || [];
     applyDamageCapBonus(info.damageCapBonus || 0);
     renderSkillTree();
   }
@@ -5316,6 +5467,31 @@ if (history.length > 3) {
     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  // ==== 悬浮提示条：showToast(消息, {actionLabel, onAction, duration}) ====
+  let _toastTimer = null;
+  function showToast(message, opts = {}) {
+    const toast = document.getElementById('appToast');
+    if (!toast) return;
+    const { actionLabel, onAction, duration = 6000 } = opts;
+    toast.innerHTML = `
+      <span class="toast-icon">⚠️</span>
+      <span class="toast-text">${message}</span>
+      ${actionLabel ? `<button type="button" class="toast-action" id="toastActionBtn">${actionLabel}</button>` : ''}
+      <button type="button" class="toast-close" onclick="hideToast()" aria-label="关闭提示">✕</button>
+    `;
+    if (actionLabel && onAction) {
+      const btn = document.getElementById('toastActionBtn');
+      if (btn) btn.onclick = () => { onAction(); hideToast(); };
+    }
+    toast.classList.add('visible');
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(hideToast, duration);
+  }
+  function hideToast() {
+    const toast = document.getElementById('appToast');
+    if (toast) toast.classList.remove('visible');
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     renderQuickNav('character');
   });
@@ -5338,6 +5514,8 @@ if (history.length > 3) {
   <button id="backToTopBtn" title="返回顶部" aria-label="返回顶部">
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 19V5M12 5L5 12M12 5l7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </button>
+
+  <div id="appToast" class="app-toast" role="status"></div>
 
 </body>
 </html>
