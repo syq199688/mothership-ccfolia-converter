@@ -1022,14 +1022,22 @@
     }
     .weapon-legend b { color: var(--accent-cyan); font-weight: 600; }
 
+    #weapons_container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
     .weapon-item {
       position: relative;
       background: var(--input-bg);
       border: 1px solid var(--border-color);
-      padding: 14px 16px 12px;
-      margin-bottom: 12px;
+      padding: 12px 14px 10px;
       font-family: var(--font-mono);
       transition: border-color .2s, background .2s;
+      display: flex;
+      flex-direction: column;
     }
     .weapon-item::before, .weapon-item::after {
       content: "";
@@ -1051,13 +1059,13 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
     }
     .weapon-item .weapon-name-input {
       flex: 1;
       min-width: 0;
       font-family: var(--font-title);
-      font-size: 14px;
+      font-size: 13px;
       letter-spacing: .5px;
       color: #fff;
       background: transparent;
@@ -1072,21 +1080,22 @@
     }
     .weapon-item .weapon-name-input::before { content: "// "; }
     .weapon-item .weapon-skill {
-      flex: 0 0 auto;
-      max-width: 150px;
+      width: 100%;
+      box-sizing: border-box;
       font-size: 11px;
       color: var(--accent-orange);
       background: var(--section-bg);
       border: 1px solid rgba(255, 168, 1, 0.35);
       border-radius: 3px;
       padding: 4px 6px;
+      margin-bottom: 8px;
     }
 
     .weapon-item .w-row {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 18px;
+      gap: 10px 14px;
       margin-bottom: 8px;
       font-size: 11px;
     }
@@ -1095,13 +1104,14 @@
       align-items: center;
       gap: 6px;
       color: var(--text-muted);
+      min-width: 0;
     }
     .weapon-item .w-label {
       color: var(--text-muted);
       flex-shrink: 0;
     }
     .weapon-item .weapon-damage {
-      width: 72px;
+      width: 56px;
       font-family: var(--font-mono);
       font-weight: 600;
       color: var(--accent-red);
@@ -1112,7 +1122,7 @@
       padding: 2px 2px;
     }
     .weapon-item .weapon-ammo {
-      width: 56px;
+      width: 44px;
       font-family: var(--font-mono);
       color: var(--text-main);
       background: transparent;
@@ -1144,6 +1154,7 @@
     .weapon-item .weapon-note {
       display: block;
       width: 100%;
+      box-sizing: border-box;
       font-family: var(--font-body);
       font-size: 11px;
       color: var(--text-muted);
@@ -1152,6 +1163,11 @@
       border-top: 1px dashed var(--border-color);
       padding: 7px 0 0;
       border-radius: 0;
+      resize: none;
+      overflow: hidden;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
     .weapon-item .weapon-note:focus {
       outline: none;
@@ -1656,14 +1672,81 @@
     }
     #backToTopBtn svg { width: 20px; height: 20px; }
 
+    /* 右侧栏位快速跳转：竖排小圆点，hover 时展开标签，点击平滑滚动到对应栏位 */
+    .quick-nav {
+      position: fixed;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 998;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 10px 0;
+    }
+    .quick-nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 2px 0;
+      position: relative;
+    }
+    .quick-nav-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      flex-shrink: 0;
+      transition: background .2s, border-color .2s, box-shadow .2s, transform .2s;
+    }
+    .quick-nav-label {
+      font-family: var(--font-body);
+      font-size: 11px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 3px 8px;
+      margin-right: 8px;
+      opacity: 0;
+      transform: translateX(6px);
+      transition: opacity .15s, transform .15s;
+      pointer-events: none;
+    }
+    .quick-nav-item:hover .quick-nav-label {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .quick-nav-item:hover .quick-nav-dot {
+      border-color: var(--accent-cyan);
+      transform: scale(1.2);
+    }
+    .quick-nav-item.active .quick-nav-dot {
+      background: var(--accent-cyan);
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 6px rgba(0, 216, 214, 0.7);
+    }
+    .quick-nav-item.active .quick-nav-label { color: var(--accent-cyan); }
+
+    @media (max-width: 640px) {
+      .quick-nav { right: 6px; gap: 8px; }
+      .quick-nav-dot { width: 7px; height: 7px; }
+      .quick-nav-label { display: none; }
+    }
+
     @media (max-width: 768px) {
       body { padding: 10px; margin: 10px auto; }
       .card { padding: 20px; }
       .grid-4 { grid-template-columns: 1fr 1fr; }
       .grid-3 { grid-template-columns: 1fr; }
       .grid-2 { grid-template-columns: 1fr; }
-      .weapon-item .w-top { flex-wrap: wrap; }
-      .weapon-item .weapon-skill { max-width: 100%; flex: 1 1 100%; order: 3; }
+      #weapons_container { grid-template-columns: 1fr; }
       .armor-info-box { grid-column: span 2; }
       #backToTopBtn { right: 14px; bottom: 14px; width: 42px; height: 42px; }
     }
@@ -1693,6 +1776,8 @@
     <button class="tab-btn tab-team" onclick="switchTab('team')">🤝 团队关系</button>
   </div>
 
+  <nav id="quickNav" class="quick-nav" aria-label="栏位快速跳转"></nav>
+
   <!-- ================= Tab 1: 主角色档案 ================= -->
   <div class="tab-content active" id="tab-character">
     <div class="quick-actions-row">
@@ -1717,7 +1802,7 @@
     <div class="status-box" id="statusBox">正在读取并解析文件内容，请稍候...</div>
 
     <div class="section-header" style="margin-top:18px;">
-      <h2>背景资料</h2>
+      <h2 id="sec-background">背景资料</h2>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
         <button class="btn-reset" onclick="exportCharacterCard()" style="border-color: var(--accent-cyan); color: var(--accent-cyan);">📤 导出档案</button>
         <button class="btn-reset" onclick="triggerCharacterImport()" style="border-color: var(--accent-cyan); color: var(--accent-cyan);">📥 导入档案</button>
@@ -1764,7 +1849,7 @@
       <textarea id="edit_backstory" placeholder="角色的过往经历、目标、人际关系、秘密等。此栏只会出现在导出的角色卡图片里，不会进入 CCFolia 指令文本。" style="width:100%; height:90px; min-height:70px; resize:vertical; background:var(--input-bg); border:1px solid var(--border-color); border-radius:6px; padding:10px 14px; color:var(--text-main); font-family:var(--font-body); font-size:13px; line-height:1.6;"></textarea>
     </div>
 
-    <h2>生存数据</h2>
+    <h2 id="sec-survival">生存数据</h2>
 
     <div class="grid-4" style="margin-top: 15px;">
       <div class="stat-card stat-card-simple">
@@ -1802,7 +1887,7 @@
     </div>
 
     <div class="section-header">
-      <h2>属性 & 豁免检定</h2>
+      <h2 id="sec-stats">属性 & 豁免检定</h2>
       <span title="点我快速掷骰生成属性" onclick="quickRollStatsAndSaves()" class="btn-roll btn-roll-icon"><span class="dice-icon-slot"></span></span>
     </div>
 
@@ -1931,7 +2016,7 @@
       <div class="loadout-quick-add" id="loadout_quick_add"></div>
     </div>
 
-    <h2>专业技能</h2>
+    <h2 id="sec-skills">专业技能</h2>
 <div class="job-skill-hint" id="job_skill_hint">
   <div class="job-skill-hint-title">💡 <span id="job_skill_hint_jobname"></span> 自带 & 奖励技能</div>
   <div id="job_skill_hint_body"></div>
@@ -1949,7 +2034,7 @@
     <div id="skills_container_15" class="skills-data-hidden"></div>
     <div id="skills_container_20" class="skills-data-hidden"></div>
 
-    <h2>武器表</h2>
+    <h2 id="sec-weapons">武器表</h2>
     <div class="weapon-card">
       <header>
         <span style="color:var(--accent-red);">武器列表</span>
@@ -1961,7 +2046,7 @@
       <button class="btn-add-weapon" onclick="addWeaponRow()">➕ 添加武器</button>
     </div>
 
-    <h2>常用对话指令预览</h2>
+    <h2 id="sec-commands">常用对话指令预览</h2>
     <div class="form-group">
       <textarea id="edit_commands" readonly></textarea>
     </div>
@@ -1984,7 +2069,7 @@
   <!-- ================= Tab 2: 宠物档案 ================= -->
   <div class="tab-content" id="tab-pet">
     <div class="section-header">
-      <h2>🐾 宠物</h2>
+      <h2 id="sec-pet-info">🐾 宠物</h2>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
         <button class="btn-reset" onclick="exportPetCard()" style="border-color: var(--accent-cyan); color: var(--accent-cyan);">📤 导出档案</button>
         <button class="btn-reset" onclick="triggerPetImport()" style="border-color: var(--accent-cyan); color: var(--accent-cyan);">📥 导入档案</button>
@@ -2013,7 +2098,7 @@
 
     <div class="rule-info-card" id="pet_rule_box"></div>
 
-    <h2>🐾 宠物技能</h2>
+    <h2 id="sec-pet-skills">🐾 宠物技能</h2>
     <div class="grid-2">
       <div class="skill-card">
         <header>
@@ -2052,7 +2137,7 @@
   <!-- ================= Tab 3: 团队关系 ================= -->
   <div class="tab-content" id="tab-team">
     <div class="section-header">
-      <h2>🤝 团队关系</h2>
+      <h2 id="sec-team">🤝 团队关系</h2>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
         <button class="btn-reset" onclick="exportTeamCard()" style="border-color: var(--accent-cyan); color: var(--accent-cyan);">📤 导出档案</button>
         <button class="btn-reset" onclick="triggerTeamImport()" style="border-color: var(--accent-cyan); color: var(--accent-cyan);">📥 导入档案</button>
@@ -2893,6 +2978,7 @@ const ARMOR_PRESETS = {
     const idx = tabIndex[tabName] ?? 0;
     document.querySelectorAll('.tab-btn')[idx].classList.add('active');
     document.getElementById(`tab-${tabName}`).classList.add('active');
+    renderQuickNav(tabName);
   }
 
   function quickRollHP() {
@@ -3413,11 +3499,11 @@ function clearSkillRelationHighlights() {
     row.innerHTML = `
       <div class="w-top">
         <input type="text" class="weapon-name-input" list="weapons-datalist" value="${selectedWeapon}" placeholder="武器名称" onchange="onWeaponPresetChange(this)" oninput="updateCommandsPreview()">
-        <select class="weapon-skill" onchange="updateCommandsPreview()">
-          ${skillOptionsHtml}
-        </select>
         <button type="button" class="w-del" onclick="this.closest('.weapon-item').remove(); updateCommandsPreview();">✕</button>
       </div>
+      <select class="weapon-skill" onchange="updateCommandsPreview()">
+        ${skillOptionsHtml}
+      </select>
       <input type="hidden" class="weapon-attr" value="战斗">
       <div class="w-row">
         <div class="w-field">
@@ -3430,11 +3516,12 @@ function clearSkillRelationHighlights() {
           <span class="w-ammo-blocks"></span>
         </div>
       </div>
-      <input type="text" class="weapon-note" value="${note}" placeholder="备注/效果" oninput="updateCommandsPreview()">
+      <textarea class="weapon-note" rows="1" placeholder="备注/效果" oninput="autoGrowLoadout(this); updateCommandsPreview()">${note}</textarea>
     `;
 
     container.appendChild(row);
     renderAmmoBlocks(row);
+    autoGrowLoadout(row.querySelector('.weapon-note'));
     updateCommandsPreview();
   }
 
@@ -3450,6 +3537,7 @@ function clearSkillRelationHighlights() {
       // 属性已固定为"战斗"（母舰规则里武器攻击检定统一用战斗属性），不再跟着预设切换
       damageInput.value = data.damage;
       noteInput.value = data.note;
+      autoGrowLoadout(noteInput);
       // 固定弹容量：预设里写了多少就带出多少（近战武器是空字符串，不会填任何东西）
       if (ammoInput) ammoInput.value = data.ammo || '';
     }
@@ -5161,6 +5249,75 @@ if (history.length > 3) {
 
   document.addEventListener('DOMContentLoaded', () => {
     loadTeamFromLocalStorage();
+  });
+
+  // ==== 右侧栏位快速跳转 ====
+  // 每个 tab 内部有哪些栏位、按什么顺序显示，都在这张表里配置
+  const QUICK_NAV_SECTIONS = {
+    character: [
+      { id: 'sec-background', label: '背景资料' },
+      { id: 'sec-survival', label: '生存数据' },
+      { id: 'sec-stats', label: '属性豁免' },
+      { id: 'sec-skills', label: '专业技能' },
+      { id: 'sec-weapons', label: '武器表' },
+      { id: 'sec-commands', label: '指令预览' }
+    ],
+    pet: [
+      { id: 'sec-pet-info', label: '宠物信息' },
+      { id: 'sec-pet-skills', label: '宠物技能' }
+    ],
+    team: [
+      { id: 'sec-team', label: '团队关系' }
+    ]
+  };
+
+  let _quickNavObserver = null;
+
+  function renderQuickNav(tabName) {
+    const nav = document.getElementById('quickNav');
+    if (!nav) return;
+    const sections = (QUICK_NAV_SECTIONS[tabName] || []).filter(s => document.getElementById(s.id));
+
+    if (_quickNavObserver) { _quickNavObserver.disconnect(); _quickNavObserver = null; }
+
+    // 只有一个栏位时跳转没意义，不显示
+    if (sections.length <= 1) {
+      nav.innerHTML = '';
+      return;
+    }
+
+    nav.innerHTML = sections.map(s => `
+      <button type="button" class="quick-nav-item" data-target="${s.id}" onclick="quickNavJump('${s.id}')" title="跳转到「${s.label}」">
+        <span class="quick-nav-label">${s.label}</span>
+        <span class="quick-nav-dot"></span>
+      </button>
+    `).join('');
+
+    // 滚动时高亮当前所在栏位对应的圆点
+    _quickNavObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const btn = nav.querySelector(`.quick-nav-item[data-target="${entry.target.id}"]`);
+        if (btn && entry.isIntersecting) {
+          nav.querySelectorAll('.quick-nav-item').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
+
+    sections.forEach(s => {
+      const el = document.getElementById(s.id);
+      if (el) _quickNavObserver.observe(el);
+    });
+  }
+
+  function quickNavJump(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderQuickNav('character');
   });
 
   // ==== 返回顶部按钮：滚动超过一屏高度才出现，点击平滑滚回顶部 ====
