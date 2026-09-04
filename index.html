@@ -278,15 +278,32 @@
     }
 
     .drop-zone {
-      border: 2px dashed var(--accent-red);
-      border-radius: 10px;
-      padding: 30px 20px;
-      text-align: center;
+      border: 1.5px dashed var(--accent-red);
+      border-radius: 8px;
+      padding: 10px 14px;
+      text-align: left;
       background: rgba(255, 63, 52, 0.03);
       cursor: pointer;
       color: var(--text-muted);
       font-weight: 500;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      height: 100%;
+      box-sizing: border-box;
+    }
+    .drop-zone .dz-icon { font-size: 19px; flex-shrink: 0; line-height: 1; }
+    .drop-zone .dz-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .drop-zone .dz-title {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--text-main);
+    }
+    .drop-zone .dz-sub {
+      font-size: 10.5px;
+      color: var(--text-muted);
     }
 
     .drop-zone:hover, .drop-zone.dragover {
@@ -541,6 +558,48 @@
       color: var(--accent-cyan);
       font-weight: 700;
     }
+
+    /* ==== 行装快速识别装备：掷完行装后，从文本里自动识别出已知武器/护甲，
+       做成可点击的小药丸，点一下直接加进武器表/护甲栏，不用再翻上去手动选 ==== */
+    .loadout-quick-add {
+      display: none;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(0, 216, 214, 0.25);
+    }
+    .loadout-quick-add-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .loadout-quick-add-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent-cyan);
+      background: rgba(0, 216, 214, 0.1);
+      border: 1px solid rgba(0, 216, 214, 0.35);
+      padding: 4px 10px;
+      border-radius: 14px;
+      margin: 3px 6px 3px 0;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .loadout-quick-add-chip:hover { background: var(--accent-cyan); color: #0d0f12; }
+    .loadout-quick-add-chip.chip-armor {
+      color: var(--accent-orange);
+      background: rgba(255, 168, 1, 0.1);
+      border-color: rgba(255, 168, 1, 0.35);
+    }
+    .loadout-quick-add-chip.chip-armor:hover { background: var(--accent-orange); color: #0d0f12; }
+    .loadout-quick-add-chip.chip-added {
+      opacity: 0.45;
+      cursor: default;
+      pointer-events: none;
+    }
     /* ==== 全站统一的"掷骰触发"按钮体系 ====
        .btn-roll      单次掷骰用：橙色描边，图标+文字或纯图标
        .btn-roll-icon 纯图标变体（用在标签旁边等空间较小的位置）
@@ -598,6 +657,58 @@
       transition: opacity 0.15s ease, transform 0.15s ease;
     }
     .btn-roll-all:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    /* ==== 一键随机生成完整角色 ====
+       "车卡"从头到尾串成一个按钮：姓名/属性豁免/HP/行装饰品贴章信用点/职业加成，
+       用渐变+发光跟普通按钮区分开，突出这是个"重量级"的一键操作。 */
+    .quick-actions-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .quick-actions-row > * {
+      flex: 1 1 220px;
+      min-width: 200px;
+      margin-top: 0 !important;
+    }
+    .btn-quick-generate {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 9px;
+      width: 100%;
+      padding: 10px 14px;
+      background: linear-gradient(135deg, rgba(0, 216, 214, 0.16), rgba(255, 168, 1, 0.16));
+      border: 1px solid var(--accent-cyan);
+      border-radius: 8px;
+      color: #fff;
+      font-family: var(--font-title);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      text-align: left;
+      cursor: pointer;
+      transition: box-shadow 0.2s, transform 0.15s, background 0.2s;
+      box-sizing: border-box;
+    }
+    .btn-quick-generate:hover {
+      background: linear-gradient(135deg, rgba(0, 216, 214, 0.3), rgba(255, 168, 1, 0.3));
+      box-shadow: 0 0 16px rgba(0, 216, 214, 0.35);
+      transform: translateY(-1px);
+    }
+    .btn-quick-generate:active { transform: translateY(0); }
+    .btn-quick-generate .dice-icon { width: 16px; height: 16px; flex-shrink: 0; }
+    .btn-quick-generate-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .btn-quick-generate-sub {
+      font-family: var(--font-body);
+      font-size: 10.5px;
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: 0;
+      white-space: normal;
+    }
+
     .loadout-item {
       background: var(--input-bg);
       border: 1px solid var(--border-color);
@@ -982,10 +1093,10 @@
     /* ==== 头像上传 ==== */
     .avatar-upload-box {
       position: relative;
-      width: 96px;
-      height: 96px;
+      width: 72px;
+      height: 72px;
       flex-shrink: 0;
-      border-radius: 10px;
+      border-radius: 9px;
       border: 1px dashed rgba(0, 216, 214, 0.45);
       background: rgba(0, 216, 214, 0.05);
       cursor: pointer;
@@ -1003,15 +1114,15 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
       color: var(--accent-cyan);
       opacity: 0.7;
       pointer-events: none;
     }
-    .avatar-upload-placeholder svg { width: 26px; height: 26px; }
+    .avatar-upload-placeholder svg { width: 19px; height: 19px; }
     .avatar-upload-placeholder span {
-      font-size: 10px;
-      letter-spacing: 1px;
+      font-size: 8.5px;
+      letter-spacing: 0.5px;
     }
     .avatar-preview-img {
       display: none;
@@ -1445,14 +1556,28 @@
 
   <!-- ================= Tab 1: 主角色档案 ================= -->
   <div class="tab-content active" id="tab-character">
-    <div class="drop-zone" id="dropZone" onclick="triggerFileInput()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-      📄 点击上传角色卡 (.xlsx / .xls)
-      <input type="file" id="fileInput" accept=".xlsx, .xls">
+    <div class="quick-actions-row">
+      <div class="drop-zone" id="dropZone" onclick="triggerFileInput()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+        <span class="dz-icon">📄</span>
+        <span class="dz-text">
+          <span class="dz-title">上传角色卡</span>
+          <span class="dz-sub">支持 .xlsx / .xls，可拖拽</span>
+        </span>
+        <input type="file" id="fileInput" accept=".xlsx, .xls">
+      </div>
+
+      <button type="button" class="btn-quick-generate" onclick="generateRandomCharacter()">
+        <span class="dice-icon-slot"></span>
+        <span class="btn-quick-generate-text">
+          <span>一键随机生成完整角色</span>
+          <span class="btn-quick-generate-sub">姓名/属性豁免/HP/装备信用点，含职业加成</span>
+        </span>
+      </button>
     </div>
 
     <div class="status-box" id="statusBox">正在读取并解析文件内容，请稍候...</div>
 
-    <div class="section-header">
+    <div class="section-header" style="margin-top:18px;">
       <h2>背景资料</h2>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
         <button class="btn-reset" onclick="exportCharacterCard()" style="border-color: var(--accent-cyan); color: var(--accent-cyan);">📤 导出档案</button>
@@ -1462,7 +1587,7 @@
       </div>
     </div>
     
-    <div style="display:flex; gap:16px; align-items:flex-start; margin-top:15px;">
+    <div style="display:flex; gap:12px; align-items:flex-start; margin-top:10px;">
       <div class="avatar-upload-box" id="avatarUploadBox" onclick="triggerAvatarInput()" title="点击上传头像">
         <img id="avatarPreviewImg" class="avatar-preview-img" src="" alt="角色头像">
         <div class="avatar-upload-placeholder" id="avatarPlaceholder">
@@ -1497,7 +1622,7 @@
 
     <div class="form-group">
       <label for="edit_backstory">背景故事 / 角色笔记</label>
-      <textarea id="edit_backstory" placeholder="角色的过往经历、目标、人际关系、秘密等。此栏只会出现在导出的角色卡图片里，不会进入 CCFolia 指令文本。" style="width:100%; min-height:110px; resize:vertical; background:var(--input-bg); border:1px solid var(--border-color); border-radius:6px; padding:10px 14px; color:var(--text-main); font-family:var(--font-body); font-size:13px; line-height:1.6;"></textarea>
+      <textarea id="edit_backstory" placeholder="角色的过往经历、目标、人际关系、秘密等。此栏只会出现在导出的角色卡图片里，不会进入 CCFolia 指令文本。" style="width:100%; height:90px; min-height:70px; resize:vertical; background:var(--input-bg); border:1px solid var(--border-color); border-radius:6px; padding:10px 14px; color:var(--text-main); font-family:var(--font-body); font-size:13px; line-height:1.6;"></textarea>
     </div>
 
     <h2>生存数据</h2>
@@ -1663,6 +1788,8 @@
           <textarea class="loadout-res-input" id="res_credits" rows="1">点击掷骰生成...</textarea>
         </div>
       </div>
+
+      <div class="loadout-quick-add" id="loadout_quick_add"></div>
     </div>
 
     <h2>专业技能</h2>
@@ -1858,7 +1985,9 @@
   const DICE_ICON_SVG = '<svg class="dice-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4.5" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.7" fill="currentColor"/><circle cx="16" cy="8" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="8" cy="16" r="1.7" fill="currentColor"/><circle cx="16" cy="16" r="1.7" fill="currentColor"/></svg>';
 
   // 音效模拟
+  let __suppressBeep = false;
   function playAudioBeep(freq = 600, type = 'sine', duration = 0.1) {
+    if (__suppressBeep) return;
     try {
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       const osc = audioCtx.createOscillator();
@@ -2378,9 +2507,125 @@ const ARMOR_PRESETS = {
       inputEl.value = `【${num}】请先填写"职类"后再掷骰`;
     }
     autoGrowAllLoadouts();
+    renderLoadoutQuickAdd();
   }
 
-function rollTrinketItem(playSound = true) {
+  // ==== 行装快速识别装备 ====
+  // 掷完行装之后，扫描结果文本里有没有能匹配上武器表/护甲表的已知名称，
+  // 有的话展示成一排可点击的小药丸，点一下直接加进武器表/选中护甲，不用再翻回上面手动选。
+  // 注：只能识别 WEAPON_PRESETS / ARMOR_PRESETS 里已收录的名字，行装表里那些没收录过的
+  // 自定义装备（比如"过长的指甲"这种同人职业的花活道具）不会被识别到，还是得手动填。
+  function renderLoadoutQuickAdd() {
+    const container = document.getElementById('loadout_quick_add');
+    if (!container) return;
+    const text = (document.getElementById('res_loadout')?.value || '');
+
+    const weaponMatches = Object.keys(WEAPON_PRESETS).filter(name => text.includes(name));
+    const armorMatches = Object.keys(ARMOR_PRESETS).filter(name => text.includes(name));
+
+    if (weaponMatches.length === 0 && armorMatches.length === 0) {
+      container.style.display = 'none';
+      container.innerHTML = '';
+      return;
+    }
+
+    const currentWeaponNames = new Set(
+      Array.from(document.querySelectorAll('.weapon-name-input')).map(el => el.value.trim())
+    );
+    const currentArmorName = (document.getElementById('edit_armor_select')?.value || '').trim();
+
+    let html = '<div class="loadout-quick-add-label">💡 从行装里识别到以下装备，点一下直接添加：</div>';
+    weaponMatches.forEach(name => {
+      const added = currentWeaponNames.has(name);
+      const esc = name.replace(/'/g, "\\'");
+      html += added
+        ? `<span class="loadout-quick-add-chip chip-added">⚔️ ${name} ✓已添加</span>`
+        : `<span class="loadout-quick-add-chip" onclick="quickAddWeaponFromLoadout('${esc}')">⚔️ ${name}</span>`;
+    });
+    armorMatches.forEach(name => {
+      const added = currentArmorName === name;
+      const esc = name.replace(/'/g, "\\'");
+      html += added
+        ? `<span class="loadout-quick-add-chip chip-armor chip-added">🛡️ ${name} ✓已选用</span>`
+        : `<span class="loadout-quick-add-chip chip-armor" onclick="quickAddArmorFromLoadout('${esc}')">🛡️ ${name}</span>`;
+    });
+
+    container.innerHTML = html;
+    container.style.display = 'block';
+  }
+
+  function quickAddWeaponFromLoadout(name) {
+    playAudioBeep(650, 'sine', 0.06);
+    addWeaponRow(name);
+    const nameInputs = document.querySelectorAll('.weapon-name-input');
+    const lastInput = nameInputs[nameInputs.length - 1];
+    if (lastInput) onWeaponPresetChange(lastInput); // 补上伤害骰/备注/弹药，跟手动选是同一套逻辑
+    renderLoadoutQuickAdd();
+  }
+
+  function quickAddArmorFromLoadout(name) {
+    playAudioBeep(650, 'sine', 0.06);
+    const sel = document.getElementById('edit_armor_select');
+    if (!sel) return;
+    sel.value = name;
+    onArmorPresetChange();
+    renderLoadoutQuickAdd();
+  }
+
+  // 掷完行装后，把能识别到的武器/护甲全部自动加上（不用一个个点小药丸），
+  // 供"一键随机生成完整角色"内部调用；单独想用这个自动扫一遍的效果也可以直接调这个函数。
+  function autoApplyAllLoadoutQuickAdd() {
+    const text = (document.getElementById('res_loadout')?.value || '');
+    const currentWeaponNames = new Set(
+      Array.from(document.querySelectorAll('.weapon-name-input')).map(el => el.value.trim())
+    );
+    Object.keys(WEAPON_PRESETS).filter(name => text.includes(name)).forEach(name => {
+      if (!currentWeaponNames.has(name)) quickAddWeaponFromLoadout(name);
+    });
+    const currentArmorName = (document.getElementById('edit_armor_select')?.value || '').trim();
+    const armorMatch = Object.keys(ARMOR_PRESETS).find(name => text.includes(name) && name !== currentArmorName);
+    if (armorMatch) quickAddArmorFromLoadout(armorMatch);
+  }
+
+  // ==== 一键随机生成完整角色 ====
+  // 把"车卡"全过程串成一个按钮：姓名、职类（没选才随机挑）、属性豁免、HP、
+  // 行装/饰品/贴章/信用点，最后把职业加成里能自动应用的部分也顺手点上。
+  // 已经填好的姓名/职类不会被覆盖，尊重玩家自己想好的方向；其余数值类的每次点都会重新掷骰覆盖。
+  function generateRandomCharacter() {
+    // 这个按钮内部会连续调用一大串"掷骰子"的小函数（随机姓名/属性豁免/HP/职业加成/装备……），
+    // 每一个原本都会自己响一下音效，叠在一起点一次能响十几下。这里统一静音，最后只响一次。
+    __suppressBeep = true;
+
+    const nameEl = document.getElementById('edit_name');
+    if (nameEl && !nameEl.value.trim()) rollRandomName();
+
+    const jobEl = document.getElementById('edit_job');
+    if (jobEl && !jobEl.value.trim()) {
+      const jobKeys = Object.keys(JOB_CLASS_INFO);
+      jobEl.value = jobKeys[Math.floor(Math.random() * jobKeys.length)];
+    }
+    updateJobResponse(); // 刷新创伤反应文案 + 职业加成提示/技能树高亮（新选的、玩家自己填的职类都要过一遍）
+
+    quickRollStatsAndSaves(); // 先把真实的属性豁免底值掷出来，下面加职业加成才有意义
+    quickRollHP();
+
+    // 职业加成里能对应到具体格子的部分自动点掉；"任选一项属性"这种没法帮玩家决定选哪项的，不会自动点
+    document.querySelectorAll('.job-hint-chip').forEach(chip => {
+      if (chip.style.display !== 'none' && chip.dataset.applied !== 'true') chip.click();
+    });
+
+    rollAllLoadouts();
+    autoApplyAllLoadoutQuickAdd();
+
+    // 上面有几个小函数会用 setTimeout 错开播放"骰子第二声"，晚个 50ms 左右才响，
+    // 所以稍微多留一点时间再解除静音，避免那些尾音漏出来；解除后再统一响一次做个完成提示音
+    setTimeout(() => {
+      __suppressBeep = false;
+      playDiceRollSound();
+    }, 80);
+  }
+
+  function rollTrinketItem(playSound = true) {
     if (playSound) playDiceRollSound();
     const val = rollD100();
     // 将 1-100 转换为两位数的字符串，例如 5 变成 "05"，100 保持 "100"
@@ -3565,6 +3810,9 @@ function clearSkillRelationHighlights() {
     }
 
     document.getElementById('edit_commands').value = cmds.join("\n");
+
+    // 武器/护甲发生变化时，行装那边的"已添加/已选用"药丸状态也要跟着刷新
+    if (typeof renderLoadoutQuickAdd === 'function') renderLoadoutQuickAdd();
   }
 
   // 生成角色 JSON
