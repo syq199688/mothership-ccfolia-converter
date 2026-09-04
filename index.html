@@ -2808,7 +2808,6 @@ const ARMOR_PRESETS = {
     
     clearSkillContainers();
     document.getElementById('weapons_container').innerHTML = '';
-    addWeaponRow();
     updateCommandsPreview();
     document.getElementById('outputGroup').style.display = 'none';
   }
@@ -2907,7 +2906,6 @@ const ARMOR_PRESETS = {
     initWeaponDatalist();
     initJobDatalist();
     renderSkillTree();
-    addWeaponRow();
     updateCommandsPreview();
     onPetTypeChange();
     renderHistoryUI();
@@ -3466,7 +3464,6 @@ function clearSkillRelationHighlights() {
 
     parseBaseAttributesText(flatTextLines.join("\n"));
     updateSkillDropdownsInWeapons();
-    if (addedWeapons.size === 0) addWeaponRow();
   }
 
   // 四大官方职类的属性/豁免加成与自带技能（数据取自官方角色卡模板/职类表）
@@ -4040,17 +4037,11 @@ function clearSkillRelationHighlights() {
       const weaponContainer = document.getElementById('weapons_container');
       if (weaponContainer) {
         weaponContainer.innerHTML = ''; // 清空现有武器
-        if (fd.weapons.length > 0) {
-          fd.weapons.forEach(w => {
-            if (typeof window.addWeaponRow === 'function') {
-              window.addWeaponRow(w.name, w.attr, w.skill, w.damage, w.note, w.ammo);
-            }
-          });
-        } else {
+        fd.weapons.forEach(w => {
           if (typeof window.addWeaponRow === 'function') {
-            window.addWeaponRow(); // 至少留一行空武器
+            window.addWeaponRow(w.name, w.attr, w.skill, w.damage, w.note, w.ammo);
           }
-        }
+        });
       }
     }
 
