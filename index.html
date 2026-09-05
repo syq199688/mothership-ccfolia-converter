@@ -1268,6 +1268,61 @@
     }
     .btn-reset:hover { background: var(--accent-red); color: #fff; }
 
+    /* ==== 阵亡处理（殉职通知彩蛋）====
+       用 <details> 原生折叠，默认收起，不跟正常车卡流程抢视线，
+       但放在顶部按钮行下面、够显眼，角色阵亡回来找的时候不用翻到最底下。 */
+    .death-notice-box {
+      margin-top: 14px;
+      border: 1px dashed rgba(255, 63, 52, 0.45);
+      border-radius: 8px;
+      background: rgba(255, 63, 52, 0.05);
+      overflow: hidden;
+    }
+    .death-notice-summary {
+      cursor: pointer;
+      padding: 11px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-red);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      user-select: none;
+    }
+    .death-notice-summary::-webkit-details-marker { display: none; }
+    .death-notice-summary::marker { content: ""; }
+    .death-notice-summary::before {
+      content: "▸";
+      display: inline-block;
+      transition: transform 0.15s;
+    }
+    .death-notice-box[open] .death-notice-summary::before { transform: rotate(90deg); }
+    .death-notice-body {
+      padding: 2px 14px 14px;
+    }
+    .death-notice-body label {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 6px;
+    }
+    .death-notice-body input {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    #btnDeathNotice {
+      width: 100%;
+      background-color: #7a1f1f;
+      color: #f0e6d8;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    #btnDeathNotice:hover { background-color: #9c2828; }
+
     /* ==== 头像上传 ==== */
     .avatar-upload-box {
       position: relative;
@@ -1887,6 +1942,17 @@
         <button class="btn-reset" onclick="resetForm()">🧹 清空重置</button>
       </div>
     </div>
+
+    <details class="death-notice-box">
+      <summary class="death-notice-summary">☠️ 角色阵亡了？点这里生成"殉职通知"</summary>
+      <div class="death-notice-body">
+        <label for="edit_death_cause">死因 / 事故经过</label>
+        <input type="text" id="edit_death_cause" placeholder="手动填写角色是怎么死的……">
+        <label for="edit_death_heir">工资继承人（留空代表由公司回收）</label>
+        <input type="text" id="edit_death_heir" placeholder="留空 = 未指定继承人，遗留信用点由公司回收">
+        <button id="btnDeathNotice" onclick="generateDeathNoticeImage()">☠️ 生成殉职通知图片</button>
+      </div>
+    </details>
     
     <div style="display:flex; gap:12px; align-items:flex-start; margin-top:10px;">
       <div class="avatar-upload-box" id="avatarUploadBox" onclick="triggerAvatarInput()" title="点击上传头像">
@@ -2136,9 +2202,9 @@
         💡 提示：点击下方按钮复制后，直接在CCfolia房间窗口使用 <code style="color: var(--accent-orange);">Ctrl + V</code> 粘贴即可生成角色Token。
       </div>
       <textarea id="outputJson" readonly></textarea>
-      <div style="display:flex; gap:10px; margin-top:10px;">
-        <button id="btnCopyJson" onclick="copyToClipboard()" style="flex:1; background-color: var(--accent-green); color: #0d0f12; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">📋 一键复制到剪贴板</button>
-        <button id="btnCardImage" onclick="generateCharacterCardImage()" style="flex:1; background-color: var(--accent-cyan); color: #0d0f12; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">🖼️ 生成角色卡图片</button>
+      <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+        <button id="btnCopyJson" onclick="copyToClipboard()" style="flex:1; min-width:160px; background-color: var(--accent-green); color: #0d0f12; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">📋 一键复制到剪贴板</button>
+        <button id="btnCardImage" onclick="generateCharacterCardImage()" style="flex:1; min-width:160px; background-color: var(--accent-cyan); color: #0d0f12; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:6px; transition: all 0.2s;">🖼️ 生成角色卡图片</button>
       </div>
     </div>
   </div>
@@ -3090,7 +3156,7 @@ const ARMOR_PRESETS = {
 
   function resetForm() {
     playAudioBeep(400, 'sawtooth', 0.15);
-    ['edit_name', 'edit_job', 'edit_response', 'edit_backstory', 'edit_hp', 'edit_armor',
+    ['edit_name', 'edit_job', 'edit_response', 'edit_backstory', 'edit_death_cause', 'edit_death_heir', 'edit_hp', 'edit_armor',
      'edit_str', 'edit_spd', 'edit_int', 'edit_combat', 'edit_sanity', 'edit_fear', 'edit_body'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = '';
@@ -4373,6 +4439,8 @@ function clearSkillRelationHighlights() {
       edit_job: document.getElementById('edit_job')?.value || '',
       edit_response: document.getElementById('edit_response')?.value || '',
       edit_backstory: document.getElementById('edit_backstory')?.value || '',
+      edit_death_cause: document.getElementById('edit_death_cause')?.value || '',
+      edit_death_heir: document.getElementById('edit_death_heir')?.value || '',
       edit_hp: document.getElementById('edit_hp')?.value || '',
       edit_stress: document.getElementById('edit_stress')?.value || '',
       edit_damage: document.getElementById('edit_damage')?.value || '',
@@ -4853,6 +4921,97 @@ if (history.length > 3) {
     const originalText = btn ? btn.textContent : '';
     if (btn) btn.textContent = '⏳ 生成中...';
     renderNodeToPng(buildCharacterCardHtml(fd, petFd), `角色卡_${sanitizeFilename(fd.edit_name)}.png`)
+      .finally(() => { if (btn) btn.textContent = originalText; });
+  }
+
+  // ==== 殉职通知 / 终止雇佣合同 ====
+  // 黑色幽默向的彩蛋功能：角色死了之后，不生成普通角色卡，而是生成一张
+  // 仿企业公文风格的"终止雇佣通知"，吐槽母舰世界观里"公司完全不把你的命当回事"这件事。
+  // 死因是玩家/GM自己复盘写的，不做随机生成——毕竟角色是怎么死的，只有玩过这一场的人才知道。
+
+  const DEATH_DISCLAIMER_POOL = [
+    "本公司对太空作业中发生的死亡、失踪、精神失常及/或非自愿基因改造不承担任何法律责任。",
+    "根据雇佣合同第 12 条，员工的遗体、遗物及未偿还的公司贷款将由公司自动处置。",
+    "此通知一经发出即视为送达，公司不接受任何形式的申诉或复活请求。",
+    "员工家属可凭本通知领取慰问信一封（不含实体信件、慰问及信）。",
+    "公司特此感谢该员工为季度报表做出的贡献。"
+  ];
+
+  function buildDeathNoticeHtml(fd) {
+    const empId = 'EMP-' + String(Math.floor(10000 + Math.random() * 89999));
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
+    const cause = (fd.edit_death_cause || '').trim() || '未记录';
+    const heir = (fd.edit_death_heir || '').trim();
+    const heirDisplay = heir || '由公司回收（未指定继承人）';
+    const disclaimer = DEATH_DISCLAIMER_POOL[Math.floor(Math.random() * DEATH_DISCLAIMER_POOL.length)];
+
+    const row = (label, value) => `
+      <tr>
+        <td style="padding:8px 10px; border:1px solid #8a8370; font-weight:700; background:#ddd6c2; width:150px; white-space:nowrap;">${label}</td>
+        <td style="padding:8px 10px; border:1px solid #8a8370;">${value || '——'}</td>
+      </tr>`;
+
+    // 签字栏旁边那个"钢戳"：纯 CSS 画的双线圆环，压在签字线附近，营造盖过章的既视感
+    const steelStamp = `
+      <div style="position:absolute; left:118px; top:-46px; width:88px; height:88px; border-radius:50%; border:3px double #5a5648; opacity:0.6; transform:rotate(-11deg); display:flex; flex-direction:column; align-items:center; justify-content:center; color:#5a5648; pointer-events:none;">
+        <div style="font-size:7.5px; letter-spacing:1.5px; font-weight:700;">AUTHORIZED</div>
+        <div style="font-size:15px; font-weight:800; margin:2px 0;">已授权</div>
+        <div style="font-size:6.5px; letter-spacing:1px;">SYSTEM · SEAL</div>
+      </div>`;
+
+    return `
+      <div style="position:relative; width:720px; padding:40px 44px; background:#ece7d6; color:#2a2620; box-sizing:border-box; font-family:'Courier New', var(--font-mono), monospace; overflow:hidden;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:3px double #2a2620; padding-bottom:12px; margin-bottom:18px;">
+          <div>
+            <div style="font-size:11px; letter-spacing:3px; color:#7a1f1f; font-weight:700;">机密 · 人力资源部内部文件</div>
+            <div style="font-size:24px; font-weight:800; letter-spacing:2px; margin-top:6px;">终止雇佣通知</div>
+            <div style="font-size:11px; letter-spacing:1px; color:#5a5648; margin-top:2px;">NOTICE OF TERMINATION OF EMPLOYMENT</div>
+          </div>
+          ${fd.edit_avatar
+            ? `<img src="${fd.edit_avatar}" style="width:76px; height:76px; object-fit:cover; border:2px solid #2a2620; filter:grayscale(60%);">`
+            : `<div style="width:76px; height:76px; border:2px solid #2a2620; display:flex; align-items:center; justify-content:center; font-size:10px; color:#8a8370; text-align:center;">无<br>存档<br>照片</div>`}
+        </div>
+
+        <table style="width:100%; border-collapse:collapse; font-size:13px; margin-bottom:16px;">
+          ${row('姓名 / NAME', fd.edit_name || '未登记')}
+          ${row('员工编号 / ID', empId)}
+          ${row('职位 / POSITION', fd.edit_job || '未分类劳动力')}
+          ${row('终止日期 / DATE', dateStr)}
+          ${row('终止原因 / CAUSE', cause)}
+          ${row('工资继承人 / BENEFICIARY', heirDisplay)}
+          ${row('遗体处置状态', '未回收 / 成本效益比不足，已放弃回收')}
+          ${row('公司财产回收状态', '已根据雇佣合同自动扣除')}
+        </table>
+
+        <div style="font-size:10px; line-height:1.7; color:#5a5648; border-top:1px solid #8a8370; padding-top:10px;">
+          ${disclaimer}
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:26px;">
+          <div style="font-size:11px; color:#5a5648; position:relative;">
+            授权代表签字：__________________<br>
+            <span style="font-size:9px;">（本签字由自动化系统生成，无需人工复核）</span>
+            ${steelStamp}
+          </div>
+          <div style="font-size:9px; color:#8a8370; text-align:right;">
+            表格编号 HR-TERM-${empId}<br>
+            存档副本 · 请勿外传
+          </div>
+        </div>
+
+        <div style="position:absolute; top:37%; left:50%; transform:translate(-50%,-50%) rotate(-18deg); border:5px solid rgba(122,31,31,0.35); color:rgba(122,31,31,0.4); font-size:52px; font-weight:900; letter-spacing:6px; padding:6px 24px; white-space:nowrap; pointer-events:none;">
+          已终止 TERMINATED
+        </div>
+      </div>`;
+  }
+
+  function generateDeathNoticeImage() {
+    const fd = collectCharacterFormData();
+    const btn = document.getElementById('btnDeathNotice');
+    const originalText = btn ? btn.textContent : '';
+    if (btn) btn.textContent = '⏳ 生成中...';
+    renderNodeToPng(buildDeathNoticeHtml(fd), `殉职通知_${sanitizeFilename(fd.edit_name)}.png`)
       .finally(() => { if (btn) btn.textContent = originalText; });
   }
 
