@@ -1944,11 +1944,11 @@
     </div>
 
     <details class="death-notice-box">
-      <summary class="death-notice-summary">☠️ 角色阵亡了？点这里生成"殉职通知"</summary>
+      <summary class="death-notice-summary">☠️ 撕卡了？点这里生成"合同终止通知"</summary>
       <div class="death-notice-body">
         <label for="edit_death_cause">死因 / 事故经过</label>
         <input type="text" id="edit_death_cause" placeholder="手动填写角色是怎么死的……">
-        <label for="edit_death_heir">工资继承人（留空代表由公司回收）</label>
+        <label for="edit_death_heir">工资继承人</label>
         <input type="text" id="edit_death_heir" placeholder="留空 = 未指定继承人，遗留信用点由公司回收">
         <button id="btnDeathNotice" onclick="generateDeathNoticeImage()">☠️ 生成殉职通知图片</button>
       </div>
@@ -4976,7 +4976,7 @@ if (history.length > 3) {
         <table style="width:100%; border-collapse:collapse; font-size:13px; margin-bottom:16px;">
           ${row('姓名 / NAME', fd.edit_name || '未登记')}
           ${row('员工编号 / ID', empId)}
-          ${row('职位 / POSITION', fd.edit_job || '未分类劳动力')}
+          ${row('职位 / CLASS', fd.edit_job || '未分类劳动力')}
           ${row('终止日期 / DATE', dateStr)}
           ${row('终止原因 / CAUSE', cause)}
           ${row('工资继承人 / BENEFICIARY', heirDisplay)}
