@@ -818,16 +818,15 @@
     }
     .skill-tree {
       position: relative;
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      display: flex;
+      flex-direction: column;
       gap: 14px;
-      align-items: start;
     }
     .skill-tree-column {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
       border-radius: 10px;
-      padding: 12px;
+      padding: 12px 14px;
       min-width: 0;
     }
     .skill-tree-column-header {
@@ -844,59 +843,88 @@
     .skill-tree-column-header span:first-child.tier-title-10 { color: var(--accent-cyan); }
     .skill-tree-column-header span:first-child.tier-title-15 { color: var(--accent-orange); }
     .skill-tree-column-header span:first-child.tier-title-20 { color: var(--accent-red); }
+    .skill-tree-chips {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+      gap: 8px;
+    }
 .skill-node {
       position: relative;
-      margin: 8px 0;
-      padding: 12px 14px;
+      padding: 8px 10px;
       border: 1px solid var(--border-color);
-      border-radius: 8px;
-      background: rgba(0,0,0,0.2);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.03);
       cursor: pointer;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: center;
+      gap: 6px;
       transition: all 0.2s;
       user-select: none;
+      text-align: center;
     }
     .skill-node:hover {
       border-color: var(--accent-cyan);
-      background: rgba(0, 216, 214, 0.05);
+      background: rgba(0, 216, 214, 0.08);
       transform: translateY(-1px);
     }
     .skill-node.learned {
       border-color: var(--accent-cyan);
-      background: rgba(0, 216, 214, 0.15);
+      background: rgba(0, 216, 214, 0.16);
       color: #fff;
-    }
-    .skill-node.learned::after {
-      content: "✓";
-      color: var(--accent-cyan);
-      font-size: 16px;
-      font-weight: 900;
     }
     .skill-node-name { 
       font-weight: 700; 
-      font-size: 13px;
+      font-size: 12.5px;
+      white-space: nowrap;
+    }
+    .skill-node-attr {
+      font-size: 10px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .skill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: var(--attr-color, var(--text-muted));
+    }
+    .skill-node-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      line-height: 1;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+    }
+    .skill-node.learned .skill-node-badge {
+      background: var(--accent-cyan);
+      border-color: var(--accent-cyan);
+      color: #0d0f12;
+      font-weight: 900;
     }
     .skill-node.locked {
-      opacity: 0.5;
+      opacity: 0.45;
       cursor: not-allowed;
       border-style: dashed;
-      flex-direction: column;
-      align-items: stretch;
     }
     .skill-node.locked:hover {
       border-color: var(--border-color);
-      background: rgba(0,0,0,0.2);
+      background: rgba(255,255,255,0.03);
       transform: none;
     }
-    .skill-node-prereq {
-      font-size: 10px;
+    .skill-node.locked .skill-node-badge {
+      background: var(--section-bg);
       color: var(--text-muted);
-      line-height: 1.5;
-      margin-top: 3px;
     }
-    .skill-node-prereq b { color: var(--accent-cyan); font-weight: 600; }
 
     .skill-node-highlight-prereq {
       border-color: var(--accent-orange) !important;
@@ -954,6 +982,15 @@
     .skill-node.job-recommended:not(.learned):hover {
       border-color: var(--accent-orange);
       background: rgba(255, 168, 1, 0.1);
+    }
+
+    .job-desc-hint {
+      display: none;
+      margin-top: 6px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--text-muted);
+      font-style: italic;
     }
 
     .job-bonus-banner {
@@ -1978,6 +2015,7 @@
           <label for="edit_job">职类</label>
           <input type="text" id="edit_job" list="job-datalist" value="" placeholder="选择预设职类或手动输入" oninput="updateJobResponse()" onchange="updateJobResponse()">
           <datalist id="job-datalist"></datalist>
+          <div class="job-desc-hint" id="job_desc_hint" style="display:none;"></div>
         </div>
       </div>
     </div>
@@ -2333,7 +2371,7 @@
 <datalist id="skills-list-20">
   <option value="知性学"><option value="外星生物学"><option value="手术"><option value="行星学">
   <option value="机器人学"><option value="工程学"><option value="神经机械学"><option value="人工智能">
-  <option value="超空间"><option value="异种密教"><option value="指挥">
+  <option value="超空间"><option value="异种秘教"><option value="指挥">
 </datalist>
 
 <datalist id="weapons-datalist"></datalist>
@@ -2580,6 +2618,30 @@ const ARMOR_PRESETS = {
       "7": "强力皮搋子（近战，1d5 伤害），样本采集套件，防护服（护甲 1）",
       "8": "消毒喷雾，消毒湿巾，除臭剂，真空服（护甲 3）",
       "9": "生锈的左轮手枪（1d10 伤害），兴奋剂（x3），雪茄（x2），真空服（护甲 3）",
+    },
+    "虚空音乐家": {
+      "0": "真空服（3 护甲），长笛，长笛固定手电，磁带录音机，空白磁带（x1）",
+      "1": "麦克风（带 6 米线），夹式扩音器，歌词本，混音带（x5），指虎（视作徒手，但优势 [+]）",
+      "2": "钉刺甲（6 护甲），暗夜小提琴（附近所有人进行恐惧豁免，失败则受到 1d5 压力），死亡面具，松香",
+      "3": "霓虹夹克（2 护甲），肩背式琴，坚固的吉他肩带，太阳镜，一包口香糖",
+      "4": "沾血的磁力靴，虚空吉他（近距，1d10 伤害，惨烈损伤），呼吸器",
+      "5": "扎染衬衫配皮革背心（1 护甲），磁力凉鞋，邦戈鼓，通用机枪（3 发弹药），烟斗，一袋外环烟草",
+      "6": "尤克里里，备用琴弦（相邻，2d10 [+] 伤害，惨烈损伤，需要突袭）",
+      "7": "长袍（1 护甲），低音风笛，镇静手枪（5 发弹药），降噪耳机，尸妆",
+      "8": "猫耳造型头盔（3 护甲），合成器，合成动力电击枪（近距，1d5 伤害，身体豁免失败则晕眩 1 轮），电池组",
+      "9": "防危服（5 护甲），特雷门琴，便携式喇叭，塔罗牌一副",
+    },
+    "狂热者": {
+      "0": "肮脏破布（1 护甲），手术刀，盖革计数器",
+      "1": "圣衣（1 护甲），冲锋枪（3 个弹匣），止痛药",
+      "2": "标准乘组制服（1 护甲），共振砍刀，兴奋药 x1",
+      "3": "素色长袍（1 护甲），破片手雷 x2，爆炸物&引爆器",
+      "4": "撕裂的制服（1 护甲），镇静手枪（4 发子弹），医疗扫描仪",
+      "5": "真空服（3 护甲），跳帮斧，喷射背包",
+      "6": "真空服（3 护甲），4 把邪异匕首（视作手术刀），解锁套组",
+      "7": "标准作战服（7 护甲），喷火器（2 次用量），香烟",
+      "8": "板甲（9 护甲），巨剑（视作跳帮斧），磁力靴",
+      "9": "先进作战服（10 护甲），战斗霰弹枪（6 发子弹），氧气罐",
     },
   };
 
@@ -3051,7 +3113,7 @@ const ARMOR_PRESETS = {
   const SKILL_DATABASE = {
     10: { '语言学': '智力', '动物学': '智力', '植物学': '智力', '地质学': '智力', '工业装备': '力量', '临时拼凑': '速度', '化学': '智力', '计算机': '智力', '零重力': '速度', '数学': '智力', '艺术': '智力', '考古学': '智力', '神学': '智力', '军事训练': '战斗', '外环门道': '智力', '运动': '力量' },
     15: { '心理学': '智力', '病理学': '智力', '战地医疗': '智力', '生态学': '智力', '小行星采矿': '力量', '机械修理': '智力', '爆炸物': '智力', '药理学': '智力', '骇客': '智力', '导航': '智力', '物理学': '智力', '神秘主义': '智力', '荒野生存': '智力', '枪械': '战斗', '近身搏斗': '战斗' },
-    20: { '知性学': '智力', '外星生物学': '智力', '手术': '速度', '行星学': '智力', '机器人学': '智力', '工程学': '智力', '神经机械学': '智力', '人工智能': '智力', '超空间': '智力', '异种密教': '智力', '指挥': '战斗' }
+    20: { '知性学': '智力', '外星生物学': '智力', '手术': '速度', '行星学': '智力', '机器人学': '智力', '工程学': '智力', '神经机械学': '智力', '人工智能': '智力', '超空间': '智力', '异种秘教': '智力', '指挥': '战斗' }
   };
   const SKILL_PREREQUISITES = {
     '小行星采矿': ['地质学', '工业装备'],
@@ -3079,7 +3141,7 @@ const ARMOR_PRESETS = {
     '机器人学': ['机械修理'],
     '知性学': ['心理学'],
     '手术': ['病理学', '战地医疗'],
-    '异种密教': ['神秘主义']
+    '异种秘教': ['神秘主义']
   };
   const DEFAULT_SKILL_ATTRS = { ...SKILL_DATABASE[10], ...SKILL_DATABASE[15], ...SKILL_DATABASE[20] };
   const SKILL_TIER_NAMES = {10:'受训技能',15:'专家技能',20:'大师技能'};
@@ -3571,7 +3633,10 @@ const ARMOR_PRESETS = {
     renderJobSkillHintTags();
   }
 
-function renderSkillTree() {
+  // 4 个属性对应的小圆点颜色，跟界面已有的强调色对应上，方便一眼扫出这个技能挂在哪个属性下
+  const SKILL_ATTR_COLORS = { 力量: '#ff5e57', 速度: 'var(--accent-green)', 智力: 'var(--accent-cyan)', 战斗: 'var(--accent-orange)' };
+
+  function renderSkillTree() {
     const tree = document.getElementById('skill_tree');
     if (!tree) return;
     tree.innerHTML = '';
@@ -3579,7 +3644,8 @@ function renderSkillTree() {
     [10, 15, 20].forEach(tier => {
       const col = document.createElement('div');
       col.className = 'skill-tree-column';
-      col.innerHTML = `<div class="skill-tree-column-header"><span class="tier-title-${tier}">${SKILL_TIER_NAMES[tier]}</span><span class="skill-badge badge-${tier}">+${tier}%</span></div>`;
+      col.innerHTML = `<div class="skill-tree-column-header"><span class="tier-title-${tier}">${SKILL_TIER_NAMES[tier]}</span><span class="skill-badge badge-${tier}">+${tier}%</span></div><div class="skill-tree-chips"></div>`;
+      const chipRow = col.querySelector('.skill-tree-chips');
       
       Object.keys(SKILL_DATABASE[tier]).forEach(skillName => {
         const learned = learnedSkills.has(skillName);
@@ -3588,34 +3654,39 @@ function renderSkillTree() {
         // 检查前置技能是否已全部满足
         const unlocked = isSkillUnlocked(skillName);
         const conflict = !learned ? getEitherOrConflict(skillName) : null;
+        const isLocked = !learned && (!unlocked || conflict);
         
         const node = document.createElement('div');
         // 根据是否解锁和是否已学习给予对应的 CSS 样式类
         let nodeClasses = ['skill-node'];
         if (learned) nodeClasses.push('learned');
-        if (!learned && (!unlocked || conflict)) nodeClasses.push('locked'); // 前置未满足 或 二选一被占用，都算锁定
+        if (isLocked) nodeClasses.push('locked'); // 前置未满足 或 二选一被占用，都算锁定
         if (recommendedSkillTags.includes(skillName)) nodeClasses.push('job-recommended');
         
         node.className = nodeClasses.join(' ');
         node.dataset.skill = skillName;
+        node.style.setProperty('--attr-color', SKILL_ATTR_COLORS[attr] || 'var(--text-muted)');
 
+        // "需要先点亮XX"这行字不常驻显示（否则每个格子高矮不一，排不整齐），改成鼠标悬停时的原生提示框；
+        // 配合下面 mouseenter 时的高亮描边，信息量不会比以前少
         const prereqs = SKILL_PREREQUISITES[skillName] || [];
-        let prereqHint = '';
         if (!learned && conflict) {
-          prereqHint = `<div class="skill-node-prereq">🚫 二选一，已学「${conflict}」</div>`;
+          node.title = `🚫 二选一，已学「${conflict}」`;
         } else if (!learned && !unlocked && prereqs.length) {
-          prereqHint = `<div class="skill-node-prereq">🔒 需要先点亮：${prereqs.map(p => `<b>${p}</b>`).join(' 或 ')}</div>`;
+          node.title = `🔒 需要先点亮：${prereqs.join(' 或 ')}`;
         }
 
+        // 右上角小圆徽章：已学会显示✓，锁住显示🔒/🚫；可学但还没学的技能不需要徽章，保持干净
+        let badgeHtml = '';
+        if (learned) badgeHtml = '<span class="skill-node-badge">✓</span>';
+        else if (!learned && conflict) badgeHtml = '<span class="skill-node-badge">🚫</span>';
+        else if (!learned && !unlocked) badgeHtml = '<span class="skill-node-badge">🔒</span>';
+
         node.innerHTML = `
-          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; width:100%;">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span class="skill-node-name">${skillName}</span>
-              <span style="font-size:11px; opacity:0.6;">(${attr})</span>
-            </div>
-            ${!learned && conflict ? '<span style="font-size:10px; color:var(--text-muted);">🚫</span>' : (!learned && !unlocked ? '<span style="font-size:10px; color:var(--text-muted);">🔒</span>' : '')}
-          </div>
-          ${prereqHint}
+          <span class="skill-dot"></span>
+          <span class="skill-node-name">${skillName}</span>
+          <span class="skill-node-attr">${attr}</span>
+          ${badgeHtml}
         `;
         
 // 点击交互统一交给 quickToggleJobSkill：学会/取消/前置校验/二选一互斥都在那一处处理，
@@ -3626,7 +3697,7 @@ node.onclick = () => quickToggleJobSkill(skillName);
         node.addEventListener('mouseenter', () => highlightSkillRelations(skillName));
         node.addEventListener('mouseleave', () => clearSkillRelationHighlights());
         
-        col.appendChild(node);
+        chipRow.appendChild(node);
       });
       tree.appendChild(col);
     });
@@ -3960,6 +4031,7 @@ function clearSkillRelationHighlights() {
   // 四大官方职类的属性/豁免加成与自带技能（数据取自官方角色卡模板/职类表）
   const JOB_CLASS_INFO = {
     "陆战队员": {
+      description: "在战斗中得心应手，但一旦惊恐就会给其他乘组带来麻烦。",
       attrBonusText: "战斗 +10，损伤上限 +1",
       attrHints: { edit_combat: "+10" },
       saveHints: { edit_sanity: 0, edit_fear: 20, edit_body: 10 },
@@ -3968,6 +4040,7 @@ function clearSkillRelationHighlights() {
       skillTags: ["军事训练", "运动"]
     },
     "仿生人": {
+      description: "对于任何乘组而言都是既恐怖又刺激的存在，它们那非人道的冷漠往往会让其他乘组感到不安。",
       attrBonusText: "智力 +20，任一属性 -10，损伤上限 +1",
       attrHints: { edit_int: "+20" },
       freeChoiceNote: "另需任选 1 项属性 -10",
@@ -3977,6 +4050,7 @@ function clearSkillRelationHighlights() {
       skillTags: ["语言学", "计算机", "数学"]
     },
     "科学家": {
+      description: "是医生、研究员以及任何想用手术刀切开生物（或感染乘组）的家伙。",
       attrBonusText: "智力 +10，任一属性 +5",
       attrHints: { edit_int: "+10" },
       freeChoiceNote: "另需任选 1 项属性 +5",
@@ -3986,6 +4060,7 @@ function clearSkillRelationHighlights() {
       skillTags: []
     },
     "技工": {
+      description: "是粗野聒噪的蓝领太空工人、机械师、工程师、矿工和机师。",
       attrBonusText: "所有属性 +5",
       attrHints: { edit_str: "+5", edit_spd: "+5", edit_int: "+5", edit_combat: "+5" },
       saveHints: { edit_sanity: 10, edit_fear: 10, edit_body: 10 },
@@ -3996,6 +4071,7 @@ function clearSkillRelationHighlights() {
 
     // ===== 扩展职业（社区/同人内容） =====
     "熊": {
+      description: "力大无穷的毛茸茸，跟乘组成员的交流可能有点小问题。",
       attrBonusText: "力量 +10，速度 +10，损伤上限 +1",
       attrHints: { edit_str: "+10", edit_spd: "+10" },
       saveHints: { edit_sanity: 20, edit_fear: 10, edit_body: 0 },
@@ -4005,6 +4081,7 @@ function clearSkillRelationHighlights() {
       eitherOrGroups: [["运动", "零重力"]]
     },
     "混混": {
+      description: "边缘星域讨生活的亡命之徒、走私犯或纯粹的社会渣滓。",
       attrBonusText: "战斗 +5，速度 +10，损伤上限 +1",
       attrHints: { edit_combat: "+5", edit_spd: "+10" },
       saveHints: { edit_sanity: -5, edit_fear: 10, edit_body: 0 },
@@ -4013,6 +4090,7 @@ function clearSkillRelationHighlights() {
       skillTags: ["外环门道", "零重力"]
     },
     "打工人": {
+      description: "巨企流水线上随时可被替换的一颗螺丝钉，低薪、过劳、任劳任怨。",
       attrBonusText: "战斗 +10，速度 +5，智力 +10",
       attrHints: { edit_combat: "+10", edit_spd: "+5", edit_int: "+10" },
       saveHints: { edit_sanity: 10, edit_fear: 5, edit_body: 0 },
@@ -4021,6 +4099,7 @@ function clearSkillRelationHighlights() {
       skillTags: ["计算机", "外环门道"]
     },
     "太空野蛮人": {
+      description: "被遗忘殖民地走出的野性之子，常被“文明人”嘲笑。",
       attrBonusText: "力量 +10，战斗 +5，损伤上限 +1",
       attrHints: { edit_str: "+10", edit_combat: "+5" },
       saveHints: { edit_sanity: 10, edit_fear: 10, edit_body: 10 },
@@ -4029,6 +4108,7 @@ function clearSkillRelationHighlights() {
       skillTags: ["运动", "艺术", "植物学"]
     },
     "虚空神甫": {
+      description: "笃信某种边缘信仰的神秘主义者，游走在虔诚与疯狂之间。",
       attrBonusText: "智力 +15，任一属性 +10",
       attrHints: { edit_int: "+15" },
       freeChoiceNote: "另需任选 1 项属性 +10",
@@ -4038,6 +4118,7 @@ function clearSkillRelationHighlights() {
       skillTags: ["神学", "艺术"]
     },
     "罪犯": {
+      description: "混迹于边缘星域犯罪网络的不法之徒，残酷务实，为生存不择手段。",
       attrBonusText: "力量 +5 或 速度 +5，战斗 +5",
       attrHints: { edit_combat: "+5" },
       freeChoiceNote: "另需任选：力量 +5 或 速度 +5",
@@ -4048,6 +4129,7 @@ function clearSkillRelationHighlights() {
       eitherOrGroups: [["计算机", "化学"]]
     },
     "拓荒者": {
+      description: "踏上未知世界的先遣者，大多死得很惨，活下来的都异常坚韧。",
       attrBonusText: "速度 +10，智力 +5",
       attrHints: { edit_spd: "+10", edit_int: "+5" },
       saveHints: { edit_sanity: 0, edit_fear: 5, edit_body: 5 },
@@ -4056,6 +4138,7 @@ function clearSkillRelationHighlights() {
       skillTags: ["植物学", "荒野生存", "战地医疗"]
     },
     "旧型号机器人": {
+      description: "早已过了保修期的旧式自动化机甲，逻辑核心落后但异常坚固耐用。",
       attrBonusText: "力量 +30，智力 -10，速度 -10，损伤上限 +2",
       attrHints: { edit_str: "+30", edit_int: "-10", edit_spd: "-10" },
       saveHints: { edit_sanity: 0, edit_fear: 60, edit_body: 0 },
@@ -4064,6 +4147,7 @@ function clearSkillRelationHighlights() {
       skillTags: ["工业装备", "临时拼凑", "外环门道"]
     },
     "退休人员": {
+      description: "本该安享晚年的老人，却因为种种原因又被拖回了这趟浑水里。",
       attrBonusText: "力量 +10 或 智力 +10 或 战斗 +10，速度 -15",
       attrHints: { edit_spd: "-15" },
       freeChoiceNote: "另需任选：力量 +10 或 智力 +10 或 战斗 +10",
@@ -4073,6 +4157,7 @@ function clearSkillRelationHighlights() {
       skillTags: []
     },
     "异变者": {
+      description: "一个被带走、被送回，并永远被改变的职类。",
       attrBonusText: "战斗 +10，力量 +10，损伤上限 +1",
       attrHints: { edit_combat: "+10", edit_str: "+10" },
       saveHints: { edit_sanity: 0, edit_fear: 0, edit_body: 20 },
@@ -4081,12 +4166,31 @@ function clearSkillRelationHighlights() {
       skillTags: ["动物学", "近身搏斗", "运动"]
     },
     "银河清理工": {
+      description: "专门处理各种脏活累活的清洁工，什么恶心东西都见过。",
       attrBonusText: "力量 +10，速度 +10",
       attrHints: { edit_str: "+10", edit_spd: "+10" },
       saveHints: { edit_sanity: 0, edit_fear: 0, edit_body: 30 },
       damageCapBonus: 0,
       skillsText: "自带：工业装备，临时拼凑，化学，机械修理。",
       skillTags: ["工业装备", "临时拼凑", "化学", "机械修理"]
+    },
+    "虚空音乐家": {
+      description: "太空吟游诗人，复古就是潮流。",
+      attrBonusText: "智力 +15，速度 +5",
+      attrHints: { edit_int: "+15", edit_spd: "+5" },
+      saveHints: { edit_sanity: 15, edit_fear: 0, edit_body: -5 },
+      damageCapBonus: 0,
+      skillsText: "自带：艺术，神秘主义，异种秘教。奖励：1 项受训技能。",
+      skillTags: ["艺术", "神秘主义", "异种秘教"]
+    },
+    "狂热者": {
+      description: "虔诚的太空圣武士，经过训练或自封为战士，对抗非自然威胁。",
+      attrBonusText: "战斗 +20，损伤上限 +1",
+      attrHints: { edit_combat: "+20" },
+      saveHints: { edit_sanity: 0, edit_fear: 15, edit_body: 15 },
+      damageCapBonus: 1,
+      skillsText: "自带：军事训练，神学。奖励：1 项专家技能或 2 项受训技能。",
+      skillTags: ["军事训练", "神学"]
     }
   };
   let recommendedSkillTags = [];
@@ -4114,6 +4218,7 @@ function clearSkillRelationHighlights() {
 
     const banner = document.getElementById('job_bonus_banner');
     const skillHint = document.getElementById('job_skill_hint');
+    const descHint = document.getElementById('job_desc_hint');
 
     // 每次都先清空所有属性/豁免旁边的小标签，避免切换职业后残留上一个职业的提示
     // （连同"已应用"的状态一起重置——毕竟职业都换了，之前那个加成还是不是已应用状态，含义已经变了）
@@ -4130,11 +4235,22 @@ function clearSkillRelationHighlights() {
     if (!info) {
       if (banner) banner.style.display = 'none';
       if (skillHint) skillHint.style.display = 'none';
+      if (descHint) descHint.style.display = 'none';
       recommendedSkillTags = [];
       currentEitherOrGroups = [];
       // 未识别到官方四大职类之一时，不强制改动损伤上限，避免覆盖自定义职业的手动设置
       renderSkillTree();
       return;
+    }
+
+    // 职业简介：一两句话的风味小字，帮助还不熟悉这个职业的玩家理解"这是个什么样的角色"
+    if (descHint) {
+      if (info.description) {
+        descHint.textContent = info.description;
+        descHint.style.display = 'block';
+      } else {
+        descHint.style.display = 'none';
+      }
     }
 
     // 属性/豁免小标签：能对应到具体某一项的加成，直接显示在那一项标题旁边，
@@ -4241,6 +4357,8 @@ function clearSkillRelationHighlights() {
     else if (job.includes('退休人员')) response = "当你惊恐时，必须进行一次身体豁免，失败则心脏病发（陷入昏迷，若在 1d10 回合内未得到治疗则死亡）。";
     else if (job.includes('异变者')) response = "每当你通过一次身体豁免，附近所有友方玩家增加1点压力。";
     else if (job.includes('银河清理工')) response = "附近友方玩家进行身体豁免时具有劣势。";
+    else if (job.includes('虚空音乐家')) response = "理智豁免失败时，会疯狂弹奏噪音。近距友方玩家必须进行身体豁免。";
+    else if (job.includes('狂热者')) response = "你的理智豁免有劣势[-]。";
     if (response) document.getElementById('edit_response').value = response;
     updateJobHints();
   }
