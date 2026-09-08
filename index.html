@@ -1067,6 +1067,18 @@
       border-color: var(--accent-cyan);
       color: #0d0f12;
     }
+    .tag-tier-suffix {
+      display: inline-block;
+      margin-left: 4px;
+      padding: 1px 5px;
+      font-size: 9.5px;
+      font-weight: 700;
+      border-radius: 4px;
+      background: rgba(13, 15, 18, 0.55);
+      color: #fff;
+      vertical-align: middle;
+      letter-spacing: 0.2px;
+    }
 
     /* 武器表：终端读数风卡片，每把武器一张卡，四角描边像瞄准取景框 */
     .weapon-legend {
@@ -3597,7 +3609,7 @@ const ARMOR_PRESETS = {
       } else {
         title = '缺前置技能，点击查看需要先点亮什么';
       }
-      return `<button type="button" class="${cls}" title="${title}" onclick="quickToggleJobSkill('${name.replace(/'/g, "\\'")}')">${learned ? '✓ ' : ''}${name}</button>`;
+      return `<button type="button" class="${cls}" title="${title}" onclick="quickToggleJobSkill('${name.replace(/'/g, "\\'")}')">${learned ? '✓ ' : ''}${name}<span class="tag-tier-suffix">+${getSkillTier(name)}%</span></button>`;
     };
     let html = recommendedSkillTags.map(name => renderTag(name, false)).join('');
     html += bonusSkills.map(name => renderTag(name, true)).join('');
